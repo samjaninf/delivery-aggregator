@@ -1,0 +1,63 @@
+html,
+body {
+  margin: 0;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.nav-link {
+  cursor: pointer;
+}
+
+.card .card-text i {
+  margin-right: 1em;
+}
+
+.fa-spin {
+  margin: 0.5em;
+  font-size: 3em;
+}
+
+.orders .order.card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.order.card p {
+  display: flex;
+}
+
+.orders .order.card:hover {
+  transform: translateY(-3px);
+  box-shadow: #eeeeee 0px 5px 20px 4px;
+}
+
+.backdrop {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.selected-order {
+  width: 400px;
+  max-width: 100vw;
+  max-height: 100vh;
+  overflow-y: auto;
+}
+
+.meta {
+  font-size: 0.8em;
+  list-style: none;
+}
+
+.meta .key {
+  font-weight: 500;
+}
