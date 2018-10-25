@@ -14,4 +14,9 @@ use Illuminate\Http\Request;
 */
 
 Route::middleware('api')->get('/stores', 'StoreController@index');
+Route::middleware('api')->get('/stores/{store}', 'StoreController@show');
+Route::middleware('api')->post('/stores', 'StoreController@store');
+Route::middleware('api')->put('/stores', 'StoreController@update');
+Route::middleware('api')->delete('/stores/{store}', 'StoreController@destroy');
+
 Route::middleware('api')->get('/stores/{store}/orders', 'WooController@orders');

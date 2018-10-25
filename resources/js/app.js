@@ -23,6 +23,11 @@ const App = require("./components/App.vue");
 // Routes
 const routes = [
     {
+        path: "/settings",
+        props: true,
+        component: require("./components/Settings.vue")
+    },
+    {
         path: "/:storeCode",
         props: true,
         component: require("./components/OrdersList.vue")

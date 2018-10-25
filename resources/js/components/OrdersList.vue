@@ -1,6 +1,6 @@
 <template>
   <main role="main" class="container mt-4" v-if="activeStore">
-    <h1 class="text-center mt-4 mb-4">Ordini {{ activeStore.name }}</h1>
+    <h1 class="text-center mt-4 mb-4">Ordini — {{ activeStore.name }}</h1>
     <div>
       <div v-for="(dayOrders, day) in ordersByDate" class="mb-3" :key="day">
         <h3 class="text-primary">{{ day }}</h3>

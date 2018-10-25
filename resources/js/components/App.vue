@@ -15,6 +15,13 @@
               </router-link>
             </li>
           </ul>
+          <ul class="navbar-nav">
+            <li class="nav-item" :class="{ active: $route.path == '/settings' }">
+              <router-link to="/settings" class="nav-link">
+                <i class="fas fa-fw fa-cog"></i> Settings
+              </router-link>
+            </li>
+          </ul>
         </div>
       </div>
     </nav>
