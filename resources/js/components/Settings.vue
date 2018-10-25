@@ -1,5 +1,7 @@
 <template>
   <div class="container mt-4">
+    <users-list></users-list>
+    <hr>
     <stores-list :stores="stores"></stores-list>
   </div>
 </template>
@@ -8,7 +10,8 @@
 export default {
   props: ['stores'],
   components: {
-    StoresList: require('./StoresList.vue')
+    UsersList: require('./UsersList.vue'),
+    StoresList: require('./StoresList.vue'),
   } 
 }
 </script>

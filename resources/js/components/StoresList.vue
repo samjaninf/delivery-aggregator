@@ -4,10 +4,10 @@
     <div class="row">
       <div class="col-md-6 mt-2">
         <div class="list-group">
-          <a v-for="store in stores" :key="store.code" href="#" class="list-group-item list-group-item-action" @click="storeEdited = store.code" :class="{ active: storeEdited === store.code  }">
+          <a v-for="store in stores" :key="store.code" href="#" class="list-group-item list-group-item-action" @click="editing = store.code" :class="{ active: editing === store.code  }">
             {{ store.name }}
           </a>
-          <a href="#" class="list-group-item list-group-item-action" @click="storeEdited = null" :class="{ active: storeEdited === null  }">
+          <a href="#" class="list-group-item list-group-item-action" @click="editing = null" :class="{ active: editing === null  }">
             <i class="fas fa-fw fa-plus"></i> Aggiungi
           </a>
         </div>
@@ -37,9 +37,9 @@
               <input type="text" class="form-control" placeholder="Inserisci il Consumer Secret (CS)" v-model="store.consumer_secret">
             </div>
             <button type="submit" class="btn btn-primary">
-              {{ storeEdited ? "Aggiorna" : "Salva" }}
+              {{ editing ? "Aggiorna" : "Salva" }}
             </button>
-            <button type="button" class="btn btn-danger float-right" v-if="storeEdited" @click="deleteStore">
+            <button type="button" class="btn btn-danger float-right" v-if="editing" @click="deleteStore">
               Elimina
             </button>
           </form>
@@ -53,19 +53,19 @@
 export default {
   data() {
     return {
-      storeEdited: null,
+      editing: null,
       store: {},
     };
   },
   watch: {
-    storeEdited() {
-      if (!this.storeEdited) {
+    editing() {
+      if (!this.editing) {
         this.store = {};
         return;
       };
 
       axios
-        .get(`/api/stores/${this.storeEdited}`)
+        .get(`/api/stores/${this.editing}`)
         .then((response) => {
           this.store = response.data;
         });
@@ -73,11 +73,11 @@ export default {
   },
   methods: {
     handleSubmit() {
-      if (this.storeEdited)
+      if (this.editing)
         axios
           .put('/api/stores', this.store)
           .then(() => {
-            const store = _.find(this.stores, { code: this.storeEdited });
+            const store = _.find(this.stores, { code: this.editing });
             Object.assign(store, this.store);
           });
       else
@@ -85,18 +85,18 @@ export default {
           .post('/api/stores', this.store)
           .then(() => {
             this.stores.push(this.store);
-            this.storeEdited = this.store.code;
+            this.editing = this.store.code;
           });
     },
 
     deleteStore() {
-      if (this.storeEdited)
+      if (this.editing)
         axios
-          .delete(`/api/stores/${this.storeEdited}`)
+          .delete(`/api/stores/${this.editing}`)
           .then(() => {
-            const idx = _.findIndex(this.stores, { code: this.storeEdited });
+            const idx = _.findIndex(this.stores, { code: this.editing });
             this.stores.splice(idx, 1);
-            this.storeEdited = null;
+            this.editing = null;
           });
     }
   },
