@@ -58,8 +58,8 @@ export default {
         return;
       };
 
-      axios
-        .get(`/api/users/${this.editing}`)
+      this.$http
+        .get(`users/${this.editing}`)
         .then((response) => {
           this.user = response.data;
         });
@@ -67,8 +67,8 @@ export default {
   },
   methods: {
     loadUsers() {
-      axios
-        .get('/api/users')
+      this.$http
+        .get('users')
         .then((response) => {
           this.users = response.data 
         });
@@ -76,15 +76,15 @@ export default {
 
     handleSubmit() {
       if (this.editing)
-        axios
-          .put('/api/users', this.user)
+        this.$http
+          .put('users', this.user)
           .then(() => {
             const user = _.find(this.users, { id: this.editing });
             Object.assign(user, this.user);
           });
       else
-        axios
-          .post('/api/users', this.user)
+        this.$http
+          .post('users', this.user)
           .then((response) => {
             this.users.push(response.data);
             this.editing = response.data.id;
@@ -93,8 +93,8 @@ export default {
 
     deleteUser() {
       if (this.editing)
-        axios
-          .delete(`/api/users/${this.editing}`)
+        this.$http
+          .delete(`users/${this.editing}`)
           .then(() => {
             const idx = _.findIndex(this.users, { id: this.editing });
             this.users.splice(idx, 1);

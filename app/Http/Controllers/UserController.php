@@ -16,7 +16,7 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $params = $request->json()->all();
-        $params['password'] = Hash::make($params['password']);
+        $params['password'] = bcrypt($params['password']);
         
         return User::create($params);
     }
@@ -30,7 +30,7 @@ class UserController extends Controller
     {
         $params = $request->json()->all();
         if (isset($params['password']))
-            $params['password'] = Hash::make($params['password']);
+            $params['password'] = bcrypt($params['password']);
         
         $user = User::find($params['id']);
         $user->fill($params);

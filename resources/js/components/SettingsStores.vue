@@ -64,8 +64,8 @@ export default {
         return;
       };
 
-      axios
-        .get(`/api/stores/${this.editing}`)
+      this.$http
+        .get(`stores/${this.editing}`)
         .then((response) => {
           this.store = response.data;
         });
@@ -74,15 +74,15 @@ export default {
   methods: {
     handleSubmit() {
       if (this.editing)
-        axios
-          .put('/api/stores', this.store)
+        this.$http
+          .put('stores', this.store)
           .then(() => {
             const store = _.find(this.stores, { code: this.editing });
             Object.assign(store, this.store);
           });
       else
-        axios
-          .post('/api/stores', this.store)
+        this.$http
+          .post('stores', this.store)
           .then(() => {
             this.stores.push(this.store);
             this.editing = this.store.code;
@@ -91,8 +91,8 @@ export default {
 
     deleteStore() {
       if (this.editing)
-        axios
-          .delete(`/api/stores/${this.editing}`)
+        this.$http
+          .delete(`stores/${this.editing}`)
           .then(() => {
             const idx = _.findIndex(this.stores, { code: this.editing });
             this.stores.splice(idx, 1);

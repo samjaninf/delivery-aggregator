@@ -28,6 +28,10 @@ Route::middleware('api')->delete('/users/{user}', 'UserController@destroy');
 Route::middleware('api')->get('/stores/{store}/orders', 'WooController@orders');
 
 
+Route::middleware(['api'])->post('/auth/login', 'AuthController@login');
+Route::middleware(['api', 'jwt.auth'])->get('/auth/user', 'AuthController@user');
+Route::middleware(['api','jwt.auth'])->get('/auth/refresh', 'AuthController@refresh');
+
 // Catch-all
 Route::middleware('api')->get('/{any}', function () {
   return abort(404);

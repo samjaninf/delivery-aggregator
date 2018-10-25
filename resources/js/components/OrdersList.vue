@@ -47,9 +47,9 @@ export default {
   },
   methods: {
     loadPage($state) {
-      axios
+      this.$http
         .get(
-          `/api/stores/${this.activeStore.code}/orders?page=${this.page + 1}`,
+          `stores/${this.activeStore.code}/orders?page=${this.page + 1}`,
           {
             cancelToken: this.storeCancel.token
           }
@@ -65,7 +65,7 @@ export default {
           $state.loaded();
         })
         .catch(e => {
-          if (axios.isCancel(e)) {
+          if (this.$http.isCancel(e)) {
             console.log("Request canceled:", e.message);
           } else {
             console.error(e);

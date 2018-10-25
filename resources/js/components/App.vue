@@ -1,42 +1,9 @@
 <template>
   <div>
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-      <div class="container">
-        <a class="navbar-brand" href="#">Delivery Aggregator</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse">
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item" v-for="store in stores" :key="store.code" :class="{ active: $route.params.storeCode == store.code }">
-              <router-link :to="`/${store.code}`" class="nav-link">
-                {{ store.name }}
-              </router-link>
-            </li>
-          </ul>
-          <ul class="navbar-nav">
-            <li class="nav-item dropdown" :class="{ active: $route.path.startsWith('/settings')}">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown">
-                Impostazioni
-              </a>
-              <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                <router-link to="/settings/stores" class="dropdown-item">
-                  <i class="fas fa-fw fa-store-alt"></i> Negozi
-                </router-link>
-                <router-link to="/settings/users" class="dropdown-item">
-                  <i class="fas fa-fw fa-users"></i> Utenti
-                </router-link>
-              </div>
-            </li>
-            <li class="nav-item ">
-
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-    <router-view :stores="stores"></router-view>
+    <template v-if="$auth.ready()">
+      <navbar :stores="stores"></navbar>
+      <router-view :stores="stores"></router-view>
+    </template>
   </div>
 </template>
 
@@ -49,7 +16,7 @@ export default {
   },
   methods: {
     loadStores: function() {
-      axios.get("/api/stores").then(response => {
+      this.$http.get("stores").then(response => {
         this.stores = response.data;
       });
     },
@@ -59,6 +26,14 @@ export default {
   },
   components: {
     OrdersList: require('./OrdersList.vue'),
+    Navbar: require('./Navbar.vue'),
   }
 }
 </script>
+
+<style scoped>
+div {
+  height: 100%;
+  width: 100%;
+}
+</style>
