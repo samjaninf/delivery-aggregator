@@ -25,7 +25,17 @@ const routes = [
     {
         path: "/settings",
         props: true,
-        component: require("./components/Settings.vue")
+        component: require("./components/Settings.vue"),
+        children: [
+            {
+                path: "stores",
+                component: require("./components/SettingsStores.vue")
+            },
+            {
+                path: "users",
+                component: require("./components/SettingsUsers.vue")
+            }
+        ]
     },
     {
         path: "/:storeCode",

@@ -14,11 +14,11 @@
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/locale/it.js"></script>
-        <link rel="stylesheet" href="css/app.css">
+        <link rel="stylesheet" href="/css/app.css">
     </head>
     <body>
         <div id="app">
         </div>
-        <script src="js/app.js"></script>
+        <script src="/js/app.js"></script>
     </body>
 </html>

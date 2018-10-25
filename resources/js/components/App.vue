@@ -10,16 +10,27 @@
         <div class="collapse navbar-collapse">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item" v-for="store in stores" :key="store.code" :class="{ active: $route.params.storeCode == store.code }">
-              <router-link :to="store.code" class="nav-link">
+              <router-link :to="`/${store.code}`" class="nav-link">
                 {{ store.name }}
               </router-link>
             </li>
           </ul>
           <ul class="navbar-nav">
-            <li class="nav-item" :class="{ active: $route.path == '/settings' }">
-              <router-link to="/settings" class="nav-link">
-                <i class="fas fa-fw fa-cog"></i> Settings
-              </router-link>
+            <li class="nav-item dropdown" :class="{ active: $route.path.startsWith('/settings')}">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+                Impostazioni
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                <router-link to="/settings/stores" class="dropdown-item">
+                  <i class="fas fa-fw fa-store-alt"></i> Negozi
+                </router-link>
+                <router-link to="/settings/users" class="dropdown-item">
+                  <i class="fas fa-fw fa-users"></i> Utenti
+                </router-link>
+              </div>
+            </li>
+            <li class="nav-item ">
+
             </li>
           </ul>
         </div>
