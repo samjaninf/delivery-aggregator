@@ -14,4 +14,4 @@ use Illuminate\Http\Request;
 */
 
 Route::middleware('api')->get('/stores', 'StoreController@index');
-Route::middleware('api')->get('/store/{store}/orders', 'WooController@orders');
+Route::middleware('api')->get('/stores/{store}/orders', 'WooController@orders');

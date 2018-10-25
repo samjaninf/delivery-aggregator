@@ -1,39 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Delivery Aggregator</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
-    crossorigin="anonymous">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/brands.css" integrity="sha384-Px1uYmw7+bCkOsNAiAV5nxGKJ0Ixn5nChyW8lCK1Li1ic9nbO5pC/iXaq27X5ENt"
-    crossorigin="anonymous">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz"
-    crossorigin="anonymous">
-  <link rel="stylesheet" href="style.css">
-
-  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/locale/it.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-  <script src="https://unpkg.com/vue-infinite-scroll@2.0.2/vue-infinite-scroll.js"></script>
-</head>
-
-<body>
-  <div id="app">
+<template>
+  <div>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark">
       <div class="container">
         <a class="navbar-brand" href="#">Delivery Aggregator</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
-          aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-toggle="collapse">
           <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <div class="collapse navbar-collapse">
           <ul class="navbar-nav mr-auto">
-            <li class="nav-item" v-for="store in stores" :class="{ active: activeStore.code === store.code }">
+            <li class="nav-item" v-for="store in stores" :class="{ active: activeStore.code === store.code }" :key="store.code">
               <a class="nav-link" @click="activeStore = store">
                 {{ store.name }}
               </a>
@@ -44,8 +20,8 @@
     </nav>
     <main role="main" class="container mt-4" v-if="activeStore">
       <h1 class="text-center mt-4 mb-4">Ordini {{ activeStore.name }}</h1>
-      <div v-infinite-scroll="loadPage" infinite-scroll-disabled="busy">
-        <div v-for="(dayOrders, day) in ordersByDate" class="mb-3">
+      <div>
+        <div v-for="(dayOrders, day) in ordersByDate" class="mb-3" :key="day">
           <h3 class="text-primary">{{ day }}</h3>
           <hr />
           <div class="orders row">
@@ -81,9 +57,7 @@
             </div>
           </div>
         </div>
-      </div>
-      <div class="text-center" :class="{ hidden: !busy || lastPage }">
-        <i class="fas fa-spin fa-spinner fa-lg"></i>
+        <infinite-loading @infinite="loadPage" :identifier="activeStore.code"></infinite-loading>
       </div>
     </main>
     <div class="backdrop" v-if="order" @click.self="order = null">
@@ -114,14 +88,14 @@
             </p>
             <hr />
             <h5>Prodotti</h5>
-            <div class="media ml-2" v-for="item in order.items">
+            <div class="media ml-2" v-for="item in order.items" :key="item.name">
               <div class="media-body">
                 <div>
                   <p class="float-right">{{ item.total | money }}</p>
                   <h6 class="d-inline">{{ item.quantity }} &times; {{ item.name }}</h6>
                 </div>
                 <ul class="meta">
-                  <li v-for="(value, key) in item.meta" class="mt-2">
+                  <li v-for="(value, key) in item.meta" class="mt-2" :key="key">
                     <span class="key d-block" v-html="`${key}: `"></span>
                     <em>{{ value }}</em>
                   </li>
@@ -133,7 +107,104 @@
       </div>
     </div>
   </div>
-  <script src="app.js"></script>
-</body>
+</template>
 
-</html>
+<script>
+const CancelToken = axios.CancelToken;
+export default {
+  data: function() {
+    return {
+      page: 0,
+      lastPage: false,
+      orders: [],
+      order: null,
+      stores: [],
+      activeStore: null,
+      storeCancel: CancelToken.source()
+    };
+  },
+  computed: {
+    ordersByDate: function() {
+      return this.orders.reduce(
+        (
+          r,
+          v,
+          i,
+          a,
+          k = moment
+            .unix(v.delivery_date)
+            .utc()
+            .format("LL")
+        ) => ((r[k] || (r[k] = [])).push(v), r),
+        {}
+      );
+    }
+  },
+  methods: {
+    loadStores: function() {
+      axios.get("/api/stores").then(response => {
+        this.stores = response.data;
+        if (this.stores.length > 0) this.activeStore = this.stores[0];
+      });
+    },
+    loadPage: function($state) {
+      console.log('Load Page');
+      axios
+        .get(
+          `/api/stores/${this.activeStore.code}/orders?page=${this.page + 1}`,
+          {
+            cancelToken: this.storeCancel.token
+          }
+        )
+        .then(response => {
+          if (response.data.length == 0) {
+            $state.complete();
+            return;
+          }
+
+          this.page += 1;
+          this.orders = [...this.orders, ...response.data];
+          $state.loaded();
+        })
+        .catch(e => {
+          if (axios.isCancel(e)) {
+            console.log("Request canceled:", e.message);
+          } else {
+            console.error(e);
+          }
+        });
+    },
+    loadOrder: function(order) {
+      this.order = order;
+    },
+    reset: function() {
+      this.storeCancel.cancel("Changed store");
+
+      this.page = 0;
+      this.lastPage = false;
+      this.orders = [];
+      this.order = null;
+      this.storeCancel = CancelToken.source();
+    }
+  },
+  watch: {
+    activeStore: function() {
+      this.reset();
+    }
+  },
+  mounted: function() {
+    this.loadStores();
+  },
+  filters: {
+    hour: function(value) {
+      return moment
+        .unix(value)
+        .utc()
+        .format("H:mm");
+    },
+    money: function(value) {
+      return `€${(+value).toFixed(2)}`;
+    }
+  },
+}
+</script>
