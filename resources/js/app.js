@@ -9,6 +9,9 @@ require("./bootstrap");
 window.Vue = require("vue");
 Vue.use(require("vue-infinite-loading"));
 
+const VueRouter = require("vue-router").default;
+Vue.use(VueRouter);
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -16,6 +19,20 @@ Vue.use(require("vue-infinite-loading"));
  */
 
 const App = require("./components/App.vue");
+
+// Routes
+const routes = [
+    {
+        path: "/:storeCode",
+        props: true,
+        component: require("./components/OrdersList.vue")
+    }
+];
+
+const router = new VueRouter({
+    mode: "history",
+    routes
+});
 
 // Global filters
 Vue.filter("hour", v =>
@@ -29,5 +46,6 @@ Vue.filter("money", v => `€${(+v).toFixed(2)}`);
 const app = new Vue({
     el: "#app",
     template: "<App/>",
-    components: { App }
+    components: { App },
+    router
 });

@@ -7,11 +7,14 @@
         <hr />
         <div class="orders row">
           <div class="col-lg-4 col-md-6" v-for="order in dayOrders" :key="order.number">
-            <order :order="order" @click="$emit('click', order)"></order>
+            <order :order="order" @click="selectedOrder = order"></order>
           </div>
         </div>
       </div>
       <infinite-loading @infinite="loadPage" :identifier="activeStore.code"></infinite-loading>
+      <div class="backdrop" v-if="selectedOrder" @click.self="selectedOrder = null">
+        <order :order="selectedOrder" :detailed="true"></order>
+      </div>
     </div>
   </main>
 </template>
@@ -24,10 +27,11 @@ export default {
     return {
       orders: [],
       page: 0,
-      storeCancel: CancelToken.source()
+      storeCancel: CancelToken.source(),
+      selectedOrder: null,
     };
   },
-  props: ["activeStore"],
+  props: ['storeCode', 'stores'],
   computed: {
     ordersByDate() {
       return _.groupBy(this.orders, o =>
@@ -36,6 +40,9 @@ export default {
           .utc()
           .format("LL")
       );
+    },
+    activeStore() {
+      return _.find(this.stores, { code: this.storeCode });
     }
   },
   methods: {
@@ -70,6 +77,7 @@ export default {
 
       this.page = 0;
       this.orders = [];
+      this.selectedOrder = null;
       this.storeCancel = CancelToken.source();
     }
   },
@@ -79,7 +87,7 @@ export default {
     }
   },
   components: {
-    Order: require('./Order.vue')
+    Order: require('./Order.vue'),
   }
 };
 

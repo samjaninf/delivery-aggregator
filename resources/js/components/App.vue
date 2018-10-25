@@ -9,19 +9,16 @@
 
         <div class="collapse navbar-collapse">
           <ul class="navbar-nav mr-auto">
-            <li class="nav-item" v-for="store in stores" :class="{ active: activeStore.code === store.code }" :key="store.code">
-              <a class="nav-link" @click="activeStore = store">
+            <li class="nav-item" v-for="store in stores" :key="store.code" :class="{ active: $route.params.storeCode == store.code }">
+              <router-link :to="store.code" class="nav-link">
                 {{ store.name }}
-              </a>
+              </router-link>
             </li>
           </ul>
         </div>
       </div>
     </nav>
-    <orders-list :activeStore="activeStore" @click="loadOrder"></orders-list>
-    <div class="backdrop" v-if="order" @click.self="order = null">
-      <order :order="order" :detailed="true"></order>
-    </div>
+    <router-view :stores="stores"></router-view>
   </div>
 </template>
 
@@ -29,20 +26,14 @@
 export default {
   data() {
     return {
-      order: null,
       stores: [],
-      activeStore: null,
     };
   },
   methods: {
     loadStores: function() {
       axios.get("/api/stores").then(response => {
         this.stores = response.data;
-        if (this.stores.length > 0) this.activeStore = this.stores[0];
       });
-    },
-    loadOrder: function(order) {
-      this.order = order;
     },
   },
   mounted: function() {
@@ -50,7 +41,6 @@ export default {
   },
   components: {
     OrdersList: require('./OrdersList.vue'),
-    Order: require('./Order.vue')
   }
 }
 </script>

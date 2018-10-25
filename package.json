@@ -18,6 +18,7 @@
         "lodash": "^4.17.5",
         "popper.js": "^1.12",
         "vue": "^2.5.17",
-        "vue-infinite-loading": "^2.4.0"
+        "vue-infinite-loading": "^2.4.0",
+        "vue-router": "^3.0.1"
     }
 }
