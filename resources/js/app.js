@@ -16,7 +16,15 @@ Vue.use(require("vue-infinite-loading"));
  */
 
 const App = require("./components/App.vue");
-require("vue-infinite-loading");
+
+// Global filters
+Vue.filter("hour", v =>
+    moment
+        .unix(v)
+        .utc()
+        .format("H:mm")
+);
+Vue.filter("money", v => `€${(+v).toFixed(2)}`);
 
 const app = new Vue({
     el: "#app",
