@@ -36,8 +36,8 @@
               <label>Consumer Secret (CS)</label>
               <input type="text" class="form-control" placeholder="Inserisci il Consumer Secret (CS)" v-model="store.consumer_secret">
             </div>
-            <button type="submit" class="btn btn-primary">
-              {{ editing ? "Aggiorna" : "Salva" }}
+            <button type="submit" class="btn" :class="editing ? 'btn-primary' : 'btn-success'">
+              {{ editing ? "Aggiorna" : "Salva nuovo" }}
             </button>
             <button type="button" class="btn btn-danger float-right" v-if="editing" @click="deleteStore">
               Elimina

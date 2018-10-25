@@ -11,22 +11,20 @@ class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
+    public static function boot() {
+        parent::boot();
+
+        static::deleting(function($user) {
+            $user->stores()->detach();
+        });
+    }
+
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'is_admin'
     ];
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
     protected $hidden = [
-        'password', 'is_admin'
+        'password'
     ];
 
     public function getJWTIdentifier()
@@ -37,5 +35,10 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function stores()
+    {
+        return $this->belongsToMany('App\Store');
     }
 }

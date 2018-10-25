@@ -31,7 +31,8 @@ class WooController extends Controller
 
     function orders(Request $request, $store)
     {
-        if(!auth()->user()->is_admin)
+        if(!auth()->user()->is_admin &&
+           !auth()->user()->stores()->where('code', $store)->first())
             abort(401);
         
         $wc = $this->createClient($store);

@@ -29,8 +29,25 @@
               <input type="password" class="form-control" placeholder="Inserisci la password" v-model="user.password">
               <small class="form-text text-muted">Inserisci una password per modificare quella esistente.</small>
             </div>
-            <button type="submit" class="btn btn-primary">
-              {{ editing ? "Aggiorna" : "Salva" }}
+            <div class="form-group">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" v-model="user.is_admin" :disabled="$auth.user().id === user.id">
+                <label class="form-check-label">
+                  Amministratore
+                </label>
+              </div>
+            </div>
+            <div class="form-group" v-if="!user.is_admin">
+              <label>Permessi</label>
+              <div class="form-check" v-for="store in stores" :key="store.code">
+                <input class="form-check-input" type="checkbox" v-model="user.permissions[store.code]">
+                <label class="form-check-label">
+                  {{ store.name }}
+                </label>
+              </div>
+            </div>
+            <button type="submit" class="btn" :class="editing ? 'btn-primary' : 'btn-success'">
+              {{ editing ? "Aggiorna" : "Salva nuovo" }}
             </button>
             <button type="button" class="btn btn-danger float-right" v-if="editing" @click="deleteUser">
               Elimina
@@ -43,18 +60,26 @@
 </template>
 
 <script>
+const emptyUser = () => ({
+  name: '',
+  email: '',
+  password: '',
+  is_admin: false,
+  permissions: {},
+})
+
 export default {
   data() {
     return {
       users: [],
       editing: null,
-      user: {},
+      user: emptyUser(),
     };
   },
   watch: {
     editing() {
       if (!this.editing) {
-        this.user = {};
+        this.user = this.emptyUser();
         return;
       };
 
@@ -66,6 +91,10 @@ export default {
     }
   },
   methods: {
+    emptyUser() {
+      return emptyUser();
+    },
+
     loadUsers() {
       this.$http
         .get('users')
@@ -104,6 +133,7 @@ export default {
   },
   mounted() {
     this.loadUsers();
-  }
+  },
+  props: ['stores']
 }
 </script>

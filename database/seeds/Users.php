@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use App\User;
+use App\Store;
 
 class Users extends Seeder
 {
@@ -28,5 +29,12 @@ class Users extends Seeder
         ];
 
         User::insert($users);
+
+        $user = User::find(1);
+        $stores = Store::all();
+        
+        foreach($stores as $store) {
+            $user->stores()->attach($store);
+        }
     }
 }
