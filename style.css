@@ -19,6 +19,11 @@ body {
   margin-right: 1em;
 }
 
+.card.cancelled {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
 .fa-spin {
   margin: 0.5em;
   font-size: 3em;

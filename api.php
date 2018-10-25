@@ -99,6 +99,7 @@ function listOrders()
             'phone' => $order->billing->phone,
             'payment_method' => $order->payment_method,
             'delivery_date' => array_find($order->meta_data, 'ywcdd_order_slot_from'),
+            'delivery_date_end' => array_find($order->meta_data, 'ywcdd_order_slot_to'),
             'items' => $items ?? [],
         ];
     }, $orders);

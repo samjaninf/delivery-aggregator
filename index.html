@@ -50,16 +50,20 @@
           <hr />
           <div class="orders row">
             <div class="col-lg-4 col-md-6" v-for="order in dayOrders" :key="order.number">
-              <div class="order card mb-4" @click="loadOrder(order)">
+              <div class="order card mb-4" @click="loadOrder(order)" :class="{ cancelled: order.status === 'cancelled' }">
                 <div class="card-body">
                   <div class="card-title mb-4">
-                    <h3 class="d-inline">
-                      <i class="far fa-clock"></i>
-                      {{ order.delivery_date | date }}
-                    </h3>
+                    <h4 v-if="order.status === 'cancelled' ">
+                      <i class="fas fa-fw fa-exclamation-triangle"></i>
+                      ANNULLATO
+                    </h4>
                     <span class="float-right">
                       Ordine #{{ order.number }}
                     </span>
+                    <h4 class="d-inline">
+                      <i class="far fa-clock"></i>
+                      {{ order.delivery_date | hour }}–{{ order.delivery_date_end | hour }}
+                    </h4>
                   </div>
                   <div class="card-text">
                     <p><i class="fas fa-fw fa-user"></i><span>{{ order.first_name }} {{ order.last_name }}</span></p>
@@ -83,19 +87,21 @@
       </div>
     </main>
     <div class="backdrop" v-if="order" @click.self="order = null">
-      <div class="selected-order order card" @click="loadOrder(order)">
+      <div class="selected-order order card" @click="loadOrder(order)" :class="{ cancelled: order.status === 'cancelled' }">
         <div class="card-body">
-          <h5 class="card-title mb-4">
-            <div>
+          <div class="card-title mb-4">
+            <h4 v-if="order.status === 'cancelled' ">
+              <i class="fas fa-fw fa-exclamation-triangle"></i>
+              ANNULLATO
+            </h4>
+            <span class="float-right">
               Ordine #{{ order.number }}
-              <button type="button" class="float-right close" aria-label="Close" @click="order = null">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div>
-              {{ order.delivery_date | date }}
-            </div>
-          </h5>
+            </span>
+            <h4 class="d-inline">
+              <i class="far fa-clock"></i>
+              {{ order.delivery_date | hour }}–{{ order.delivery_date_end | hour }}
+            </h4>
+          </div>
           <div class="card-text">
             <p><i class="fas fa-fw fa-user"></i> {{ order.first_name }} {{ order.last_name }}</p>
             <p><i class="fas fa-fw fa-map-pin"></i> {{ order.address }}, {{ order.city }}</p>

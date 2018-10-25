@@ -1,3 +1,5 @@
+const CancelToken = axios.CancelToken;
+
 Vue.use(infiniteScroll);
 
 new Vue({
@@ -10,7 +12,8 @@ new Vue({
       orders: [],
       order: null,
       stores: [],
-      activeStore: null
+      activeStore: null,
+      storeCancel: CancelToken.source()
     };
   },
   computed: {
@@ -36,7 +39,7 @@ new Vue({
       axios.get("/api.php?path=stores").then(response => {
         this.busy = false;
         this.stores = response.data;
-        this.activeStore = this.stores[0];
+        if (this.stores.length > 0) this.activeStore = this.stores[0];
       });
     },
     loadPage: function() {
@@ -46,7 +49,10 @@ new Vue({
       axios
         .get(
           `/api.php?path=orders&store=${this.activeStore.code}&page=${this
-            .page + 1}`
+            .page + 1}`,
+          {
+            cancelToken: this.storeCancel.token
+          }
         )
         .then(response => {
           if (response.data.length == 0) {
@@ -56,17 +62,27 @@ new Vue({
           this.orders = [...this.orders, ...response.data];
           this.page += 1;
           this.busy = false;
+        })
+        .catch(e => {
+          if (axios.isCancel(e)) {
+            console.log("Request canceled:", e.message);
+          } else {
+            console.error(e);
+          }
         });
     },
     loadOrder: function(order) {
       this.order = order;
     },
     reset: function() {
+      this.storeCancel.cancel("Changed store");
+
       this.busy = false;
       this.page = 0;
       this.lastPage = false;
       this.orders = [];
       this.order = null;
+      this.storeCancel = CancelToken.source();
     }
   },
   watch: {
@@ -79,7 +95,7 @@ new Vue({
     this.loadStores();
   },
   filters: {
-    date: function(value) {
+    hour: function(value) {
       return moment
         .unix(value)
         .utc()
