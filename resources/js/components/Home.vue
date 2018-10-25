@@ -18,6 +18,11 @@ export default {
     loadStores: function() {
       this.$http.get("stores").then(response => {
         this.stores = response.data;
+
+        if (this.stores.length > 0) {
+          const firstStore = this.stores[0];
+          this.$router.replace(`/${firstStore.code}`);
+        }
       });
     },
   },

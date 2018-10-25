@@ -13,7 +13,7 @@
       </div>
       <infinite-loading @infinite="loadPage" :identifier="activeStore.code"></infinite-loading>
       <div class="backdrop" v-if="selectedOrder" @click.self="selectedOrder = null">
-        <order :order="selectedOrder" :detailed="true"></order>
+        <order :order="selectedOrder" :detailed="true" @close="selectedOrder = null"></order>
       </div>
     </div>
   </main>

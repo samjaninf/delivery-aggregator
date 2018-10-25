@@ -1,13 +1,16 @@
 <template>
-  <div class="order card mb-4" @click="$emit('click')" :class="{ cancelled: order.status === 'cancelled', detailed: detailed }">
+  <div class="order card" @click="$emit('click')" :class="{ cancelled: order.status === 'cancelled', detailed: detailed, 'mb-4': !detailed }">
     <div class="card-body">
-      <div class="card-title mb-4">
+      <div class="card-title">
         <h4 v-if="order.status === 'cancelled' ">
           <i class="fas fa-fw fa-exclamation-triangle"></i>
           Annullato
         </h4>
         <span class="float-right">
           Ordine #{{ order.number }}
+          <button type="button" class="close d-block float-right ml-4" v-if="detailed" @click="$emit('close')">
+            <span>&times;</span>
+          </button>
         </span>
         <h4 class="d-inline">
           <i class="far fa-clock"></i>
@@ -53,3 +56,10 @@ export default {
 }
 </script>
 
+<style scoped>
+@media only screen and (max-width: 400px) {
+  .card.detailed {
+    border-radius: 0;
+  }
+}
+</style>

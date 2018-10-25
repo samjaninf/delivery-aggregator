@@ -14,9 +14,6 @@ class StoreController extends Controller
 
     public function index()
     {
-        if (!auth()->user()->is_admin)
-            abort(401);
-        
         if (auth()->user()->is_admin)
             return Store::all();
         else
