@@ -2,12 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Automattic\WooCommerce\Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Automattic\WooCommerce\Client;
 use App\Store;
 
 class WooController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
+
     private function createClient($storeCode)
     {
         $store = Store::findByCode($storeCode);
@@ -25,6 +31,9 @@ class WooController extends Controller
 
     function orders(Request $request, $store)
     {
+        if(!auth()->user()->is_admin)
+            abort(401);
+        
         $wc = $this->createClient($store);
         $page = $request->page ?? 1;
 

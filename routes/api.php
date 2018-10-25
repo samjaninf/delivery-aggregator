@@ -13,26 +13,36 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('api')->get('/stores', 'StoreController@index');
-Route::middleware('api')->get('/stores/{store}', 'StoreController@show');
-Route::middleware('api')->post('/stores', 'StoreController@store');
-Route::middleware('api')->put('/stores', 'StoreController@update');
-Route::middleware('api')->delete('/stores/{store}', 'StoreController@destroy');
+Route::group([
+  'middleware' => 'api',
+  'prefix' => 'auth'
+], function() {
+  Route::post('login', 'AuthController@login');
+  Route::get('user', 'AuthController@user');
+  Route::middleware('jwt.refresh')->get('refresh', 'AuthController@refresh');
+  Route::get('logout', 'AuthController@logout');
+});
 
-Route::middleware('api')->get('/users', 'UserController@index');
-Route::middleware('api')->get('/users/{user}', 'UserController@show');
-Route::middleware('api')->post('/users', 'UserController@store');
-Route::middleware('api')->put('/users', 'UserController@update');
-Route::middleware('api')->delete('/users/{user}', 'UserController@destroy');
+Route::group([
+  'middleware' => 'api',
+], function() {
+  Route::get('/stores', 'StoreController@index');
+  Route::get('/stores/{store}', 'StoreController@show');
+  Route::post('/stores', 'StoreController@store');
+  Route::put('/stores', 'StoreController@update');
+  Route::delete('/stores/{store}', 'StoreController@destroy');
+  
+  Route::get('/users', 'UserController@index');
+  Route::get('/users/{user}', 'UserController@show');
+  Route::post('/users', 'UserController@store');
+  Route::put('/users', 'UserController@update');
+  Route::delete('/users/{user}', 'UserController@destroy');
+  
+  Route::get('/stores/{store}/orders', 'WooController@orders');
+  
+  // Catch-all
+  Route::get('/{any}', function () {
+    return abort(404);
+  })->where('any', '.*');
+});
 
-Route::middleware('api')->get('/stores/{store}/orders', 'WooController@orders');
-
-
-Route::middleware(['api'])->post('/auth/login', 'AuthController@login');
-Route::middleware(['api', 'jwt.auth'])->get('/auth/user', 'AuthController@user');
-Route::middleware(['api','jwt.auth'])->get('/auth/refresh', 'AuthController@refresh');
-
-// Catch-all
-Route::middleware('api')->get('/{any}', function () {
-  return abort(404);
-})->where('any', '.*');;

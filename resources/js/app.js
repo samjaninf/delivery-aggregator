@@ -32,35 +32,38 @@ const routes = [
     },
     {
         path: "/",
+        component: require("./components/Home.vue"),
         meta: {
             auth: true
-        }
-    },
-    {
-        path: "/settings",
-        props: true,
-        component: require("./components/Settings.vue"),
+        },
         children: [
             {
-                path: "stores",
-                component: require("./components/SettingsStores.vue")
+                path: "/settings",
+                props: true,
+                component: require("./components/Settings.vue"),
+                children: [
+                    {
+                        path: "stores",
+                        component: require("./components/SettingsStores.vue")
+                    },
+                    {
+                        path: "users",
+                        component: require("./components/SettingsUsers.vue")
+                    }
+                ],
+                meta: {
+                    auth: "admin"
+                }
             },
             {
-                path: "users",
-                component: require("./components/SettingsUsers.vue")
+                path: "/:storeCode",
+                props: true,
+                component: require("./components/OrdersList.vue"),
+                meta: {
+                    auth: true
+                }
             }
-        ],
-        meta: {
-            auth: true
-        }
-    },
-    {
-        path: "/:storeCode",
-        props: true,
-        component: require("./components/OrdersList.vue"),
-        meta: {
-            auth: true
-        }
+        ]
     }
 ];
 

@@ -3,9 +3,7 @@
 
     <form class="form-signin" @submit.prevent="handleSubmit">
       <h1 class="h3 mb-3 font-weight-normal">Effettua l'accesso</h1>
-      <label class="sr-only">Indirizzo email</label>
-      <input type="email" class="form-control" placeholder="Email address" required autofocus v-model="email">
-      <label class="sr-only">Password</label>
+      <input type="email" class="form-control" placeholder="Indirizzo email" required autofocus v-model="email">
       <input type="password" class="form-control" placeholder="Password" required v-model="password">
       <button class="btn btn-lg btn-primary btn-block" type="submit">Accedi</button>
       <div class="alert alert-danger mt-4" v-if="error">

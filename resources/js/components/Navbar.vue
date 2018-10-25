@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar navbar-expand-md navbar-dark bg-dark" v-if="$auth.check()">
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
     <div class="container">
       <a class="navbar-brand" href="#">Delivery Aggregator</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse">
@@ -21,7 +21,7 @@
             </a>
 
             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-              <template>
+              <template v-if="$auth.check('admin')">
                 <router-link to="/settings/stores" class="dropdown-item">
                   <i class="fas fa-fw fa-store-alt"></i> Negozi
                 </router-link>

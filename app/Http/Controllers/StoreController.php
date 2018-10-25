@@ -7,6 +7,11 @@ use App\Store;
 
 class StoreController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
+
     public function index()
     {
         return Store::query()->get(['name', 'code']);
