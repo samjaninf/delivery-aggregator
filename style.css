@@ -11,6 +11,10 @@ body {
   cursor: pointer;
 }
 
+.text-primary + hr {
+  border-color: var(--blue);
+}
+
 .card .card-text i {
   margin-right: 1em;
 }

@@ -24,49 +24,55 @@
 <body>
   <div id="app">
     <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-      <a class="navbar-brand" href="#">Delivery Aggregator</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
-        aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+      <div class="container">
+        <a class="navbar-brand" href="#">Delivery Aggregator</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+          aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
 
-      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item" v-for="store in stores" :class="{ active: activeStore.code === store.code }">
-            <a class="nav-link" @click="activeStore = store">
-              {{ store.name }}
-            </a>
-          </li>
-        </ul>
+        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item" v-for="store in stores" :class="{ active: activeStore.code === store.code }">
+              <a class="nav-link" @click="activeStore = store">
+                {{ store.name }}
+              </a>
+            </li>
+          </ul>
+        </div>
       </div>
     </nav>
-    <main role="main" class="container mt-4">
-      <h1 class="text-center mb-4">Ordini {{ activeStore.name }}</h1>
-      <div class="orders row" v-infinite-scroll="loadPage" infinite-scroll-disabled="busy">
-        <div class="col-lg-4 col-md-6" v-for="order in orders" :key="order.number">
-          <div class="order card mb-4" @click="loadOrder(order)">
-            <div class="card-body">
-              <h5 class="card-title mb-4">
-                <div>
-                  Ordine #{{ order.number }}
-                  <!-- <small class="float-right font-italic font-weight-normal badge badge-pill" :class="{ 'badge-secondary': order.status === 'pending', 'badge-primary': order.status === 'processing' }">
-                    {{ order.status }}
-                  </small> -->
+    <main role="main" class="container mt-4" v-if="activeStore">
+      <h1 class="text-center mt-4 mb-4">Ordini {{ activeStore.name }}</h1>
+      <div v-infinite-scroll="loadPage" infinite-scroll-disabled="busy">
+        <div v-for="(dayOrders, day) in ordersByDate" class="mb-3">
+          <h3 class="text-primary">{{ day }}</h3>
+          <hr />
+          <div class="orders row">
+            <div class="col-lg-4 col-md-6" v-for="order in dayOrders" :key="order.number">
+              <div class="order card mb-4" @click="loadOrder(order)">
+                <div class="card-body">
+                  <div class="card-title mb-4">
+                    <h3 class="d-inline">
+                      <i class="far fa-clock"></i>
+                      {{ order.delivery_date | date }}
+                    </h3>
+                    <span class="float-right">
+                      Ordine #{{ order.number }}
+                    </span>
+                  </div>
+                  <div class="card-text">
+                    <p><i class="fas fa-fw fa-user"></i><span>{{ order.first_name }} {{ order.last_name }}</span></p>
+                    <p><i class="fas fa-fw fa-map-pin"></i><span>{{ order.address }}, {{ order.city }}</span></p>
+                    <p v-if="order.phone"><i class="fas fa-fw fa-phone"></i><span>{{ order.phone }}</span></p>
+                    <p v-if="order.payment_method === 'cod'">
+                      <i class="fas fa-fw fa-money-bill-alt"></i><span>{{ order.total | money }} (Contanti)
+                      </span></p>
+                    <p v-if="order.payment_method === 'ppec_paypal'">
+                      <i class="fab fa-fw fa-paypal"></i><span>{{ order.total | money }} (Paypal)
+                      </span></p>
+                  </div>
                 </div>
-                <div>
-                  {{ order.delivery_date | date }}
-                </div>
-              </h5>
-              <div class="card-text">
-                <p><i class="fas fa-fw fa-user"></i><span>{{ order.first_name }} {{ order.last_name }}</span></p>
-                <p><i class="fas fa-fw fa-map-pin"></i><span>{{ order.address }}, {{ order.city }}</span></p>
-                <p v-if="order.phone"><i class="fas fa-fw fa-phone"></i><span>{{ order.phone }}</span></p>
-                <p v-if="order.payment_method === 'cod'">
-                  <i class="fas fa-fw fa-money-bill-alt"></i><span>{{ order.total | money }} (Contanti)
-                  </span></p>
-                <p v-if="order.payment_method === 'ppec_paypal'">
-                  <i class="fab fa-fw fa-paypal"></i><span>{{ order.total | money }} (Paypal)
-                  </span></p>
               </div>
             </div>
           </div>

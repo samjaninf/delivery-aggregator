@@ -1,8 +1,3 @@
-const stores = [
-  { name: "Imburger", code: "imburger" },
-  { name: "Da Scomposto", code: "dascomposto" }
-];
-
 Vue.use(infiniteScroll);
 
 new Vue({
@@ -14,18 +9,43 @@ new Vue({
       lastPage: false,
       orders: [],
       order: null,
-      stores,
-      activeStore: stores[0]
+      stores: [],
+      activeStore: null
     };
   },
+  computed: {
+    ordersByDate: function() {
+      return this.orders.reduce(
+        (
+          r,
+          v,
+          i,
+          a,
+          k = moment
+            .unix(v.delivery_date)
+            .utc()
+            .format("LL")
+        ) => ((r[k] || (r[k] = [])).push(v), r),
+        {}
+      );
+    }
+  },
   methods: {
+    loadStores: function() {
+      this.busy = true;
+      axios.get("/api.php?path=stores").then(response => {
+        this.busy = false;
+        this.stores = response.data;
+        this.activeStore = this.stores[0];
+      });
+    },
     loadPage: function() {
-      if (this.busy || this.lastPage) return;
+      if (this.busy || this.lastPage || !this.activeStore) return;
 
       this.busy = true;
       axios
         .get(
-          `/api.php?store=${this.activeStore.code}&path=orders&page=${this
+          `/api.php?path=orders&store=${this.activeStore.code}&page=${this
             .page + 1}`
         )
         .then(response => {
@@ -50,17 +70,20 @@ new Vue({
     }
   },
   watch: {
-    activeStore: function(newValue, oldValue) {
+    activeStore: function() {
       this.reset();
       this.loadPage();
     }
+  },
+  mounted: function() {
+    this.loadStores();
   },
   filters: {
     date: function(value) {
       return moment
         .unix(value)
         .utc()
-        .format("H:mm — D MMMM YYYY");
+        .format("H:mm");
     },
     money: function(value) {
       return `€${(+value).toFixed(2)}`;

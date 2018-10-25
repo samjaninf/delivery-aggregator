@@ -1,10 +1,20 @@
 <?php
 require __DIR__ . '/vendor/autoload.php';
+
 use Automattic\WooCommerce\Client;
+use Cake\Database\Connection;
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+
+
+$db = new Connection([
+	'driver' => 'Cake\Database\Driver\Mysql',
+    'database' => 'delivery',
+    'username' => 'root',
+    'password' => 'password'
+]);
 
 // Helper functions
 function array_find($xs, $k)
@@ -17,48 +27,46 @@ function array_find($xs, $k)
     return null;
 }
 
-// Setup Stores
-$stores = [
-    'imburger' => [
-        'url' => 'https://imburger.it',
-        'consumer_key' => '***REMOVED***',
-        'consumer_secret' => '***REMOVED***'
-    ],
-    'dascomposto' => [
-        'url' => 'http://delivery.dascomposto.it',
-        'consumer_key' => '***REMOVED***',
-        'consumer_secret' => '***REMOVED***'
-    ]
-];
+function create_client($store_name) {
+    global $db;
 
-// Create client
-$store = $stores[$_GET['store']];
-if (!$store) {
-    exit('Invalid store parameter');
+    $stmt = $db->execute("SELECT url, consumer_key, consumer_secret FROM stores where code = :code", ['code' => $store_name]);
+    $store = $stmt->fetch('assoc');
+
+    if (!$store) {
+        exit('Invalid store parameter');
+    }
+
+    $wc = new Client(
+        $store['url'],
+        $store['consumer_key'],
+        $store['consumer_secret'],
+        [
+            'wp_api' => true, // Enable the WP REST API integration
+            'version' => 'wc/v2' // WooCommerce WP REST API version
+        ]
+    );
+
+    return $wc;
 }
-
-$wc = new Client(
-    $store['url'],
-    $store['consumer_key'],
-    $store['consumer_secret'],
-    [
-        'wp_api' => true, // Enable the WP REST API integration
-        'version' => 'wc/v2' // WooCommerce WP REST API version
-    ]
-);
 
 // Fetch action
 switch ($_GET['path']) {
     case 'orders':
-        listOrders($wc);
+        listOrders();
+        break;
+    case 'stores':
+        listStores();
         break;
     default:
         exit('Invalid path');
 }
 
 //
-function listOrders($wc)
+function listOrders()
 {
+    $wc = create_client($_GET['store']);
+
     $page = $_GET['page'] ?? 1;
     $orders = $wc->get('orders', ['per_page' => 12, 'page' => $page, 'parent' => 0]);
     $res = array_map(function ($order) {
@@ -97,5 +105,14 @@ function listOrders($wc)
 
     // echo json_encode($orders);
     echo json_encode($res);
+}
+
+function listStores() {
+    global $db;
+
+    $stmt = $db->execute('SELECT name, code FROM stores');
+    $stores = $stmt->fetchAll('assoc');
+
+    echo json_encode($stores);
 }
 ?>
