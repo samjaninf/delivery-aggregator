@@ -92,3 +92,31 @@ export default {
 };
 
 </script>
+
+<style>
+.text-primary + hr {
+  border-color: var(--blue);
+}
+
+.orders .order.card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.orders .order.card:hover {
+  transform: translateY(-2px);
+  box-shadow: #eeeeee 0px 3px 10px 2px;
+}
+
+.backdrop {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>

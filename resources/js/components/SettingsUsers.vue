@@ -1,51 +1,38 @@
 <template>
   <div>
     <h3>Utenti</h3>
-    <div class="row">
-      <div class="col-md-6 mt-2">
-        <div class="list-group">
-          <a v-for="user in users" :key="user.id" href="#" class="list-group-item list-group-item-action" @click="editing = user.id" :class="{ active: editing === user.id  }">
+    <b-row>
+      <b-col md="6" class="mt-2">
+        <b-list-group>
+          <b-list-group-item v-for="user in users" :key="user.id" href="#" @click="editing = user.id" :active="editing === user.id">
             {{ user.name }}
-          </a>
-          <a href="#" class="list-group-item list-group-item-action" @click="editing = null" :class="{ active: editing === null  }">
+          </b-list-group-item>
+          <b-list-group-item href="#" @click="editing = null" :active="editing === null">
             <i class="fas fa-fw fa-plus"></i> Aggiungi
-          </a>
-        </div>
-      </div>
-      <div class="col-md-6 mt-2">
-        <div class="card p-4">
+          </b-list-group-item>
+        </b-list-group>
+      </b-col>
+      <b-col md="6" class="mt-2">
+        <b-card class="p-1">
           <form @submit.prevent="handleSubmit">
-            <div class="form-group">
-              <label>Nome</label>
-              <input type="text" class="form-control" placeholder="Inserisci il nome" v-model="user.name" required>
-            </div>
-            <div class="form-group">
-              <label>Email</label>
-              <input type="email" class="form-control" placeholder="Inserisci l'email" v-model="user.email" required>
-              <small class="form-text text-muted">Assicurati di usare una email unica.</small>
-            </div>
-            <div class="form-group">
-              <label>Password</label>
-              <input type="password" class="form-control" placeholder="Inserisci la password" v-model="user.password">
-              <small class="form-text text-muted">Inserisci una password per modificare quella esistente.</small>
-            </div>
-            <div class="form-group">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" v-model="user.is_admin" :disabled="$auth.user().id === user.id">
-                <label class="form-check-label">
-                  Amministratore
-                </label>
-              </div>
-            </div>
-            <div class="form-group" v-if="!user.is_admin">
-              <label>Permessi</label>
-              <div class="form-check" v-for="store in stores" :key="store.code">
-                <input class="form-check-input" type="checkbox" v-model="user.permissions[store.code]">
-                <label class="form-check-label">
-                  {{ store.name }}
-                </label>
-              </div>
-            </div>
+            <b-form-group label="Nome">
+              <b-form-input type="text" placeholder="Inserisci il nome" v-model="user.name" required></b-form-input>
+            </b-form-group>
+            <b-form-group label="Email" description="Assicurati di usare una email unica,">
+              <b-form-input type="email" placeholder="Inserisci l'email" v-model="user.email" required></b-form-input>
+            </b-form-group>
+            <b-form-group label="Password" description="Inserisci una password per modificare quella esistente.">
+              <b-form-input type="password" placeholder="Inserisci la password" v-model="user.password" :required="!editing"></b-form-input>
+            </b-form-group>
+            <b-form-group>
+              <b-form-checkbox v-model="user.is_admin" :disabled="$auth.user().id === user.id">
+                Amministratore
+              </b-form-checkbox>
+            </b-form-group>
+            <b-form-group v-if="!user.is_admin" label="Permessi">
+              <b-form-checkbox-group v-model="user.permissions" :options="checkboxOptions">
+              </b-form-checkbox-group>
+            </b-form-group>
             <button type="submit" class="btn" :class="editing ? 'btn-primary' : 'btn-success'">
               {{ editing ? "Aggiorna" : "Salva nuovo" }}
             </button>
@@ -53,9 +40,9 @@
               Elimina
             </button>
           </form>
-        </div>
-      </div>
-    </div>
+        </b-card>
+      </b-col>
+    </b-row>
   </div>
 </template>
 
@@ -65,7 +52,7 @@ const emptyUser = () => ({
   email: '',
   password: '',
   is_admin: false,
-  permissions: {},
+  permissions: [],
 })
 
 export default {
@@ -75,6 +62,11 @@ export default {
       editing: null,
       user: emptyUser(),
     };
+  },
+  computed: {
+    checkboxOptions() {
+      return this.stores.map(s => ({ text: s.name, value: s.code }));
+    }
   },
   watch: {
     editing() {
@@ -87,6 +79,7 @@ export default {
         .get(`users/${this.editing}`)
         .then((response) => {
           this.user = response.data;
+          this.user.is_admin = !!this.user.is_admin;
         });
     }
   },

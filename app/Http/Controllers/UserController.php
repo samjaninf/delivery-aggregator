@@ -32,13 +32,9 @@ class UserController extends Controller
         
         $user = User::create($params);
 
-        $user->stores()->detach();
-        foreach($params['permissions'] as $storeCode => $active) {
+        foreach($params['permissions'] as $storeCode) {
             $store = Store::findbyCode($storeCode);
-
-            if ($active) {
-                $user->stores()->attach($store);
-            }
+            $user->stores()->attach($store);
         }
 
         return $user;
@@ -50,12 +46,7 @@ class UserController extends Controller
             abort(401);
 
         $user = User::find($id);
-        $user->permissions =
-            $user->stores->mapWithKeys(function($s) {
-                return [ $s->code => true ];
-            });
-        if ($user->permissions->isEmpty())
-            $user->permissions = new \stdClass; // force json object
+        $user->permissions = $user->stores->pluck('code');
         return $user;
     }
 
@@ -65,8 +56,11 @@ class UserController extends Controller
             abort(401);
 
         $params = $request->json()->all();
+        
         if (isset($params['password']))
             $params['password'] = bcrypt($params['password']);
+        else
+            unset($params['password']);
         
         $user = User::find($params['id']);
         $user->fill($params);
@@ -77,12 +71,9 @@ class UserController extends Controller
         $user->save();
 
         $user->stores()->detach();
-        foreach($params['permissions'] as $storeCode => $active) {
+        foreach($params['permissions'] as $storeCode) {
             $store = Store::findbyCode($storeCode);
-
-            if ($active) {
-                $user->stores()->attach($store);
-            }
+            $user->stores()->attach($store);
         }
 
         return $user;

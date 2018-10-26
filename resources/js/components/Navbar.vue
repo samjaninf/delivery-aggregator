@@ -1,45 +1,40 @@
 <template>
-  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-    <div class="container">
-      <a class="navbar-brand" href="#">Delivery Aggregator</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+  <b-navbar toggleable variant="dark" type="dark">
+    <b-container>
+      <b-navbar-brand>Delivery Aggregator</b-navbar-brand>
+      <b-navbar-toggle target="nav-collapse">
+      </b-navbar-toggle>
 
-      <div class="collapse navbar-collapse">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item" v-for="store in stores" :key="store.code" :class="{ active: $route.params.storeCode == store.code }">
-            <router-link :to="`/${store.code}`" class="nav-link">
-              {{ store.name }}
-            </router-link>
-          </li>
-        </ul>
-        <ul class="navbar-nav">
-          <li class="nav-item dropdown" :class="{ active: $route.path.startsWith('/settings')}">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+      <b-collapse is-nav id="nav-collapse">
+        <b-navbar-nav class="navbar-nav mr-auto">
+          <b-nav-item v-for="store in stores" :key="store.code" :to="`/${store.code}`">
+            {{ store.name }}
+          </b-nav-item>
+        </b-navbar-nav>
+
+        <b-navbar-nav class="ml-auto">
+          <b-nav-item-dropdown right>
+            <template slot="button-content">
               <i class="fas fa-fw fa-cog"></i>
-            </a>
+            </template>
 
-            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-              <template v-if="$auth.check('admin')">
-                <router-link to="/settings/stores" class="dropdown-item">
-                  <i class="fas fa-fw fa-store-alt"></i> Negozi
-                </router-link>
-                <router-link to="/settings/users" class="dropdown-item">
-                  <i class="fas fa-fw fa-users"></i> Utenti
-                </router-link>
-                <div class="dropdown-divider"></div>
-              </template>
-              <a href="#" class="dropdown-item" @click.prevent="$auth.logout()">Esci</a>
-            </div>
-          </li>
-          <li class="nav-item ">
-
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
+            <template v-if="$auth.check('admin')">
+              <b-dropdown-item to="/settings/stores">
+                <i class="fas fa-fw fa-store-alt"></i> Negozi
+              </b-dropdown-item>
+              <b-dropdown-item to="/settings/users">
+                <i class="fas fa-fw fa-users"></i> Utenti
+              </b-dropdown-item>
+              <div class="dropdown-divider"></div>
+            </template>
+            <b-dropdown-item @click.prevent="$auth.logout()">
+              Esci
+            </b-dropdown-item>
+          </b-nav-item-dropdown>
+        </b-navbar-nav>
+      </b-collapse>
+    </b-container>
+  </b-navbar>
 </template>
 
 <script>

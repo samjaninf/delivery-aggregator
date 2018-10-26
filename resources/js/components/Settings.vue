@@ -1,7 +1,7 @@
 <template>
-  <div class="container mt-4">
+  <b-container class="mt-4">
     <router-view :stores="stores"></router-view>
-  </div>
+  </b-container>
 </template>
 
 <script>

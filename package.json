@@ -13,6 +13,7 @@
         "@websanova/vue-auth": "^2.21.14-beta",
         "axios": "^0.18",
         "bootstrap": "^4.0.0",
+        "bootstrap-vue": "^2.0.0-rc.11",
         "cross-env": "^5.1",
         "jquery": "^3.2",
         "laravel-mix": "^2.0",

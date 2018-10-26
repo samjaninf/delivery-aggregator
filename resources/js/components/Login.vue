@@ -1,12 +1,12 @@
 <template>
   <div class="cover text-center">
 
-    <form class="form-signin" @submit.prevent="handleSubmit">
+    <b-form class="form-signin" @submit.prevent="handleSubmit">
       <h1 class="h3 mb-3 font-weight-normal">Effettua l'accesso</h1>
-      <input type="email" class="form-control" placeholder="Indirizzo email" required autofocus v-model="email">
-      <input type="password" class="form-control" placeholder="Password" required v-model="password">
-      <button class="btn btn-lg btn-primary btn-block" type="submit">Accedi</button>
-    </form>
+      <b-form-input type="email" placeholder="Indirizzo email" required autofocus v-model="email"></b-form-input>
+      <b-form-input type="password" placeholder="Password" required v-model="password"></b-form-input>
+      <b-button size="lg" variant="primary" block type="submit">Accedi</b-button>
+    </b-form>
   </div>
 </template>
 
