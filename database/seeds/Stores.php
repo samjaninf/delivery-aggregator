@@ -17,15 +17,15 @@ class Stores extends Seeder
                 'name' => "Imburger",
                 'code' => 'imburger',
                 'url' => 'https://imburger.it',
-                'consumer_key' => '***REMOVED***',
-                'consumer_secret' => '***REMOVED***'
+                'consumer_key' => 'ck_123456789',
+                'consumer_secret' => 'cs_123456789'
             ],
             [
                 'name' => "Da Scomposto",
                 'code' => 'dascomposto',
                 'url' => 'http://delivery.dascomposto.it',
-                'consumer_key' => '***REMOVED***',
-                'consumer_secret' => '***REMOVED***'
+                'consumer_key' => 'ck_987654321',
+                'consumer_secret' => 'cs_987654321'
             ],
         ];
 
