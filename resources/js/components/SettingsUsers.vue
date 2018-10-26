@@ -17,11 +17,11 @@
           <form @submit.prevent="handleSubmit">
             <div class="form-group">
               <label>Nome</label>
-              <input type="text" class="form-control" placeholder="Inserisci il nome" v-model="user.name">
+              <input type="text" class="form-control" placeholder="Inserisci il nome" v-model="user.name" required>
             </div>
             <div class="form-group">
               <label>Email</label>
-              <input type="email" class="form-control" placeholder="Inserisci l'email" v-model="user.email">
+              <input type="email" class="form-control" placeholder="Inserisci l'email" v-model="user.email" required>
               <small class="form-text text-muted">Assicurati di usare una email unica.</small>
             </div>
             <div class="form-group">
@@ -110,6 +110,17 @@ export default {
           .then(() => {
             const user = _.find(this.users, { id: this.editing });
             Object.assign(user, this.user);
+
+            this.$notify({
+              type: "success",
+              text: "Utente aggiornato con successo"
+            });
+          })
+          .catch((e) => {
+            this.$notify({
+              type: "error",
+              text: "Errore durante il salvataggio"
+            })
           });
       else
         this.$http
@@ -117,6 +128,17 @@ export default {
           .then((response) => {
             this.users.push(response.data);
             this.editing = response.data.id;
+
+            this.$notify({
+              type: "success",
+              text: "Utente salvato con successo"
+            });
+          })
+          .catch((e) => {
+            this.$notify({
+              type: "error",
+              text: "Errore durante il salvataggio"
+            })
           });
     },
 
@@ -128,6 +150,17 @@ export default {
             const idx = _.findIndex(this.users, { id: this.editing });
             this.users.splice(idx, 1);
             this.editing = null;
+
+            this.$notify({
+              type: "success",
+              text: "Utente eliminato con successo"
+            });
+          })
+          .catch((e) => {
+            this.$notify({
+              type: "error",
+              text: "Errore durante l'eliminazione"
+            })
           });
     }
   },

@@ -9,6 +9,7 @@ require("./bootstrap");
 window.Vue = require("vue");
 Vue.use(require("vue-infinite-loading"));
 Vue.use(require("vue-axios"), axios);
+Vue.use(require("vue-notification").default);
 
 const VueRouter = require("vue-router").default;
 Vue.use(VueRouter);
@@ -21,55 +22,9 @@ Vue.use(VueRouter);
 
 const App = require("./components/App.vue");
 
-// Routes
-const routes = [
-    {
-        path: "/login",
-        component: require("./components/Login.vue"),
-        meta: {
-            auth: false
-        }
-    },
-    {
-        path: "/",
-        component: require("./components/Home.vue"),
-        meta: {
-            auth: true
-        },
-        children: [
-            {
-                path: "/settings",
-                props: true,
-                component: require("./components/Settings.vue"),
-                children: [
-                    {
-                        path: "stores",
-                        component: require("./components/SettingsStores.vue")
-                    },
-                    {
-                        path: "users",
-                        component: require("./components/SettingsUsers.vue")
-                    }
-                ],
-                meta: {
-                    auth: "admin"
-                }
-            },
-            {
-                path: "/:storeCode",
-                props: true,
-                component: require("./components/OrdersList.vue"),
-                meta: {
-                    auth: true
-                }
-            }
-        ]
-    }
-];
-
 const router = new VueRouter({
     mode: "history",
-    routes
+    routes: require("./routes.js")
 });
 
 Vue.router = router;

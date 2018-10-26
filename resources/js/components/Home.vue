@@ -19,7 +19,7 @@ export default {
       this.$http.get("stores").then(response => {
         this.stores = response.data;
 
-        if (this.stores.length > 0) {
+        if (this.stores.length > 0 && this.$route.path === '/') {
           const firstStore = this.stores[0];
           this.$router.replace(`/${firstStore.code}`);
         }

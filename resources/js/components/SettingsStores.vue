@@ -17,24 +17,24 @@
           <form @submit.prevent="handleSubmit">
             <div class="form-group">
               <label>Nome</label>
-              <input type="text" class="form-control" placeholder="Inserisci il nome" v-model="store.name">
+              <input type="text" class="form-control" placeholder="Inserisci il nome" v-model="store.name" required>
             </div>
             <div class="form-group">
               <label>Codice identificativo</label>
-              <input type="text" class="form-control" placeholder="Inserisci il codice identificativo" v-model="store.code">
+              <input type="text" class="form-control" placeholder="Inserisci il codice identificativo" v-model="store.code" required>
               <small class="form-text text-muted">Assicurati di usare un codice identificativo unico.</small>
             </div>
             <div class="form-group">
               <label>URL</label>
-              <input type="text" class="form-control" placeholder="Inserisci l'URL" v-model="store.url">
+              <input type="text" class="form-control" placeholder="Inserisci l'URL" v-model="store.url" required>
             </div>
             <div class="form-group">
               <label>Consumer Key (CK)</label>
-              <input type="text" class="form-control" placeholder="Inserisci la Consumer Key (CK)" v-model="store.consumer_key">
+              <input type="text" class="form-control" placeholder="Inserisci la Consumer Key (CK)" v-model="store.consumer_key" required>
             </div>
             <div class="form-group">
               <label>Consumer Secret (CS)</label>
-              <input type="text" class="form-control" placeholder="Inserisci il Consumer Secret (CS)" v-model="store.consumer_secret">
+              <input type="text" class="form-control" placeholder="Inserisci il Consumer Secret (CS)" v-model="store.consumer_secret" required>
             </div>
             <button type="submit" class="btn" :class="editing ? 'btn-primary' : 'btn-success'">
               {{ editing ? "Aggiorna" : "Salva nuovo" }}
@@ -79,6 +79,17 @@ export default {
           .then(() => {
             const store = _.find(this.stores, { code: this.editing });
             Object.assign(store, this.store);
+
+            this.$notify({
+              type: "success",
+              text: "Negozio aggiornato con successo"
+            });
+          })
+          .catch((e) => {
+            this.$notify({
+              type: "error",
+              text: "Errore durante il salvataggio"
+            })
           });
       else
         this.$http
@@ -86,6 +97,17 @@ export default {
           .then(() => {
             this.stores.push(this.store);
             this.editing = this.store.code;
+
+            this.$notify({
+              type: "success",
+              text: "Negozio salvato con successo"
+            });
+          })
+          .catch((e) => {
+            this.$notify({
+              type: "error",
+              text: "Errore durante il salvataggio"
+            })
           });
     },
 
@@ -97,6 +119,17 @@ export default {
             const idx = _.findIndex(this.stores, { code: this.editing });
             this.stores.splice(idx, 1);
             this.editing = null;
+
+            this.$notify({
+              type: "success",
+              text: "Negozio eliminato con successo"
+            });
+          })
+          .catch((e) => {
+            this.$notify({
+              type: "error",
+              text: "Errore durante l'eliminazione"
+            })
           });
     }
   },

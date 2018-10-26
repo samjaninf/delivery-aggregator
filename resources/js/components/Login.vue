@@ -6,9 +6,6 @@
       <input type="email" class="form-control" placeholder="Indirizzo email" required autofocus v-model="email">
       <input type="password" class="form-control" placeholder="Password" required v-model="password">
       <button class="btn btn-lg btn-primary btn-block" type="submit">Accedi</button>
-      <div class="alert alert-danger mt-4" v-if="error">
-        Credenziali invalide.
-      </div>
     </form>
   </div>
 </template>
@@ -19,23 +16,27 @@ export default {
     return {
       email: '',
       password: '',
-      error: false
     }
   },
   methods: {
     handleSubmit() {
       this.$auth.login({
         data: { email: this.email, password: this.password },
-        rememberMe: false,
-        success: () => { this.error = false },
-        error: () => { this.error = true },
-      });
+        rememberMe: true,
+        success: () => {},
+        error: (e) => { 
+          this.$notify({
+            type: "error",
+            text: "Credenziali invalide",
+          });
+        },
+      })
     }
   }
 }
 </script>
 
-<style>
+<style scoped>
 .cover {
   display: -ms-flexbox;
   display: -webkit-box;
@@ -49,6 +50,8 @@ export default {
   padding-top: 40px;
   padding-bottom: 40px;
   background-color: #f5f5f5;
+  height: 100%;
+  width: 100%;
 }
 
 .form-signin {
