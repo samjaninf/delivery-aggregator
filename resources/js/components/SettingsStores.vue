@@ -14,7 +14,7 @@
       </b-col>
       <b-col md="6" class="mt-2">
         <b-card class="p-1">
-          <b-form @submit="handleSubmit">
+          <b-form @submit.prevent="handleSubmit">
             <b-form-group label="Nome">
               <b-form-input type="text" placeholder="Inserisci il nome" v-model="store.name" required></b-form-input>
             </b-form-group>
