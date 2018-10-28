@@ -39,7 +39,7 @@ class WooController extends Controller
         $page = $request->page ?? 1;
 
         $orders = $wc->get('orders', [
-            'per_page' => 12,
+            'per_page' => 20,
             'page' => $page,
             'parent' => 0
         ]);

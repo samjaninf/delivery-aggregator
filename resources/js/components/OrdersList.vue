@@ -11,7 +11,7 @@
           </div>
         </div>
       </div>
-      <infinite-loading @infinite="loadPage" :identifier="activeStore.code"></infinite-loading>
+      <infinite-loading @infinite="loadNextPage" :identifier="activeStore.code"></infinite-loading>
       <div class="backdrop" v-if="selectedOrder" @click.self="selectedOrder = null">
         <order :order="selectedOrder" :detailed="true" @close="selectedOrder = null"></order>
       </div>
@@ -21,6 +21,7 @@
 
 <script>
 const CancelToken = axios.CancelToken;
+const UPDATE_INTERVAL = 5 * 1000;
 
 export default {
   data() {
@@ -29,6 +30,7 @@ export default {
       page: 0,
       storeCancel: CancelToken.source(),
       selectedOrder: null,
+      intervalHandle: null,
     };
   },
   props: ['storeCode', 'stores'],
@@ -46,23 +48,33 @@ export default {
     }
   },
   methods: {
-    loadPage($state) {
-      this.$http
+    loadPage(page = 0, $state) {
+      return this.$http
         .get(
-          `stores/${this.activeStore.code}/orders?page=${this.page + 1}`,
+          `stores/${this.activeStore.code}/orders?page=${page + 1}`,
           {
             cancelToken: this.storeCancel.token
           }
         )
         .then(response => {
           if (response.data.length == 0) {
-            $state.complete();
+            if ($state)
+              $state.complete();
             return;
           }
+          
+          // Merge arrays
+          for(let newOrder of response.data) {
+            const old = _.find(this.orders, { 'number': newOrder.number });
+            if (old) {
+              Object.assign(old, newOrder);
+            } else {
+              this.orders.push(newOrder);
+            }
+          }
 
-          this.page += 1;
-          this.orders = [...this.orders, ...response.data];
-          $state.loaded();
+          if($state)
+            $state.loaded();
         })
         .catch(e => {
           if (this.$http.isCancel(e)) {
@@ -71,6 +83,10 @@ export default {
             console.error(e);
           }
         });
+    },
+    loadNextPage($state) {
+      this.loadPage(this.page, $state)
+        .then(() => this.page += 1);
     },
     reset() {
       this.storeCancel.cancel("Changed store");
@@ -85,6 +101,12 @@ export default {
     activeStore() {
       this.reset();
     }
+  },
+  mounted() {
+    this.intervalHandle = setInterval(this.loadPage, UPDATE_INTERVAL);
+  },
+  beforeDestroy() {
+    this.clearInterval(this.intervalHandle);
   },
   components: {
     Order: require('./Order.vue'),
