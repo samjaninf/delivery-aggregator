@@ -40,10 +40,10 @@ class Store extends Model
      *  FIREBASE FUNCTIONS  *
      ************************/
 
-    private function fb_create_group($user = null)
+    public function fb_create_group($user = null)
     {
         $user = $user ?? auth()->user();
-        
+
         $deviceId = $user->fb_device_id;
         if (!$deviceId) {
             Log::warning("FB: Active user doesn't have a valid fb_device_id, cannot create Firebase group!");
@@ -65,7 +65,7 @@ class Store extends Model
         }
     }
 
-    private function fb_delete_group()
+    public function fb_delete_group()
     {
         if (!$this->fb_notification_key) {
             Log::warning("FB: Store {$this->code} doesn't have a valid fb_notification_key, ignoring request to delete group from Firebase!");

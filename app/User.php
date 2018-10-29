@@ -55,8 +55,8 @@ class User extends Authenticatable implements JWTSubject
      *  FIREBASE FUNCTIONS  *
      ************************/
 
-    private function fb_update_groups() {
-        $old_device_id = $user->getOriginal('fb_device_id');
+    public function fb_update_groups() {
+        $old_device_id = $this->getOriginal('fb_device_id');
         if (isset($old_device_id)) {
             $this->fb_unsubscribe_from_groups($old_device_id);
         }
@@ -66,7 +66,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     
-    private function fb_unsubscribe_from_groups($device_id)
+    public function fb_unsubscribe_from_groups($device_id)
     {
         foreach($this->stores as $store)
         {
@@ -74,7 +74,7 @@ class User extends Authenticatable implements JWTSubject
         }
     }
     
-    private function fb_subscribe_to_groups($device_id)
+    public function fb_subscribe_to_groups($device_id)
     {
         foreach($this->stores as $store)
         {
@@ -82,7 +82,7 @@ class User extends Authenticatable implements JWTSubject
         }
     }
 
-    private function fb_unsubscribe_from_group($store, $device_id = null)
+    public function fb_unsubscribe_from_group($store, $device_id = null)
     {
         if (!isset($device_id))
             $device_id = $this->fb_device_id;
@@ -92,11 +92,10 @@ class User extends Authenticatable implements JWTSubject
         if (!$s || !$s->pivot->fb_registered)
             return;
 
-
         $response = fb_curl_post([
             "operation" => "remove",
             "notification_key_name" => $store->code,
-            "notification_key" => $store->fb_registration_key,
+            "notification_key" => $store->fb_notification_key,
             "registration_ids" => [ $device_id ] 
         ]);
 
@@ -121,7 +120,7 @@ class User extends Authenticatable implements JWTSubject
         $response = fb_curl_post([
             "operation" => "add",
             "notification_key_name" => $store->code,
-            "notification_key" => $store->fb_registration_key,
+            "notification_key" => $store->fb_notification_key,
             "registration_ids" => [ $device_id ] 
         ]);
 
