@@ -40,9 +40,11 @@ class Store extends Model
      *  FIREBASE FUNCTIONS  *
      ************************/
 
-    private function fb_create_group()
+    private function fb_create_group($user = null)
     {
-        $deviceId = auth()->user()->fb_device_id;
+        $user = $user ?? auth()->user();
+        
+        $deviceId = $user->fb_device_id;
         if (!$deviceId) {
             Log::warning("FB: Active user doesn't have a valid fb_device_id, cannot create Firebase group!");
             return;

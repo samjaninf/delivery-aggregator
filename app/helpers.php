@@ -14,14 +14,15 @@ function fb_curl_post($body)
     'Content-Type: application/json'
   ];
 
+  $ch = curl_init();
   curl_setopt( $ch,CURLOPT_URL, 'https://fcm.googleapis.com/fcm/notification' );
   curl_setopt( $ch,CURLOPT_POST, true );
   curl_setopt( $ch,CURLOPT_HTTPHEADER, $headers );
   curl_setopt( $ch,CURLOPT_RETURNTRANSFER, true );
   curl_setopt( $ch,CURLOPT_SSL_VERIFYPEER, false );
-  curl_setopt( $ch,CURLOPT_POSTFIELDS, json_encode( $fields ) );
+  curl_setopt( $ch,CURLOPT_POSTFIELDS, json_encode( $body ) );
   $result = curl_exec($ch );
   curl_close( $ch );
 
-  return $result ? json_encode($result) : false;
+  return $result ? json_decode($result) : false;
 }
