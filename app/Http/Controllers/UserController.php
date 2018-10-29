@@ -68,14 +68,28 @@ class UserController extends Controller
         if (auth()->user()->id === $user->id)
             $user->is_admin = true; // prevents removing own admin flag
 
-        $user->save();
+        // Update permissions      
+        $wanted = collect($params['permissions']);
+        $current = $user->stores->pluck('code');
 
-        $user->stores()->detach();
-        foreach($params['permissions'] as $storeCode) {
+        $to_add = $wanted->except($current);
+        foreach($to_add as $storeCode) {
             $store = Store::findbyCode($storeCode);
+
             $user->stores()->attach($store);
+            $user->fb_subscribe_to_group($store);
+        }
+        
+        $to_remove = $current->except($wanted);
+        foreach($to_remove as $storeCode) {
+            $store = Store::findbyCode($storeCode);
+            
+            $user->stores()->detach($store);
+            $user->fb_unsubscribe_from_group($store);
         }
 
+        $user->save();
+        
         return $user;
     }
 

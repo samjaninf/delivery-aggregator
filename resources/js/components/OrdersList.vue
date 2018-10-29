@@ -106,7 +106,7 @@ export default {
     this.intervalHandle = setInterval(this.loadPage, UPDATE_INTERVAL);
   },
   beforeDestroy() {
-    this.clearInterval(this.intervalHandle);
+    clearInterval(this.intervalHandle);
   },
   components: {
     Order: require('./Order.vue'),

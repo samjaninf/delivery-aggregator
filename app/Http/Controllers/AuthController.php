@@ -24,6 +24,16 @@ class AuthController extends Controller
                 'msg' => 'Invalid Credentials.'
             ], 400);
         }
+
+        $user = auth()->user();
+        $fb_device_id = $request->fb_device_id;
+        
+        // If a fb_device_id was provided update it
+        if ($fb_device_id && $user->fb_device_id != $fb_device_id) {
+            $user->fb_device_id = $fb_device_id;
+            $user->save();
+        }
+
         return response([
             'status' => 'success'
         ])

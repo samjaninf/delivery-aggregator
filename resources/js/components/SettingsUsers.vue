@@ -24,6 +24,9 @@
             <b-form-group label="Password" description="Inserisci una password per modificare quella esistente.">
               <b-form-input type="password" placeholder="Inserisci la password" v-model="user.password" :required="!editing"></b-form-input>
             </b-form-group>
+            <b-form-group label="Firebase Registration ID" v-if="editing">
+              <b-form-input type="text" class="form-control" v-model="user.fb_device_id" disabled></b-form-input>
+            </b-form-group>
             <b-form-group>
               <b-form-checkbox v-model="user.is_admin" :disabled="$auth.user().id === user.id">
                 Amministratore

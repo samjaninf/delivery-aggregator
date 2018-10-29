@@ -30,6 +30,9 @@
             <b-form-group label="Consumer Secret (CS)">
               <b-form-input type="text" class="form-control" placeholder="Inserisci il Consumer Secret (CS)" v-model="store.consumer_secret" required></b-form-input>
             </b-form-group>
+            <b-form-group label="Firebase Notification Key" v-if="editing">
+              <b-form-input type="text" class="form-control" v-model="store.fb_notification_key" disabled></b-form-input>
+            </b-form-group>
             <b-button type="submit" :variant="editing ? 'primary' : 'success'">
               {{ editing ? "Aggiorna" : "Salva nuovo" }}
             </b-button>

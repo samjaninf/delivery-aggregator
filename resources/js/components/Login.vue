@@ -20,8 +20,15 @@ export default {
   },
   methods: {
     handleSubmit() {
+      const data = { email: this.email, password: this.password};
+      
+      // Try to send the fb_device_id along with the credentials
+      const fb_device_id = document.head.querySelector('meta[name="registrationid"]').content;
+      if (fb_device_id)
+        data.fb_device_id = fb_device_id;
+
       this.$auth.login({
-        data: { email: this.email, password: this.password },
+        data,
         rememberMe: true,
         success: () => {},
         error: (e) => { 
