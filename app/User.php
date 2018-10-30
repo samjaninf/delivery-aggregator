@@ -107,7 +107,7 @@ class User extends Authenticatable implements JWTSubject
         }
     }
 
-    private function fb_subscribe_to_group($store, $device_id = null)
+    public function fb_subscribe_to_group($store, $device_id = null)
     {
         if (!isset($device_id))
             $device_id = $this->fb_device_id;
