@@ -67,6 +67,9 @@ class UserController extends Controller
 
         if (auth()->user()->id === $user->id)
             $user->is_admin = true; // prevents removing own admin flag
+        else
+            // when is_admin is not defined assume it's false
+            $user->is_admin = $request->is_admin ?? false;
 
         // Update permissions      
         $wanted = collect($params['permissions']);

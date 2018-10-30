@@ -99,7 +99,7 @@ class User extends Authenticatable implements JWTSubject
             "registration_ids" => [ $device_id ] 
         ]);
 
-        if($response) {
+        if($response && !isset($response->error)) {
             Log::info("FB: Firebase user unsubscription for user {$this->email} from store {$this->code} completed with response " . print_r($response, true));
             $this->stores()->updateExistingPivot($store->id, [ 'fb_registered' => false ]);
         } else {
@@ -124,7 +124,7 @@ class User extends Authenticatable implements JWTSubject
             "registration_ids" => [ $device_id ] 
         ]);
 
-        if($response) {
+        if($response && !isset($response->error)) {
             Log::info("FB: Firebase user subscription for user {$this->email} to store {$this->code} completed with response " . print_r($response, true));
             $this->stores()->updateExistingPivot($store->id, [ 'fb_registered' => true ]);
         } else {

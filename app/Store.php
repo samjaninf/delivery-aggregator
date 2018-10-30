@@ -56,7 +56,7 @@ class Store extends Model
             "registration_ids" => [ $deviceId ]
         ]);
 
-        if($response) {
+        if($response && !isset($response->error)) {
             Log::info("FB: Firebase group creation for store {$this->code} completed with response " . print_r($response, true));
             $this->fb_notification_key = $response->notification_key;
             $this->save();
@@ -82,7 +82,7 @@ class Store extends Model
             "registration_ids" => $deviceIds
         ]);
         
-        if ($response) {
+        if ($response && !isset($response->error)) {
             Log::info("FB: Firebase group deletion for store {$this->code} completed with response " . print_r($response, true));
         } else {
             Log::error("FB: Firebase group deletion for store {$this->code} failed with response " . print_r($response, true));
