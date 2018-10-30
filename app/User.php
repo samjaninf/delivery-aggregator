@@ -51,6 +51,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsToMany('App\Store')->withPivot('fb_registered');
     }
 
+    public function getIsAdminAttribute($is_admin)
+    {
+        return (bool) $is_admin;
+    }
+
     /************************
      *  FIREBASE FUNCTIONS  *
      ************************/
