@@ -1,12 +1,17 @@
 <template>
   <div class="cover text-center">
+    <div class="form-container">
+      <b-form class="form-signin" @submit.prevent="handleSubmit">
+        <h1 class="h3 mb-3 font-weight-normal">Effettua l'accesso</h1>
+        <b-form-input type="email" placeholder="Indirizzo email" required autofocus v-model="email"></b-form-input>
+        <b-form-input type="password" placeholder="Password" required v-model="password"></b-form-input>
+        <b-button size="lg" variant="primary" block type="submit">Accedi</b-button>
+      </b-form>
+    </div>
 
-    <b-form class="form-signin" @submit.prevent="handleSubmit">
-      <h1 class="h3 mb-3 font-weight-normal">Effettua l'accesso</h1>
-      <b-form-input type="email" placeholder="Indirizzo email" required autofocus v-model="email"></b-form-input>
-      <b-form-input type="password" placeholder="Password" required v-model="password"></b-form-input>
-      <b-button size="lg" variant="primary" block type="submit">Accedi</b-button>
-    </b-form>
+    <router-link to="/privacy">
+      <i class="fas fa-file-alt mr-2"></i> Informativa Privacy
+    </router-link>
   </div>
 </template>
 
@@ -59,11 +64,20 @@ export default {
   background-color: #f5f5f5;
   height: 100%;
   width: 100%;
+  flex-direction: column;
+}
+
+.form-container {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 330px;
 }
 
 .form-signin {
   width: 100%;
-  max-width: 330px;
   padding: 15px;
   margin: 0 auto;
 }

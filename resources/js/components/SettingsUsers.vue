@@ -32,7 +32,7 @@
                 Amministratore
               </b-form-checkbox>
             </b-form-group>
-            <b-form-group label="Permessi">
+            <b-form-group label="Negozi">
               <b-form-checkbox-group v-model="user.permissions" :options="checkboxOptions">
               </b-form-checkbox-group>
             </b-form-group>

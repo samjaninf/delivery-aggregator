@@ -7,6 +7,13 @@ module.exports = [
         }
     },
     {
+        path: "/privacy",
+        component: require("./components/PrivacyPolicy.vue"),
+        meta: {
+            auth: null
+        }
+    },
+    {
         path: "/",
         component: require("./components/Home.vue"),
         meta: {

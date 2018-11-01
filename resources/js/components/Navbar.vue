@@ -27,6 +27,9 @@
               </b-dropdown-item>
               <div class="dropdown-divider"></div>
             </template>
+            <b-dropdown-item to="/privacy">
+              Informativa Privacy
+            </b-dropdown-item>
             <b-dropdown-item @click.prevent="$auth.logout()">
               Esci
             </b-dropdown-item>
