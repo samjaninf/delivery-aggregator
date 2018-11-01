@@ -123,7 +123,7 @@ class User extends Authenticatable implements JWTSubject
 
         $s = $this->stores->firstWhere('id', $store->id);
         // User already registered to provided store
-        if (!$s || $s->pivot->fb_registered)
+        if ($s && $s->pivot->fb_registered)
             return;
 
         if (!$device_id || !$store->fb_notification_key)
