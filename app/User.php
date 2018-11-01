@@ -97,6 +97,10 @@ class User extends Authenticatable implements JWTSubject
         if (!$s || !$s->pivot->fb_registered)
             return;
 
+        if (!$device_id || !$store->fb_notification_key)
+            // need device id and notification key
+            return;
+
         $response = fb_curl_post([
             "operation" => "remove",
             "notification_key_name" => $store->code,
@@ -120,6 +124,10 @@ class User extends Authenticatable implements JWTSubject
         $s = $this->stores->firstWhere('id', $store->id);
         // User already registered to provided store
         if (!$s || $s->pivot->fb_registered)
+            return;
+
+        if (!$device_id || !$store->fb_notification_key)
+            // need device id and notification key
             return;
 
         $response = fb_curl_post([
