@@ -80,7 +80,8 @@ class WooController extends Controller
                     'key',
                     'ywcdd_order_slot_to'
                 )->value,
-                'items' => $items ?? []
+                'items' => $items ?? [],
+                'notes' => $order->customer_note,
             ];
         }, $orders);
     }

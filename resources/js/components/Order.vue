@@ -28,6 +28,10 @@
         </span></p>
       <template v-if="detailed">
         <hr />
+        <template v-if="order.notes">
+          <h5>Note</h5>
+          <p>{{ order.notes }}</p>
+        </template>
         <h5>Prodotti</h5>
         <div class="media ml-2" v-for="item in order.items" :key="item.name">
           <div class="media-body">
