@@ -21,7 +21,7 @@
 
 <script>
 const CancelToken = axios.CancelToken;
-const UPDATE_INTERVAL = 5 * 1000;
+const UPDATE_INTERVAL = 30 * 1000;
 
 export default {
   data() {
