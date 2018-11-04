@@ -19,7 +19,10 @@
     <div class="card-text">
       <p><i class="fas fa-fw fa-user"></i><span>{{ order.first_name }} {{ order.last_name }}</span></p>
       <p><i class="fas fa-fw fa-map-pin"></i><span>{{ order.address }}, {{ order.city }}</span></p>
-      <p v-if="order.phone"><i class="fas fa-fw fa-phone"></i><span>{{ order.phone }}</span></p>
+      <p v-if="order.phone"><i class="fas fa-fw fa-phone"></i>
+        <a v-if="detailed" :href="`tel:${order.phone}`"><span>{{ order.phone }}</span></a>
+        <span v-else>{{ order.phone }}</span>
+      </p>
       <p v-if="order.payment_method === 'cod'">
         <i class="fas fa-fw fa-money-bill-alt"></i><span>{{ order.total | money }} (Contanti)
         </span></p>
@@ -45,6 +48,14 @@
                 <em>{{ value }}</em>
               </li>
             </ul>
+          </div>
+        </div>
+        <div class="media ml-2" v-if="order.shipping > 0">
+          <div class="media-body">
+            <div>
+              <p class="float-right">{{ order.shipping | money }}</p>
+              <h6 class="d-inline font-italic">Costi di spedizione</h6>
+            </div>
           </div>
         </div>
       </template>

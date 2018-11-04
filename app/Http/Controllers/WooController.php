@@ -82,6 +82,7 @@ class WooController extends Controller
                 )->value,
                 'items' => $items ?? [],
                 'notes' => $order->customer_note,
+                'shipping' => $order->shipping_total,
             ];
         }, $orders);
     }
