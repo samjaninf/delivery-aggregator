@@ -45,7 +45,7 @@
             <ul class="meta">
               <li v-for="(value, key) in item.meta" class="mt-2" :key="key">
                 <span class="key d-block" v-html="`${key}: `"></span>
-                <em>{{ value }}</em>
+                <em>{{ value && Array.isArray(value) ? value.join(", ") : "" }}</em>
               </li>
             </ul>
           </div>

@@ -47,12 +47,9 @@ class WooController extends Controller
         return array_map(function ($order) {
             $items = array_map(function ($item) {
                 // Group meta by key
-                $meta = [];
-                foreach ($item->meta_data as $m) {
-                    if (array_key_exists('key', $m)) {
-                        $meta[$m->key] = $m->value;
-                    }
-                }
+                $meta = collect($item->meta_data)->mapToGroups(function($m) {
+                    return [ $m->key => $m->value ];
+                });
 
                 return [
                     'name' => $item->name,
@@ -82,7 +79,7 @@ class WooController extends Controller
                 )->value,
                 'items' => $items ?? [],
                 'notes' => $order->customer_note,
-                'shipping' => $order->shipping_total,
+                'shipping' => $order->shipping_total
             ];
         }, $orders);
     }

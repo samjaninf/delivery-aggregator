@@ -75,6 +75,8 @@ export default {
 
           if($state)
             $state.loaded();
+
+          return true; // loading successful
         })
         .catch(e => {
           if (this.$http.isCancel(e)) {
@@ -82,11 +84,17 @@ export default {
           } else {
             console.error(e);
           }
+
+          return false; // loading failed
         });
     },
     loadNextPage($state) {
-      this.loadPage(this.page, $state)
-        .then(() => this.page += 1);
+      this
+        .loadPage(this.page, $state)
+        .then(success => {
+          if (success)
+            this.page += 1;
+        });
     },
     reset() {
       this.storeCancel.cancel("Changed store");
