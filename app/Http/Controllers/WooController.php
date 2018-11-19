@@ -44,8 +44,13 @@ class WooController extends Controller
             'parent' => 0
         ]);
 
-        return array_map(function ($order) {
-            $items = array_map(function ($item) {
+        return collect($orders)
+            ->filter(function ($order) {
+                return $order->status != 'pending';
+            })
+            ->values()
+            ->map(function ($order) {
+            $items = collect($order->line_items)->map(function ($item) {
                 // Group meta by key
                 $meta = collect($item->meta_data)->mapToGroups(function($m) {
                     return [ $m->key => $m->value ];
@@ -57,7 +62,7 @@ class WooController extends Controller
                     'total' => $item->total + $item->total_tax,
                     'meta' => $meta
                 ];
-            }, $order->line_items);
+            });
 
             return [
                 'number' => $order->number,
@@ -81,6 +86,6 @@ class WooController extends Controller
                 'notes' => $order->customer_note,
                 'shipping' => $order->shipping_total
             ];
-        }, $orders);
+        });
     }
 }

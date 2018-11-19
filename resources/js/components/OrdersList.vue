@@ -3,7 +3,12 @@
     <h1 class="text-center mt-4 mb-4">Ordini — {{ activeStore.name }}</h1>
     <div>
       <div v-for="(dayOrders, day) in ordersByDate" class="mb-3" :key="day">
-        <h3 class="text-primary">{{ day }}</h3>
+        <div class="day-header">
+          <h3 class="text-primary">{{ day }}</h3>
+          <h3 class="text-primary" v-if="$auth.check('admin')">
+            {{ dayOrders.reduce((acc, o) => acc + Number(o.total), 0) | money }}
+          </h3>
+        </div>
         <hr />
         <div class="orders row">
           <div class="col-lg-4 col-md-6" v-for="order in dayOrders" :key="order.number">
@@ -124,7 +129,7 @@ export default {
 </script>
 
 <style>
-.text-primary + hr {
+.day-header + hr {
   border-color: var(--blue);
 }
 
@@ -148,5 +153,14 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.day-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.day-header h3 {
+  margin-bottom: 0;
 }
 </style>
