@@ -1,11 +1,32 @@
 <template>
   <div class="cover text-center">
     <div class="form-container">
-      <b-form class="form-signin" @submit.prevent="handleSubmit">
+      <b-form
+        class="form-signin"
+        @submit.prevent="handleSubmit"
+      >
         <h1 class="h3 mb-3 font-weight-normal">Effettua l'accesso</h1>
-        <b-form-input type="email" placeholder="Indirizzo email" required autofocus v-model="email"></b-form-input>
-        <b-form-input type="password" placeholder="Password" required v-model="password"></b-form-input>
-        <b-button size="lg" variant="primary" block type="submit">Accedi</b-button>
+        <b-form-input
+          type="email"
+          placeholder="Indirizzo email"
+          required
+          autofocus
+          v-model="email"
+          id="login-email-input"
+        ></b-form-input>
+        <b-form-input
+          type="password"
+          placeholder="Password"
+          required
+          v-model="password"
+          id="login-password-input"
+        ></b-form-input>
+        <b-button
+          size="lg"
+          variant="primary"
+          block
+          type="submit"
+        >Accedi</b-button>
       </b-form>
     </div>
 
@@ -19,33 +40,34 @@
 export default {
   data() {
     return {
-      email: '',
-      password: '',
-    }
+      email: "",
+      password: ""
+    };
   },
   methods: {
     handleSubmit() {
-      const data = { email: this.email, password: this.password};
-      
+      const data = { email: this.email, password: this.password };
+
       // Try to send the fb_device_id along with the credentials
-      const fb_device_id = document.head.querySelector('meta[name="registrationid"]').content;
-      if (fb_device_id)
-        data.fb_device_id = fb_device_id;
+      const fb_device_id = document.head.querySelector(
+        'meta[name="registrationid"]'
+      ).content;
+      if (fb_device_id) data.fb_device_id = fb_device_id;
 
       this.$auth.login({
         data,
         rememberMe: true,
         success: () => {},
-        error: (e) => { 
+        error: e => {
           this.$notify({
             type: "error",
-            text: "Credenziali invalide",
+            text: "Credenziali invalide"
           });
-        },
-      })
+        }
+      });
     }
   }
-}
+};
 </script>
 
 <style scoped>

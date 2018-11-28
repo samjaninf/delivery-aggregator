@@ -84,7 +84,13 @@ class WooController extends Controller
                 )->value,
                 'items' => $items ?? [],
                 'notes' => $order->customer_note,
-                'shipping' => $order->shipping_total
+                'shipping' => $order->shipping_total,
+                'coupons' => collect($order->coupon_lines)->map(function($c) {
+                    return [
+                        'code' => $c->code,
+                        'discount' => ($c->discount ?? 0) + ($c->discount_tax ?? 0),
+                    ];
+                }),
             ];
         });
     }
