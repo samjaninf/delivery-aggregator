@@ -1,13 +1,25 @@
 <template>
-  <b-navbar toggleable variant="dark" type="dark">
+  <b-navbar
+    toggleable
+    variant="dark"
+    type="dark"
+    style="z-index: 100;"
+  >
     <b-container>
       <b-navbar-brand>Delivery Aggregator</b-navbar-brand>
       <b-navbar-toggle target="nav-collapse">
       </b-navbar-toggle>
 
-      <b-collapse is-nav id="nav-collapse">
+      <b-collapse
+        is-nav
+        id="nav-collapse"
+      >
         <b-navbar-nav class="navbar-nav mr-auto">
-          <b-nav-item v-for="store in stores" :key="store.code" :to="`/${store.code}`">
+          <b-nav-item
+            v-for="store in stores"
+            :key="store.code"
+            :to="`/${store.code}`"
+          >
             {{ store.name }}
           </b-nav-item>
         </b-navbar-nav>
@@ -42,7 +54,7 @@
 
 <script>
 export default {
-  props: ['stores']
-}
+  props: ["stores"]
+};
 </script>
 
