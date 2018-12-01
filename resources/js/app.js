@@ -8,7 +8,6 @@ require("./bootstrap");
 
 window.Vue = require("vue");
 Vue.use(require("bootstrap-vue"));
-Vue.use(require("vue-infinite-loading"));
 Vue.use(require("vue-axios"), axios);
 Vue.use(require("vue-notification").default);
 
