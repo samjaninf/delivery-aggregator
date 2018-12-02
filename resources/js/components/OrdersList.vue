@@ -161,7 +161,7 @@ export default {
       this.storeCancel = CancelToken.source();
       this.noMoreOrders = false;
 
-      this.loadNextPage();
+      if (this.activeStore) this.loadNextPage();
     },
     refresh(loaded) {
       this.loadPage(0).then(success => {
@@ -174,6 +174,7 @@ export default {
       handler() {
         this.reset();
       },
+      immediate: true,
       deep: true
     }
   },
