@@ -49,11 +49,12 @@
             </div>
           </div>
         </div>
-        <div
-          class="loading-bar infinite-loading-bar"
-          v-if="!noMoreOrders"
-        >
-          <div class="sk-folding-cube">
+        <div class="loading-bar infinite-loading-bar">
+          <h6 v-if="noMoreOrders">Non sono presenti altri ordini</h6>
+          <div
+            class="sk-folding-cube"
+            v-else
+          >
             <div class="sk-cube1 sk-cube"></div>
             <div class="sk-cube2 sk-cube"></div>
             <div class="sk-cube4 sk-cube"></div>
@@ -169,8 +170,11 @@ export default {
     }
   },
   watch: {
-    activeStore() {
-      this.reset();
+    activeStore: {
+      handler() {
+        this.reset();
+      },
+      deep: true
     }
   },
   mounted() {
