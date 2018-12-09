@@ -64,37 +64,7 @@ class WooController extends Controller
                 ];
             });
 
-            /*
-             * YITH bug workaround: the YITH timeslots plugin
-             * uses UTC time to decide which day assign to the timeslot.
-             * This means that between 0-1AM orders are assigned to
-             * the wrong day. We're fixing it using the delivery date field.
-             */
-            $date = collect($order->meta_data)->firstWhere(
-                'key',
-                'ywcdd_order_delivery_date'
-            )->value;
-
-            $slot_from = collect($order->meta_data)->firstWhere(
-                'key',
-                'ywcdd_order_slot_from'
-            )->value;
-
-            $slot_to = collect($order->meta_data)->firstWhere(
-                'key',
-                'ywcdd_order_slot_to'
-            )->value;
-
-            try {
-                $date = \Carbon\Carbon::parse($date);
-                $slot_from = \Carbon\Carbon::createFromTimestamp($slot_from)
-                    ->setDateFrom($date)->timestamp;
-                $slot_to = \Carbon\Carbon::createFromTimestamp($slot_to)
-                    ->setDateFrom($date)->timestamp;
-            } catch(\ErrorException $e) {
-                $slot_from = $date->timestamp;
-                $slot_to = $date->timestamp;
-            }
+            list($slot_from, $slot_to) = $this->getTimeslots($order);
 
             return [
                 'number' => $order->number,
@@ -120,5 +90,59 @@ class WooController extends Controller
                 'order' => $order,
             ];
         });
+    }
+
+    function getTimeslots($order)
+    {
+        $meta = collect($order->meta_data);
+
+        $date = $meta->firstWhere('key','ywcdd_order_delivery_date');
+
+        if ($date) {
+            // --- Using YITH plugin ---
+
+            $date = $date->value;
+
+            /*
+             * YITH bug workaround: the YITH timeslots plugin
+             * uses UTC time to decide which day assign to the timeslot.
+             * This means that between 0-1AM orders are assigned to
+             * the wrong day. We're fixing it using the delivery date field.
+             */   
+            $slot_from = $meta->firstWhere('key','ywcdd_order_slot_from')->value;
+            $slot_to = $meta->firstWhere('key','ywcdd_order_slot_to')->value;
+    
+            try {
+                $date = \Carbon\Carbon::parse($date);
+                $slot_from = \Carbon\Carbon::createFromTimestamp($slot_from)
+                    ->setDateFrom($date)->timestamp;
+                $slot_to = \Carbon\Carbon::createFromTimestamp($slot_to)
+                    ->setDateFrom($date)->timestamp;
+            } catch(\ErrorException $e) {
+                $slot_from = $date->timestamp;
+                $slot_to = $date->timestamp;
+            }
+        } else if ($date = $meta->firstWhere('key', 'jckwds_date_ymd')) {
+            // --- Using Iconic plugin ---
+
+            $date = $date->value;
+            $timeslot = $meta->firstWhere('key', 'jckwds_timeslot')->value;
+            list($slot_from, $slot_to) = explode(' - ', $timeslot);
+            
+            try {
+                $slot_from = \Carbon\Carbon::parse("$date $slot_from")->timestamp;
+                $slot_to = \Carbon\Carbon::parse("$date $slot_to")->timestamp;
+            } catch(\ErrorException $e) {
+                $slot_from = $date->timestamp;
+                $slot_to = $date->timestamp;
+            }
+        }
+        else {
+            // --- Missing timeslot info ---
+            $slot_from = null;
+            $slot_to = null;
+        }
+
+        return [$slot_from, $slot_to];
     }
 }
