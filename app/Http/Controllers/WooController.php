@@ -87,7 +87,6 @@ class WooController extends Controller
                         'discount' => ($c->discount ?? 0) + ($c->discount_tax ?? 0),
                     ];
                 }),
-                'order' => $order,
             ];
         });
     }

@@ -64,8 +64,8 @@
         <h5>Prodotti</h5>
         <div
           class="media ml-2"
-          v-for="item in order.items"
-          :key="item.name"
+          v-for="(item, i) in order.items"
+          :key="i"
         >
           <div class="media-body">
             <div>

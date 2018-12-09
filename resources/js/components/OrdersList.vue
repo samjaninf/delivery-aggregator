@@ -52,13 +52,13 @@
         <div class="loading-bar infinite-loading-bar">
           <h6 v-if="noMoreOrders">Non sono presenti altri ordini</h6>
           <div
-            class="sk-folding-cube"
+            class="lds-ring"
             v-else
           >
-            <div class="sk-cube1 sk-cube"></div>
-            <div class="sk-cube2 sk-cube"></div>
-            <div class="sk-cube4 sk-cube"></div>
-            <div class="sk-cube3 sk-cube"></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
           </div>
         </div>
         <div
@@ -80,6 +80,7 @@
 <script>
 const CancelToken = axios.CancelToken;
 const UPDATE_INTERVAL = 30 * 1000;
+const ORDERS_PER_PAGE = 20;
 
 export default {
   data() {
@@ -116,11 +117,6 @@ export default {
           cancelToken: this.storeCancel.token
         })
         .then(response => {
-          if (response.data.length == 0) {
-            this.noMoreOrders = true;
-            return false;
-          }
-
           // Merge arrays
           for (let newOrder of response.data) {
             const old = _.find(this.orders, { number: newOrder.number });
@@ -131,7 +127,12 @@ export default {
             }
           }
 
-          return true; // loading successful
+          if (response.data.length >= ORDERS_PER_PAGE) {
+            return true; // loading successful
+          } else {
+            this.noMoreOrders = true;
+            return false;
+          }
         })
         .catch(e => {
           if (this.$http.isCancel(e)) {
@@ -195,12 +196,7 @@ const pullToConfig = {
     '<i class="fas fa-arrow-down"></i> Scorri per aggiornare <i class="fas fa-arrow-down"></i>',
   triggerText:
     '<i class="fas fa-arrow-down"></i> Scorri per aggiornare <i class="fas fa-arrow-down"></i>',
-  loadingText: `<div class="sk-folding-cube">
-      <div class="sk-cube1 sk-cube"></div>
-      <div class="sk-cube2 sk-cube"></div>
-      <div class="sk-cube4 sk-cube"></div>
-      <div class="sk-cube3 sk-cube"></div>
-    </div>`,
+  loadingText: `<div class="lds-ring"><div></div><div></div><div></div><div></div></div>`,
   doneText: '<i class="fas fa-check"></i>',
   failText: '<i class="fas fa-exclamation-circle"></i>',
   loadedStayTime: 400,
@@ -257,101 +253,39 @@ const pullToConfig = {
   margin-bottom: 5em;
 }
 
-.sk-folding-cube {
-  margin: 20px auto;
-  width: 40px;
-  height: 40px;
+.lds-ring {
+  display: inline-block;
   position: relative;
-  -webkit-transform: rotateZ(45deg);
-  transform: rotateZ(45deg);
+  width: 64px;
+  height: 64px;
 }
-
-.sk-folding-cube .sk-cube {
-  float: left;
-  width: 50%;
-  height: 50%;
-  position: relative;
-  -webkit-transform: scale(1.1);
-  -ms-transform: scale(1.1);
-  transform: scale(1.1);
-}
-.sk-folding-cube .sk-cube:before {
-  content: "";
+.lds-ring div {
+  box-sizing: border-box;
+  display: block;
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #3490dc;
-  -webkit-animation: sk-foldCubeAngle 2.4s infinite linear both;
-  animation: sk-foldCubeAngle 2.4s infinite linear both;
-  -webkit-transform-origin: 100% 100%;
-  -ms-transform-origin: 100% 100%;
-  transform-origin: 100% 100%;
+  width: 51px;
+  height: 51px;
+  margin: 6px;
+  border: 6px solid #3490dc;
+  border-radius: 50%;
+  animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  border-color: #3490dc transparent transparent transparent;
 }
-.sk-folding-cube .sk-cube2 {
-  -webkit-transform: scale(1.1) rotateZ(90deg);
-  transform: scale(1.1) rotateZ(90deg);
+.lds-ring div:nth-child(1) {
+  animation-delay: -0.45s;
 }
-.sk-folding-cube .sk-cube3 {
-  -webkit-transform: scale(1.1) rotateZ(180deg);
-  transform: scale(1.1) rotateZ(180deg);
+.lds-ring div:nth-child(2) {
+  animation-delay: -0.3s;
 }
-.sk-folding-cube .sk-cube4 {
-  -webkit-transform: scale(1.1) rotateZ(270deg);
-  transform: scale(1.1) rotateZ(270deg);
+.lds-ring div:nth-child(3) {
+  animation-delay: -0.15s;
 }
-.sk-folding-cube .sk-cube2:before {
-  -webkit-animation-delay: 0.3s;
-  animation-delay: 0.3s;
-}
-.sk-folding-cube .sk-cube3:before {
-  -webkit-animation-delay: 0.6s;
-  animation-delay: 0.6s;
-}
-.sk-folding-cube .sk-cube4:before {
-  -webkit-animation-delay: 0.9s;
-  animation-delay: 0.9s;
-}
-@-webkit-keyframes sk-foldCubeAngle {
-  0%,
-  10% {
-    -webkit-transform: perspective(140px) rotateX(-180deg);
-    transform: perspective(140px) rotateX(-180deg);
-    opacity: 0;
+@keyframes lds-ring {
+  0% {
+    transform: rotate(0deg);
   }
-  25%,
-  75% {
-    -webkit-transform: perspective(140px) rotateX(0deg);
-    transform: perspective(140px) rotateX(0deg);
-    opacity: 1;
-  }
-  90%,
   100% {
-    -webkit-transform: perspective(140px) rotateY(180deg);
-    transform: perspective(140px) rotateY(180deg);
-    opacity: 0;
-  }
-}
-
-@keyframes sk-foldCubeAngle {
-  0%,
-  10% {
-    -webkit-transform: perspective(140px) rotateX(-180deg);
-    transform: perspective(140px) rotateX(-180deg);
-    opacity: 0;
-  }
-  25%,
-  75% {
-    -webkit-transform: perspective(140px) rotateX(0deg);
-    transform: perspective(140px) rotateX(0deg);
-    opacity: 1;
-  }
-  90%,
-  100% {
-    -webkit-transform: perspective(140px) rotateY(180deg);
-    transform: perspective(140px) rotateY(180deg);
-    opacity: 0;
+    transform: rotate(360deg);
   }
 }
 </style>
