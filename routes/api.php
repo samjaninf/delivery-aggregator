@@ -39,6 +39,7 @@ Route::group([
   Route::delete('/users/{user}', 'UserController@destroy');
   
   Route::get('/stores/{store}/orders', 'WooController@orders');
+  Route::post('/stores/{store}/orders/{order}/outfordelivery', 'WooController@orderOutForDelivery');
   
   // Catch-all
   Route::get('/{any}', function () {

@@ -5,11 +5,13 @@
     :class="{ cancelled: order.status === 'cancelled', detailed: detailed, 'mb-4': !detailed }"
   >
     <div class="card-title">
-      <h4 v-if="order.status === 'cancelled' ">
-        <i class="fas fa-fw fa-exclamation-triangle"></i>
+      <h4
+        v-if="order.status === 'cancelled'"
+        class="text-center mb-4"
+      >
         Annullato
       </h4>
-      <span class="float-right">
+      <span class=" float-right">
         Ordine #{{ order.number }}
         <button
           type="button"
@@ -21,7 +23,19 @@
         </button>
       </span>
       <h4 class="d-inline">
-        <i class="far fa-clock"></i>
+        <i
+          v-if="order.status === 'cancelled'"
+          class="fas fa-fw fa-exclamation-triangle"
+        ></i>
+        <i
+          v-else-if="order.status === 'out-for-delivery'"
+          class="fas fa-fw fa-motorcycle"
+          style="color: #3490dc;"
+        ></i>
+        <i
+          v-else
+          class="far fa-fw fa-clock"
+        ></i>
         {{ order.delivery_date | hour }}–{{ order.delivery_date_end | hour }}
       </h4>
     </div>
@@ -56,6 +70,19 @@
             </h6>
           </div>
         </div>
+
+        <div
+          class="text-center mt-2"
+          v-if="order.status === 'processing'"
+        >
+          <b-button
+            variant="primary"
+            @click="setOutForDelivery"
+          >
+            <i class="fas fa-motorcycle"></i> In consegna
+          </b-button>
+        </div>
+
         <hr />
         <template v-if="order.notes">
           <h5>Note</h5>
@@ -105,7 +132,29 @@
 
 <script>
 export default {
-  props: ["order", "detailed"]
+  props: ["order", "detailed", "storeCode"],
+  methods: {
+    setOutForDelivery() {
+      this.$http
+        .post(
+          `stores/${this.storeCode}/orders/${this.order.number}/outfordelivery`
+        )
+        .then(() => {
+          this.order.status = "out-for-delivery";
+
+          this.$notify({
+            type: "success",
+            text: "Ordine aggiornato con successo"
+          });
+        })
+        .catch(() => {
+          this.$notify({
+            type: "error",
+            text: "Errore durante il cambio di stato"
+          });
+        });
+    }
+  }
 };
 </script>
 

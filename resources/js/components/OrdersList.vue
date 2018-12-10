@@ -69,6 +69,7 @@
           <order
             :order="selectedOrder"
             :detailed="true"
+            :storeCode="storeCode"
             @close="selectedOrder = null"
           ></order>
         </div>

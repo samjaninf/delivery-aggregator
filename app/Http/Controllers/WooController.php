@@ -91,6 +91,23 @@ class WooController extends Controller
         });
     }
 
+    function orderOutForDelivery(Request $request, $store, $order)
+    {
+        if(!auth()->user()->is_admin &&
+           !auth()->user()->stores()->where('code', $store)->first())
+            abort(401);
+        
+        $wc = $this->createClient($store);
+
+        try {
+            $wc->put("orders/$order", [
+                'status' => 'out-for-delivery'
+            ]);
+        } catch(\Automattic\WooCommerce\HttpClient\HttpClientException $e) {
+            return abort(422, $e->getMessage());
+        }
+    }
+
     function getTimeslots($order)
     {
         $meta = collect($order->meta_data);
