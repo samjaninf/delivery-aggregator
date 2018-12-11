@@ -146,8 +146,8 @@ class WooController extends Controller
             list($slot_from, $slot_to) = explode(' - ', $timeslot);
             
             try {
-                $slot_from = \Carbon\Carbon::parse("$date $slot_from")->timestamp;
-                $slot_to = \Carbon\Carbon::parse("$date $slot_to")->timestamp;
+                $slot_from = \Carbon\Carbon::createFromFormat('Ymd H:i+', "$date $slot_from")->timestamp;
+                $slot_to = \Carbon\Carbon::createFromFormat('Ymd H:i+', "$date $slot_to")->timestamp;
             } catch(\ErrorException $e) {
                 $slot_from = $date->timestamp;
                 $slot_to = $date->timestamp;
