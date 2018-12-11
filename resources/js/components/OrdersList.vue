@@ -22,7 +22,7 @@
       </h1>
       <div>
         <div
-          v-for="(dayOrders, day) in ordersByDate"
+          v-for="{dayOrders, day} in ordersByDate"
           class="mb-3"
           :key="day"
         >
@@ -97,12 +97,17 @@ export default {
   props: ["storeCode", "stores"],
   computed: {
     ordersByDate() {
-      return _.groupBy(this.orders, o =>
-        moment
-          .unix(o.delivery_date)
-          .utc()
-          .format("LL")
-      );
+      return _(this.orders)
+        .groupBy(o =>
+          moment
+            .unix(o.delivery_date)
+            .utc()
+            .format("LL")
+        )
+        .toPairs()
+        .orderBy(v => v[0], "desc")
+        .map(v => ({ day: v[0], dayOrders: v[1] }))
+        .value();
     },
     activeStore() {
       return _.find(this.stores, { code: this.storeCode });
