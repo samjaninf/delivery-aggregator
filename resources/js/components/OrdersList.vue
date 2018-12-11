@@ -105,7 +105,7 @@ export default {
             .format("LL")
         )
         .toPairs()
-        .orderBy(v => v[0], "desc")
+        .orderBy(v => v[1][0].delivery_date, "desc")
         .map(v => ({ day: v[0], dayOrders: v[1] }))
         .value();
     },
