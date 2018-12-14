@@ -72,7 +72,7 @@ class UserController extends Controller
         $wanted = collect($params['permissions']);
         $current = $user->stores->pluck('code');
 
-        $to_add = $wanted->except($current);
+        $to_add = $wanted->diff($current);
         foreach($to_add as $storeCode) {
             $store = Store::findbyCode($storeCode);
 
@@ -80,7 +80,7 @@ class UserController extends Controller
             $user->fb_subscribe_to_group($store);
         }
         
-        $to_remove = $current->except($wanted);
+        $to_remove = $current->diff($wanted);
         foreach($to_remove as $storeCode) {
             $store = Store::findbyCode($storeCode);
             
