@@ -1,8 +1,15 @@
 <template>
   <b-container class="mt-4">
     <h3>Registro Consegne</h3>
-    <div class="d-flex flex-row-reverse mt-4">
+    <div class="d-flex justify-content-between flex-wrap mt-4">
+      <b-input
+        class="mt-2"
+        placeholder="Filtro"
+        style="max-width: 300px"
+        v-model="filter"
+      ></b-input>
       <b-pagination
+        class="mt-2"
         size="md"
         v-model="currentPage"
         :total-rows="total"
@@ -41,7 +48,11 @@ const fields = [
   {
     key: "updated_at",
     label: "Data",
-    formatter: d => moment(d).format("DD/MM/YYYY HH:mm")
+    formatter: d =>
+      moment
+        .utc(d)
+        .local()
+        .format("DD/MM/YYYY HH:mm")
   },
   {
     key: "user.name",
@@ -58,7 +69,8 @@ export default {
       currentPage: 1,
       total: 0,
       perPage: 20,
-      loading: false
+      loading: false,
+      filter: ""
     };
   },
   methods: {
@@ -71,7 +83,7 @@ export default {
       this.loading = true;
 
       this.$http
-        .get(`status_changes?page=${this.currentPage}`, {
+        .get(`status_changes?page=${this.currentPage}&filter=${this.filter}`, {
           cancelToken: this.pageCancel.token
         })
         .then(response => {
@@ -89,7 +101,10 @@ export default {
       handler(page, oldPage) {
         if (page !== oldPage) this.loadPage();
       }
-    }
+    },
+    filter: _.debounce(function(filter, oldFilter) {
+      if (filter !== oldFilter) this.loadPage();
+    }, 500)
   }
 };
 </script>
