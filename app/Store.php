@@ -36,6 +36,11 @@ class Store extends Model
         return $this->belongsToMany('App\User')->withPivot('fb_registered');
     }
 
+    public function statusChanges()
+    {
+        return $this->hasMany('App\StatusChange');
+    }
+
     /************************
      *  FIREBASE FUNCTIONS  *
      ************************/

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Automattic\WooCommerce\Client;
 use App\Store;
+use App\StatusChange;
 
 class WooController extends Controller
 {
@@ -106,6 +107,14 @@ class WooController extends Controller
         } catch(\Automattic\WooCommerce\HttpClient\HttpClientException $e) {
             return abort(422, $e->getMessage());
         }
+
+        // Log order status change
+        $s = new StatusChange;
+        $s->order = $order;
+        $s->status = 'out-for-delivery';
+        $s->user()->associate(auth()->user());
+        $s->store()->associate(Store::findByCode($store));
+        $s->save();
     }
 
     function getTimeslots($order)

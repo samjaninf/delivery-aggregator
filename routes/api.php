@@ -41,6 +41,8 @@ Route::group([
   Route::get('/stores/{store}/orders', 'WooController@orders');
   Route::post('/stores/{store}/orders/{order}/outfordelivery', 'WooController@orderOutForDelivery');
   
+  Route::get('/status_changes', 'StatusChangeController@index');
+
   // Catch-all
   Route::get('/{any}', function () {
     return abort(404);
