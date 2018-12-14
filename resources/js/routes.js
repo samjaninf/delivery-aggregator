@@ -39,6 +39,13 @@ module.exports = [
                 }
             },
             {
+                path: "/statuslog",
+                component: require("./components/StatusLog.vue"),
+                meta: {
+                    auth: "admin"
+                }
+            },
+            {
                 path: "/:storeCode",
                 props: true,
                 component: require("./components/OrdersList.vue"),

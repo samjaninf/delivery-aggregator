@@ -24,6 +24,8 @@ class StatusChangeController extends Controller
             'store' => function($q){
                 $q->select('id', 'name');
             },            
-        ])->get();
+        ])
+            ->orderBy('updated_at', 'desc')
+            ->paginate(20);
     }
 }

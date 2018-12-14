@@ -1,6 +1,6 @@
 <template>
   <b-navbar
-    toggleable
+    toggleable="md"
     variant="dark"
     type="dark"
     style="z-index: 100;"
@@ -31,6 +31,9 @@
             </template>
 
             <template v-if="$auth.check('admin')">
+              <b-dropdown-item to="/statuslog">
+                <i class="fas fa-fw fa-history"></i> Registro consegne
+              </b-dropdown-item>
               <b-dropdown-item to="/settings/stores">
                 <i class="fas fa-fw fa-store-alt"></i> Negozi
               </b-dropdown-item>
