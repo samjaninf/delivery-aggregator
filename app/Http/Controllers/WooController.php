@@ -151,8 +151,15 @@ class WooController extends Controller
             // --- Using Iconic plugin ---
 
             $date = $date->value;
-            $timeslot = $meta->firstWhere('key', 'jckwds_timeslot')->value;
-            list($slot_from, $slot_to) = explode(' - ', $timeslot);
+            $timeslot = $meta->firstWhere('key', 'jckwds_timeslot');
+            
+            if (isset($timeslot->value)) {
+                list($slot_from, $slot_to) = explode(' - ', $timeslot->value);
+            } else {
+                // Requires further investigation
+                $slot_from = '00:00 AM';
+                $slot_to   = '00:00 AM';
+            }
             
             try {
                 $slot_from = \Carbon\Carbon::createFromFormat('Ymd H:i+', "$date $slot_from")->timestamp;
