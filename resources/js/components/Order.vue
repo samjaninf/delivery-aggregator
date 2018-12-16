@@ -73,7 +73,7 @@
 
         <div
           class="text-center mt-2"
-          v-if="order.status === 'processing'"
+          v-if="order.status === 'processing' && storeCode !== 'imburger'"
         >
           <b-button
             variant="primary"
