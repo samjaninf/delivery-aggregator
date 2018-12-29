@@ -31,6 +31,9 @@
             </template>
 
             <template v-if="$auth.check('admin')">
+              <b-dropdown-item to="/products">
+                <i class="fas fa-fw fa-box"></i> Prodotti
+              </b-dropdown-item>
               <b-dropdown-item to="/statuslog">
                 <i class="fas fa-fw fa-history"></i> Registro consegne
               </b-dropdown-item>

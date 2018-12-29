@@ -38,6 +38,7 @@ Route::group([
 
     Route::get('/stores/{store}/orders', 'WooController@orders');
     Route::post('/stores/{store}/orders/{order}/outfordelivery', 'WooController@orderOutForDelivery');
+    Route::get('/stores/{store}/products', 'WooController@products');
 
     Route::get('/status_changes', 'StatusChangeController@index');
 

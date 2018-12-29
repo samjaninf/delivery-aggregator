@@ -48,4 +48,13 @@ class WooController extends Controller
         $s->save();
     }
 
+    public function products(Request $request, $store)
+    {
+        if (!auth()->user()->is_admin &&
+            !auth()->user()->stores()->where('code', $store)->first()) {
+            abort(401);
+        }
+
+        return $this->woo->products($store);
+    }
 }

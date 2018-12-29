@@ -146,4 +146,24 @@ class WooService
 
         return [$slot_from, $slot_to];
     }
+
+    public function products($store, $page = 1)
+    {
+        $wc = $this->createClient($store);
+        $products = $wc->get('products', [
+            'per_page' => 100,
+        ]);
+
+        return collect($products)
+            ->map(function ($product) {
+                $category = collect($product->categories)->first();
+
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'category' => $category->name ?? 'Senza categoria',
+                    'in_stock' => $product->in_stock,
+                ];
+            });
+    }
 }

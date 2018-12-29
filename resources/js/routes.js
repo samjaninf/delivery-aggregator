@@ -46,6 +46,14 @@ module.exports = [
                 }
             },
             {
+                path: "/products",
+                props: true,
+                component: require("./components/Products.vue"),
+                meta: {
+                    auth: true
+                }
+            },
+            {
                 path: "/:storeCode",
                 props: true,
                 component: require("./components/OrdersList.vue"),
