@@ -151,7 +151,7 @@ class WooService
     {
         $wc = $this->createClient($store);
         $products = $wc->get('products', [
-            'per_page' => 100,
+            'per_page' => 100, // TODO: needs to be fixed for > 100 products
         ]);
 
         return collect($products)
@@ -165,5 +165,14 @@ class WooService
                     'in_stock' => $product->in_stock,
                 ];
             });
+    }
+
+    public function updateInStock($store, $product, $in_stock)
+    {
+        $wc = $this->createClient($store);
+
+        return $wc->put("products/$product", [
+            'in_stock' => $in_stock,
+        ]);
     }
 }

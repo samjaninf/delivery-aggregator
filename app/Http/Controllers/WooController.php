@@ -57,4 +57,20 @@ class WooController extends Controller
 
         return $this->woo->products($store);
     }
+
+    public function updateProduct(Request $request, $store, $product)
+    {
+        if (!auth()->user()->is_admin) {
+            abort(401);
+        }
+
+        $in_stock = $request->in_stock;
+
+        try {
+            $product = $this->woo->updateInStock($store, $product, $in_stock);
+            return response()->json($product);
+        } catch (\Automattic\WooCommerce\HttpClient\HttpClientException $e) {
+            return abort(422, $e->getMessage());
+        }
+    }
 }

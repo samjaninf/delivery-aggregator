@@ -32,7 +32,10 @@
           v-for="product in products"
           :key="product.id"
         >
-          <product :product="product" />
+          <product
+            :store="selectedStore"
+            :product="product"
+          />
         </b-col>
       </b-row>
     </div>
