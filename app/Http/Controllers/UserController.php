@@ -67,9 +67,9 @@ class UserController extends Controller
             unset($params['password']);
         }
 
-        // prevents removing own admin flag
+        // Prevents changing own role
         if (auth()->user()->id === $params['id']) {
-            unset($params['is_admin']);
+            unset($params['role']);
         }
 
         $user = User::find($params['id']);
