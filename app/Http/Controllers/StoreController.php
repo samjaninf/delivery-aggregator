@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Store;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class StoreController extends Controller
 {
@@ -14,34 +15,39 @@ class StoreController extends Controller
 
     public function index()
     {
-        if (auth()->user()->is_admin)
+        if (Gate::allows('view all stores')) {
             return Store::all();
-        else
+        } else {
             return auth()->user()->stores()->get(['name', 'code']);
+        }
+
     }
 
     public function store(Request $request)
     {
-        if (!auth()->user()->is_admin)
+        if (Gate::denies('manage stores')) {
             abort(401);
-        
+        }
+
         $params = $request->json()->all();
         $store = Store::create($params);
     }
 
     public function show($storeCode)
     {
-        if (!auth()->user()->is_admin)
+        if (Gate::denies('manage stores')) {
             abort(401);
-        
+        }
+
         return Store::findByCode($storeCode);
     }
 
     public function update(Request $request)
     {
-        if (!auth()->user()->is_admin)
+        if (Gate::denies('manage stores')) {
             abort(401);
-        
+        }
+
         $params = $request->json()->all();
         $store = Store::find($params['id']);
         $store->fill($params);
@@ -50,9 +56,10 @@ class StoreController extends Controller
 
     public function destroy($storeCode)
     {
-        if (!auth()->user()->is_admin)
+        if (Gate::denies('manage stores')) {
             abort(401);
-            
+        }
+
         Store::findByCode($storeCode)->delete();
     }
 }

@@ -7,6 +7,7 @@ use App\StatusChange;
 use App\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class WooController extends Controller
 {
@@ -18,8 +19,7 @@ class WooController extends Controller
 
     public function orders(Request $request, $store)
     {
-        if (!auth()->user()->is_admin &&
-            !auth()->user()->stores()->where('code', $store)->first()) {
+        if (Gate::denies('view orders', $store)) {
             abort(401);
         }
 
@@ -28,8 +28,7 @@ class WooController extends Controller
 
     public function orderOutForDelivery(Request $request, $store, $order)
     {
-        if (!auth()->user()->is_admin &&
-            !auth()->user()->stores()->where('code', $store)->first()) {
+        if (Gate::denies('set delivered', $store)) {
             abort(401);
         }
 
@@ -50,8 +49,7 @@ class WooController extends Controller
 
     public function products(Request $request, $store)
     {
-        if (!auth()->user()->is_admin &&
-            !auth()->user()->stores()->where('code', $store)->first()) {
+        if (Gate::denies('manage products', $store)) {
             abort(401);
         }
 
@@ -60,7 +58,7 @@ class WooController extends Controller
 
     public function updateProduct(Request $request, $store, $product)
     {
-        if (!auth()->user()->is_admin) {
+        if (Gate::denies('manage products', $store)) {
             abort(401);
         }
 

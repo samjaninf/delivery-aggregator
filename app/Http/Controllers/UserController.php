@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use App\User;
 use App\Store;
+use App\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
@@ -16,23 +16,25 @@ class UserController extends Controller
 
     public function index()
     {
-        if (!auth()->user()->is_admin)
+        if (Gate::denies('manage users')) {
             abort(401);
+        }
 
         return User::query()->get(['id', 'name']);
     }
 
     public function store(Request $request)
     {
-        if (!auth()->user()->is_admin)
+        if (Gate::denies('manage users')) {
             abort(401);
+        }
 
         $params = $request->json()->all();
         $params['password'] = bcrypt($params['password']);
-        
+
         $user = User::create($params);
 
-        foreach($params['permissions'] as $storeCode) {
+        foreach ($params['permissions'] as $storeCode) {
             $store = Store::findbyCode($storeCode);
             $user->stores()->attach($store);
         }
@@ -42,8 +44,9 @@ class UserController extends Controller
 
     public function show($id)
     {
-        if (!auth()->user()->is_admin)
+        if (Gate::denies('manage users')) {
             abort(401);
+        }
 
         $user = User::find($id);
         $user->permissions = $user->stores->pluck('code');
@@ -52,51 +55,56 @@ class UserController extends Controller
 
     public function update(Request $request)
     {
-        if (!auth()->user()->is_admin)
+        if (Gate::denies('manage users')) {
             abort(401);
+        }
 
         $params = $request->json()->all();
-        
-        if (isset($params['password']))
+
+        if (isset($params['password'])) {
             $params['password'] = bcrypt($params['password']);
-        else
+        } else {
             unset($params['password']);
-        
+        }
+
+        // prevents removing own admin flag
+        if (auth()->user()->id === $params['id']) {
+            unset($params['is_admin']);
+        }
+
         $user = User::find($params['id']);
         $user->fill($params);
 
-        if (auth()->user()->id === $user->id)
-            $user->is_admin = true; // prevents removing own admin flag
-
-        // Update permissions      
+        // Update permissions
         $wanted = collect($params['permissions']);
         $current = $user->stores->pluck('code');
 
         $to_add = $wanted->diff($current);
-        foreach($to_add as $storeCode) {
+        foreach ($to_add as $storeCode) {
             $store = Store::findbyCode($storeCode);
 
             $user->stores()->attach($store);
             $user->fb_subscribe_to_group($store);
         }
-        
+
         $to_remove = $current->diff($wanted);
-        foreach($to_remove as $storeCode) {
+        foreach ($to_remove as $storeCode) {
             $store = Store::findbyCode($storeCode);
-            
+
             $user->stores()->detach($store);
             $user->fb_unsubscribe_from_group($store);
         }
 
         $user->save();
-        
+
         return $user;
     }
 
     public function destroy($id)
     {
-        if (!auth()->user()->is_admin)
+        if (Gate::denies('manage users')) {
             abort(401);
+        }
 
         User::find($id)->delete();
     }
