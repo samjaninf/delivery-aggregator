@@ -2,38 +2,37 @@
 
 namespace App;
 
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Log;
-
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
 
-    public static function boot() {
+    public static function boot()
+    {
         parent::boot();
 
-        static::updating(function($user) {
+        static::updating(function ($user) {
             if ($user->getOriginal('fb_device_id') != $user->fb_device_id) {
                 // Update the fb registration groups with the new device id
                 $user->fb_update_groups();
             }
         });
 
-        static::deleting(function($user) {
+        static::deleting(function ($user) {
             $user->stores()->detach();
         });
     }
 
     protected $fillable = [
-        'name', 'email', 'password', 'is_admin'
+        'name', 'email', 'password', 'role',
     ];
 
     protected $hidden = [
-        'password'
+        'password',
     ];
 
     public function getJWTIdentifier()
@@ -56,66 +55,96 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany('App\StatusChange');
     }
 
-    public function getIsAdminAttribute($is_admin)
+    /************************
+     *    ROLES FUNCTIONS   *
+     ************************/
+
+    const USER = 10;
+    const MANAGER = 20;
+    const ADMIN = 30;
+
+    public function getRolesAttribute()
     {
-        return (bool) $is_admin;
+        $roles = [
+            'user' => self::USER,
+            'manager' => self::MANAGER,
+            'admin' => self::ADMIN,
+        ];
+
+        return collect($roles)
+            ->filter(function ($v, $k) {
+                return $v <= $this->role;
+            })->keys();
+    }
+
+    public function hasRole($role)
+    {
+        return $this->roles->contains($role);
+    }
+
+    public function hasPermissionForStore($store)
+    {
+        return $this->stores()->where('code', $store)->first() !== null;
     }
 
     /************************
      *  FIREBASE FUNCTIONS  *
      ************************/
 
-    public function fb_update_groups() {
+    public function fb_update_groups()
+    {
         $old_device_id = $this->getOriginal('fb_device_id');
         if (isset($old_device_id)) {
             $this->fb_unsubscribe_from_groups($old_device_id);
         }
 
-        if ($this->fb_device_id)
+        if ($this->fb_device_id) {
             $this->fb_subscribe_to_groups($this->fb_device_id);
+        }
     }
 
-    
     public function fb_unsubscribe_from_groups($device_id)
     {
-        foreach($this->stores as $store)
-        {
+        foreach ($this->stores as $store) {
             $this->fb_unsubscribe_from_group($store, $device_id);
         }
     }
-    
+
     public function fb_subscribe_to_groups($device_id)
     {
-        foreach($this->stores as $store)
-        {
+        foreach ($this->stores as $store) {
             $this->fb_subscribe_to_group($store, $device_id);
         }
     }
 
     public function fb_unsubscribe_from_group($store, $device_id = null)
     {
-        if (!isset($device_id))
+        if (!isset($device_id)) {
             $device_id = $this->fb_device_id;
+        }
 
         $s = $this->stores->firstWhere('id', $store->id);
         // User not registered to provided store
-        if (!$s || !$s->pivot->fb_registered)
+        if (!$s || !$s->pivot->fb_registered) {
             return;
+        }
 
         if (!$device_id || !$store->fb_notification_key)
-            // need device id and notification key
+        // need device id and notification key
+        {
             return;
+        }
 
         $response = fb_curl_post([
             "operation" => "remove",
             "notification_key_name" => $store->code,
             "notification_key" => $store->fb_notification_key,
-            "registration_ids" => [ $device_id ] 
+            "registration_ids" => [$device_id],
         ]);
 
-        if($response && !isset($response->error)) {
+        if ($response && !isset($response->error)) {
             Log::info("FB: Firebase user unsubscription for user {$this->email} from store {$this->code} completed with response " . print_r($response, true));
-            $this->stores()->updateExistingPivot($store->id, [ 'fb_registered' => false ]);
+            $this->stores()->updateExistingPivot($store->id, ['fb_registered' => false]);
         } else {
             Log::error("FB: Firebase user unsubscription for user {$this->email} from store {$this->code} failed with response " . print_r($response, true));
         }
@@ -123,28 +152,32 @@ class User extends Authenticatable implements JWTSubject
 
     public function fb_subscribe_to_group($store, $device_id = null)
     {
-        if (!isset($device_id))
+        if (!isset($device_id)) {
             $device_id = $this->fb_device_id;
+        }
 
         $s = $this->stores->firstWhere('id', $store->id);
         // User already registered to provided store
-        if ($s && $s->pivot->fb_registered)
+        if ($s && $s->pivot->fb_registered) {
             return;
+        }
 
         if (!$device_id || !$store->fb_notification_key)
-            // need device id and notification key
+        // need device id and notification key
+        {
             return;
+        }
 
         $response = fb_curl_post([
             "operation" => "add",
             "notification_key_name" => $store->code,
             "notification_key" => $store->fb_notification_key,
-            "registration_ids" => [ $device_id ] 
+            "registration_ids" => [$device_id],
         ]);
 
-        if($response && !isset($response->error)) {
+        if ($response && !isset($response->error)) {
             Log::info("FB: Firebase user subscription for user {$this->email} to store {$this->code} completed with response " . print_r($response, true));
-            $this->stores()->updateExistingPivot($store->id, [ 'fb_registered' => true ]);
+            $this->stores()->updateExistingPivot($store->id, ['fb_registered' => true]);
         } else {
             Log::error("FB: Firebase user subscription for user {$this->email} to store {$this->code} failed with response " . print_r($response, true));
         }

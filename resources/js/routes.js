@@ -50,7 +50,7 @@ module.exports = [
                 props: true,
                 component: require("./components/Products.vue"),
                 meta: {
-                    auth: true
+                    auth: "manager"
                 }
             },
             {

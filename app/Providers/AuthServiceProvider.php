@@ -26,19 +26,20 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         Gate::before(function ($user, $ability) {
-            if ($user->is_admin) {
+            if ($user->hasRole('admin')) {
                 return true;
             }
         });
 
         Gate::define('view orders', function ($user, $store) {
-            return $user->stores()->where('code', $store)->first() !== null;
+            return $user->hasPermissionForStore($store);
         });
         Gate::define('set delivered', function ($user, $store) {
-            return $user->stores()->where('code', $store)->first() !== null;
+            return $user->hasPermissionForStore($store);
         });
         Gate::define('manage products', function ($user, $store) {
-            return false; // todo: fix
+            return $user->hasRole('manager')
+            && $user->hasPermissionForStore($store);
         });
 
         Gate::define('view all stores', function ($user) {

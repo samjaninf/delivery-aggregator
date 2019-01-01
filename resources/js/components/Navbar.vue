@@ -30,10 +30,14 @@
               <i class="fas fa-fw fa-cog"></i>
             </template>
 
-            <template v-if="$auth.check('admin')">
+            <template v-if="$auth.check('manager')">
               <b-dropdown-item to="/products">
                 <i class="fas fa-fw fa-box"></i> Prodotti
               </b-dropdown-item>
+              <div class="dropdown-divider"></div>
+            </template>
+
+            <template v-if="$auth.check('admin')">
               <b-dropdown-item to="/statuslog">
                 <i class="fas fa-fw fa-history"></i> Registro consegne
               </b-dropdown-item>

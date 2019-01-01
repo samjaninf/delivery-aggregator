@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Database\Seeder;
-use App\User;
 use App\Store;
+use App\User;
+use Illuminate\Database\Seeder;
 
 class Users extends Seeder
 {
@@ -18,13 +18,13 @@ class Users extends Seeder
                 'name' => 'Daniele',
                 'email' => 'daniele@prova.it',
                 'password' => bcrypt('password'),
-                'is_admin' => true,
+                'role' => User::ADMIN,
             ],
             [
                 'name' => 'Luca',
                 'email' => 'luca@prova.it',
                 'password' => bcrypt('password'),
-                'is_admin' => false,
+                'role' => User::USER,
             ],
         ];
 
@@ -32,8 +32,8 @@ class Users extends Seeder
 
         $user = User::find(1);
         $stores = Store::all();
-        
-        foreach($stores as $store) {
+
+        foreach ($stores as $store) {
             $user->stores()->attach($store);
         }
     }
