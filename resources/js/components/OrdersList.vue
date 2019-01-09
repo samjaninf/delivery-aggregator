@@ -192,8 +192,8 @@ export default {
     clearInterval(this.intervalHandle);
   },
   components: {
-    Order: require("./Order.vue"),
-    PullTo: require("vue-pull-to")
+    Order: require("./Order.vue").default,
+    PullTo: require("vue-pull-to").default
   }
 };
 

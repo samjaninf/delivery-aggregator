@@ -102,7 +102,7 @@ export default {
     }
   },
   components: {
-    Product: require("./Product.vue")
+    Product: require("./Product.vue").default
   }
 };
 </script>

@@ -20,7 +20,7 @@ Vue.use(VueRouter);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-const App = require("./components/App.vue");
+const App = require("./components/App.vue").default;
 
 const router = new VueRouter({
     mode: "history",

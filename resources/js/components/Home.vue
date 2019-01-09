@@ -30,8 +30,8 @@ export default {
     this.loadStores();
   },
   components: {
-    OrdersList: require('./OrdersList.vue'),
-    Navbar: require('./Navbar.vue'),
+    OrdersList: require('./OrdersList.vue').default,
+    Navbar: require('./Navbar.vue').default,
   }
 }
 </script>
