@@ -30,17 +30,21 @@
               <i class="fas fa-fw fa-cog"></i>
             </template>
 
-            <template v-if="$auth.check('manager')">
+            <template v-if="$auth.check(['manage products', 'admin'])">
               <b-dropdown-item to="/products">
                 <i class="fas fa-fw fa-box"></i> Prodotti
               </b-dropdown-item>
               <div class="dropdown-divider"></div>
             </template>
 
-            <template v-if="$auth.check('admin')">
-              <b-dropdown-item to="/statuslog">
-                <i class="fas fa-fw fa-history"></i> Registro consegne
-              </b-dropdown-item>
+            <b-dropdown-item
+              to="/statuslog"
+              v-if="$auth.check(['view status log', 'admin'])"
+            >
+              <i class="fas fa-fw fa-history"></i> Registro consegne
+            </b-dropdown-item>
+
+            <template v-if="$auth.check(['manage settings', 'admin'])">
               <b-dropdown-item to="/settings/stores">
                 <i class="fas fa-fw fa-store-alt"></i> Negozi
               </b-dropdown-item>

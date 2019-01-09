@@ -30,7 +30,7 @@
             <h3 class="text-primary">{{ day }}</h3>
             <h3
               class="text-primary"
-              v-if="$auth.check('admin')"
+              v-if="$auth.check(['view totals', 'admin'])"
             >
               {{ dayOrders.reduce((acc, o) => acc + Number(o.total), 0) | money }}
             </h3>
@@ -193,7 +193,7 @@ export default {
   },
   components: {
     Order: require("./Order.vue").default,
-    PullTo: require("vue-pull-to").default
+    PullTo: require("vue-pull-to")
   }
 };
 

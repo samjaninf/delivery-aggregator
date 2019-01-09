@@ -61,27 +61,14 @@ class User extends Authenticatable implements JWTSubject
      *    ROLES FUNCTIONS   *
      ************************/
 
-    const USER = 10;
-    const MANAGER = 20;
-    const ADMIN = 30;
-
-    public function getRolesAttribute()
+    public function getAbilitiesAttribute()
     {
-        $roles = [
-            'user' => self::USER,
-            'manager' => self::MANAGER,
-            'admin' => self::ADMIN,
-        ];
-
-        return collect($roles)
-            ->filter(function ($v, $k) {
-                return $v <= $this->role;
-            })->keys();
-    }
-
-    public function hasRole($role)
-    {
-        return $this->roles->contains($role);
+        return $this->isAn('admin') ?
+        ['admin'] :
+        $this->getAbilities()
+            ->map(function ($a) {
+                return $a->name;
+            });
     }
 
     public function hasPermissionForStore($store)

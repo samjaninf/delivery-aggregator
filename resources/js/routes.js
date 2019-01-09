@@ -27,22 +27,24 @@ module.exports = [
                 children: [
                     {
                         path: "stores",
-                        component: require("./components/SettingsStores.vue").default
+                        component: require("./components/SettingsStores.vue")
+                            .default
                     },
                     {
                         path: "users",
-                        component: require("./components/SettingsUsers.vue").default
+                        component: require("./components/SettingsUsers.vue")
+                            .default
                     }
                 ],
                 meta: {
-                    auth: "admin"
+                    auth: ["manage settings", "admin"]
                 }
             },
             {
                 path: "/statuslog",
                 component: require("./components/StatusLog.vue").default,
                 meta: {
-                    auth: "admin"
+                    auth: ["view status log", "admin"]
                 }
             },
             {
@@ -50,7 +52,7 @@ module.exports = [
                 props: true,
                 component: require("./components/Products.vue").default,
                 meta: {
-                    auth: "manager"
+                    auth: ["manage products", "admin"]
                 }
             },
             {
@@ -58,7 +60,7 @@ module.exports = [
                 props: true,
                 component: require("./components/OrdersList.vue").default,
                 meta: {
-                    auth: true
+                    auth: ["view orders", "admin"]
                 }
             }
         ]

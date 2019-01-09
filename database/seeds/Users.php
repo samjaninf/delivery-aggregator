@@ -18,23 +18,30 @@ class Users extends Seeder
                 'name' => 'Daniele',
                 'email' => 'daniele@prova.it',
                 'password' => bcrypt('password'),
-                'role' => User::ADMIN,
             ],
             [
                 'name' => 'Luca',
                 'email' => 'luca@prova.it',
                 'password' => bcrypt('password'),
-                'role' => User::USER,
             ],
         ];
 
         User::insert($users);
 
-        $user = User::find(1);
+        // Assign roles and stores
+
+        // User 1
+        $user = User::where('email', 'daniele@prova.it')->firstOrFail();
+        $user->assign('admin');
+
         $stores = Store::all();
 
         foreach ($stores as $store) {
             $user->stores()->attach($store);
         }
+
+        // User 2
+        $user2 = User::where('email', 'luca@prova.it')->firstOrFail();
+        $user2->assign('manager');
     }
 }

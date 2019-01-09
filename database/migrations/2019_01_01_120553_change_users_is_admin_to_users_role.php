@@ -17,8 +17,8 @@ class ChangeUsersIsAdminToUsersRole extends Migration
             $table->unsignedInteger('role')->after('is_admin')->default(1);
         });
 
-        DB::table('users')->where('is_admin', 1)->update(['role' => \App\User::ADMIN]);
-        DB::table('users')->where('is_admin', 0)->update(['role' => \App\User::USER]);
+        DB::table('users')->where('is_admin', 1)->update(['role' => 30]);
+        DB::table('users')->where('is_admin', 0)->update(['role' => 10]);
 
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('is_admin');
@@ -36,8 +36,8 @@ class ChangeUsersIsAdminToUsersRole extends Migration
             $table->boolean('is_admin')->after('role')->default(1);
         });
 
-        DB::table('users')->where('role', \App\User::ADMIN)->update(['is_admin' => 1]);
-        DB::table('users')->where('role', \App\User::USER)->update(['is_admin' => 0]);
+        DB::table('users')->where('role', 30)->update(['is_admin' => 1]);
+        DB::table('users')->where('role', 10)->update(['is_admin' => 0]);
 
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('role');
