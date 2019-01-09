@@ -5,11 +5,13 @@ namespace App;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Log;
+use Silber\Bouncer\Database\HasRolesAndAbilities;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
+    use HasRolesAndAbilities;
 
     public static function boot()
     {
@@ -84,7 +86,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function hasPermissionForStore($store)
     {
-        return $this->stores()->where('code', $store)->first() !== null;
+        return $this->stores()->where('stores.id', $store->id)->first() !== null;
     }
 
     /************************

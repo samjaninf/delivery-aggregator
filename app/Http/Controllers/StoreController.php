@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Store;
+use Bouncer;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
 
 class StoreController extends Controller
 {
@@ -15,7 +15,7 @@ class StoreController extends Controller
 
     public function index()
     {
-        if (Gate::allows('view all stores')) {
+        if (Bouncer::can('view all stores')) {
             return Store::all();
         } else {
             return auth()->user()->stores()->get(['name', 'code']);
@@ -25,7 +25,7 @@ class StoreController extends Controller
 
     public function store(Request $request)
     {
-        if (Gate::denies('manage stores')) {
+        if (Bouncer::cannot('manage stores')) {
             abort(401);
         }
 
@@ -35,7 +35,7 @@ class StoreController extends Controller
 
     public function show($storeCode)
     {
-        if (Gate::denies('manage stores')) {
+        if (Bouncer::cannot('manage stores')) {
             abort(401);
         }
 
@@ -44,7 +44,7 @@ class StoreController extends Controller
 
     public function update(Request $request)
     {
-        if (Gate::denies('manage stores')) {
+        if (Bouncer::cannot('manage stores')) {
             abort(401);
         }
 
@@ -56,7 +56,7 @@ class StoreController extends Controller
 
     public function destroy($storeCode)
     {
-        if (Gate::denies('manage stores')) {
+        if (Bouncer::cannot('manage stores')) {
             abort(401);
         }
 

@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Services\WooService;
 use App\StatusChange;
 use App\Store;
+use Bouncer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 
 class WooController extends Controller
 {
@@ -19,7 +19,8 @@ class WooController extends Controller
 
     public function orders(Request $request, $store)
     {
-        if (Gate::denies('view orders', $store)) {
+        $s = Store::findByCode($store);
+        if (!isset($s) || Bouncer::cannot('view orders', $s)) {
             abort(401);
         }
 
@@ -28,7 +29,8 @@ class WooController extends Controller
 
     public function orderOutForDelivery(Request $request, $store, $order)
     {
-        if (Gate::denies('set delivered', $store)) {
+        $s = Store::findByCode($store);
+        if (!isset($s) || Bouncer::cannot('set out for delivery', $s)) {
             abort(401);
         }
 
@@ -49,7 +51,8 @@ class WooController extends Controller
 
     public function products(Request $request, $store)
     {
-        if (Gate::denies('manage products', $store)) {
+        $s = Store::findByCode($store);
+        if (!isset($s) || Bouncer::cannot('manage products', $s)) {
             abort(401);
         }
 
@@ -58,7 +61,8 @@ class WooController extends Controller
 
     public function updateProduct(Request $request, $store, $product)
     {
-        if (Gate::denies('manage products', $store)) {
+        $s = Store::findByCode($store);
+        if (!isset($s) || Bouncer::cannot('manage products', $s)) {
             abort(401);
         }
 

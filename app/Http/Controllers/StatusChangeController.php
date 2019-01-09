@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\StatusChange;
+use Bouncer;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
 
 class StatusChangeController extends Controller
 {
@@ -15,7 +15,7 @@ class StatusChangeController extends Controller
 
     public function index(Request $request)
     {
-        if (Gate::denies('view statuslog')) {
+        if (Bouncer::cannot('view statuslog')) {
             abort(401);
         }
 

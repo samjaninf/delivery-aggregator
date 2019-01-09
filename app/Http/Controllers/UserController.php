@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Store;
 use App\User;
+use Bouncer;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
@@ -16,7 +16,7 @@ class UserController extends Controller
 
     public function index()
     {
-        if (Gate::denies('manage users')) {
+        if (Bouncer::cannot('manage users')) {
             abort(401);
         }
 
@@ -25,7 +25,7 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        if (Gate::denies('manage users')) {
+        if (Bouncer::cannot('manage users')) {
             abort(401);
         }
 
@@ -44,7 +44,7 @@ class UserController extends Controller
 
     public function show($id)
     {
-        if (Gate::denies('manage users')) {
+        if (Bouncer::cannot('manage users')) {
             abort(401);
         }
 
@@ -55,7 +55,7 @@ class UserController extends Controller
 
     public function update(Request $request)
     {
-        if (Gate::denies('manage users')) {
+        if (Bouncer::cannot('manage users')) {
             abort(401);
         }
 
@@ -102,7 +102,7 @@ class UserController extends Controller
 
     public function destroy($id)
     {
-        if (Gate::denies('manage users')) {
+        if (Bouncer::cannot('manage users')) {
             abort(401);
         }
 
