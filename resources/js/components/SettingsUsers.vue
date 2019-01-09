@@ -115,7 +115,7 @@ const emptyUser = () => ({
   name: "",
   email: "",
   password: "",
-  is_admin: false,
+  role: null,
   permissions: []
 });
 
@@ -134,9 +134,9 @@ export default {
 
     roleOptions() {
       return [
-        { value: 10, text: "Utente" },
-        { value: 20, text: "Manager" },
-        { value: 30, text: "Amministratore" }
+        { value: "courier", text: "Corriere" },
+        { value: "manager", text: "Manager" },
+        { value: "admin", text: "Amministratore" }
       ];
     }
   },
@@ -149,7 +149,6 @@ export default {
 
       this.$http.get(`users/${this.editing}`).then(response => {
         this.user = response.data;
-        this.user.is_admin = !!this.user.is_admin;
       });
     }
   },

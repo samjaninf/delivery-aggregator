@@ -5,24 +5,24 @@
     :class="{ cancelled: order.status === 'cancelled', detailed: detailed, 'mb-4': !detailed }"
   >
     <div class="card-title">
+      <button
+        type="button"
+        class="close d-block ml-4"
+        v-if="detailed"
+        @click="$emit('close')"
+      >
+        <span>&times;</span>
+      </button>
+      <span class="order-number">
+        Ordine #{{ order.number }}
+      </span>
       <h4
         v-if="order.status === 'cancelled'"
         class="text-center mb-4"
       >
         Annullato
       </h4>
-      <span class=" float-right">
-        Ordine #{{ order.number }}
-        <button
-          type="button"
-          class="close d-block float-right ml-4"
-          v-if="detailed"
-          @click="$emit('close')"
-        >
-          <span>&times;</span>
-        </button>
-      </span>
-      <h4 class="d-inline">
+      <h4 class="order-slot">
         <i
           v-if="order.status === 'cancelled'"
           class="fas fa-fw fa-exclamation-triangle"
@@ -159,6 +159,16 @@ export default {
 </script>
 
 <style scoped>
+.card .card-title {
+  display: flex;
+  flex-direction: row-reverse;
+  flex-wrap: wrap;
+}
+
+.card .card-title > .order-slot {
+  flex-grow: 1;
+}
+
 .card .card-text i {
   margin-right: 1em;
 }
@@ -189,7 +199,7 @@ export default {
 }
 
 @media only screen and (max-width: 400px) {
-  .card.detailed {
+  .card .card.detailed {
     border-radius: 0;
   }
 }

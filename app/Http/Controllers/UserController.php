@@ -50,6 +50,7 @@ class UserController extends Controller
 
         $user = User::find($id);
         $user->permissions = $user->stores->pluck('code');
+        $user->role = $user->getRoles()->first();
         return $user;
     }
 
@@ -70,10 +71,20 @@ class UserController extends Controller
         // Prevents changing own role
         if (auth()->user()->id === $params['id']) {
             unset($params['role']);
+        } else if (!isset($params['role'])) {
+            abort(422);
         }
 
         $user = User::find($params['id']);
         $user->fill($params);
+
+        // Update role
+        $roleName = $params['role'];
+        $role = Bouncer::role()->where('name', $roleName)->first();
+        if (!$role) {
+            abort(422);
+        }
+        Bouncer::sync($user)->roles([$role]);
 
         // Update permissions
         $wanted = collect($params['permissions']);
