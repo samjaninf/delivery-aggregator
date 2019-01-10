@@ -39,6 +39,14 @@ class UserController extends Controller
             $user->stores()->attach($store);
         }
 
+        // Update role
+        $roleName = $params['role'];
+        $role = Bouncer::role()->where('name', $roleName)->first();
+        if (!$role) {
+            abort(422);
+        }
+        Bouncer::sync($user)->roles([$role]);
+
         return $user;
     }
 

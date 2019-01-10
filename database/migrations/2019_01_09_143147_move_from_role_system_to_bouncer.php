@@ -36,7 +36,7 @@ class MoveFromRoleSystemToBouncer extends Migration
         ]);
         Bouncer::allow($courier)->toOwn(Store::class)->to([
             'view orders',
-            'set delivered',
+            'set completed',
         ]);
 
         // Update user roles
