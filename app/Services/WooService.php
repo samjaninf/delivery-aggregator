@@ -87,6 +87,15 @@ class WooService
         ]);
     }
 
+    public function setCompleted($store, $order)
+    {
+        $wc = $this->createClient($store);
+
+        $wc->put("orders/$order", [
+            'status' => 'completed',
+        ]);
+    }
+
     public function getTimeslots($order)
     {
         $meta = collect($order->meta_data);

@@ -33,6 +33,11 @@
           style="color: #3490dc;"
         ></i>
         <i
+          v-else-if="order.status === 'completed'"
+          class="fas fa-fw fa-box"
+          style="color: #28a745;"
+        ></i>
+        <i
           v-else
           class="far fa-fw fa-clock"
         ></i>
@@ -80,6 +85,17 @@
             @click="setOutForDelivery"
           >
             <i class="fas fa-motorcycle"></i> In consegna
+          </b-button>
+        </div>
+        <div
+          class="text-center mt-2"
+          v-if="order.status === 'out-for-delivery' && $auth.check(['set completed', 'admin'])"
+        >
+          <b-button
+            variant="success"
+            @click="setCompleted"
+          >
+            <i class="fas fa-box"></i> Consegnato
           </b-button>
         </div>
 
@@ -131,29 +147,32 @@
 </template>
 
 <script>
+const updateState = (state, endpoint) => {
+  return function() {
+    this.$http
+      .post(`stores/${this.storeCode}/orders/${this.order.number}/${endpoint}`)
+      .then(() => {
+        this.order.status = state;
+
+        this.$notify({
+          type: "success",
+          text: "Ordine aggiornato con successo"
+        });
+      })
+      .catch(() => {
+        this.$notify({
+          type: "error",
+          text: "Errore durante il cambio di stato"
+        });
+      });
+  };
+};
+
 export default {
   props: ["order", "detailed", "storeCode"],
   methods: {
-    setOutForDelivery() {
-      this.$http
-        .post(
-          `stores/${this.storeCode}/orders/${this.order.number}/outfordelivery`
-        )
-        .then(() => {
-          this.order.status = "out-for-delivery";
-
-          this.$notify({
-            type: "success",
-            text: "Ordine aggiornato con successo"
-          });
-        })
-        .catch(() => {
-          this.$notify({
-            type: "error",
-            text: "Errore durante il cambio di stato"
-          });
-        });
-    }
+    setOutForDelivery: updateState("out-for-delivery", "outfordelivery"),
+    setCompleted: updateState("completed", "completed")
   }
 };
 </script>

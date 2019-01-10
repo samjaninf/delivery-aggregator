@@ -49,6 +49,28 @@ class WooController extends Controller
         $s->save();
     }
 
+    public function orderCompleted(Request $request, $store, $order)
+    {
+        $s = Store::findByCode($store);
+        if (!isset($s) || Bouncer::cannot('set completed', $s)) {
+            abort(401);
+        }
+
+        try {
+            $this->woo->setCompleted($store, $order);
+        } catch (\Automattic\WooCommerce\HttpClient\HttpClientException $e) {
+            return abort(422, $e->getMessage());
+        }
+
+        // Log order status change
+        $s = new StatusChange;
+        $s->order = $order;
+        $s->status = 'completed';
+        $s->user()->associate(auth()->user());
+        $s->store()->associate(Store::findByCode($store));
+        $s->save();
+    }
+
     public function products(Request $request, $store)
     {
         $s = Store::findByCode($store);

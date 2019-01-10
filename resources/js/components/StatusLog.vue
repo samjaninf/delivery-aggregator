@@ -31,7 +31,8 @@
 const CancelToken = axios.CancelToken;
 
 const statusTranslations = {
-  "out-for-delivery": "In consegna"
+  "out-for-delivery": "In consegna",
+  completed: "Completato"
 };
 
 const fields = [
