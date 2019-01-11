@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\WooService;
 use App\Store;
 use App\User;
 use Bouncer;
@@ -9,8 +10,9 @@ use Illuminate\Http\Request;
 
 class StatusChangeController extends Controller
 {
-    public function __construct()
+    public function __construct(WooService $woo)
     {
+        $this->woo = $woo;
         $this->middleware('auth:api');
     }
 
@@ -56,15 +58,22 @@ class StatusChangeController extends Controller
             ->getQuery()
             ->paginate(20);
 
+        $ids = $response->getCollection()->pluck('order');
+        $orders = $this->woo->ordersWithId($store, $ids)->keyBy('number');
+
         // Transform the query result to a proper format
-        $response->getCollection()->transform(function ($row) {
+        $response->getCollection()->transform(function ($row) use ($orders) {
             $statuses = collect(explode(',', $row->statuses))
                 ->zip(
                     explode(',', $row->created_ats),
                     explode(',', $row->user_ids)
                 );
 
-            $res = ['order' => $row->order];
+            $res = [
+                'number' => $row->order,
+                'order' => $orders[$row->order] ?? null,
+            ];
+
             foreach ($statuses as $status) {
                 $user = User::find($status[2]); // This might need a refactor
                 $res[$status[0]] = [

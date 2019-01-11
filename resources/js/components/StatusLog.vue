@@ -2,11 +2,9 @@
   <b-container class="mt-4">
     <h3>Registro Consegne</h3>
     <h5 class="mt-4">Negozio</h5>
-    <b-form-radio-group
-      buttons
+    <b-form-select
       v-model="selectedStore"
       :options="options"
-      button-variant="outline-primary"
     />
     <div class="d-flex justify-content-between flex-wrap mt-4">
       <b-input
@@ -25,11 +23,22 @@
       </b-pagination>
     </div>
     <b-table
-      stacked="sm"
+      stacked="lg"
       hover
       :items="items"
       :fields="fields"
     ></b-table>
+    <div
+      class="text-center mt-4"
+      v-if="loading"
+    >
+      <div class="lds-ring">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
   </b-container>
 </template>
 
@@ -46,42 +55,50 @@ const date = d =>
 
 const fields = [
   {
-    key: "order",
+    key: "number",
     label: "Ordine"
+  },
+  {
+    key: "order.name",
+    label: "Cliente",
+    formatter: (v, k, i) =>
+      i.order ? `${i.order.first_name} ${i.order.last_name}` : "-"
+  },
+  {
+    key: "timeslot",
+    label: "Slot",
+    formatter: (v, k, i) => {
+      const hour = Vue.filter("hour");
+      return i.order
+        ? `${hour(i.order.delivery_date)} - ${hour(i.order.delivery_date_end)}`
+        : "";
+    }
+  },
+  {
+    key: "out-for-delivery.date",
+    label: "Data in consegna",
+    formatter: date
+  },
+  {
+    key: "completed.date",
+    label: "Data completato",
+    formatter: date
+  },
+  {
+    key: "completed.user",
+    label: "Corriere"
   },
   {
     key: "time",
     label: "Tempo di consegna",
     formatter: (v, k, i) => {
-      if (!i.completed) return "–";
+      if (!i.completed || !i["out-for-delivery"]) return "–";
 
       const out = moment.utc(i["out-for-delivery"].date).local();
       const completed = moment.utc(i.completed.date).local();
 
       return `${completed.diff(out, "minutes")} minuti`;
     }
-  },
-  {
-    key: "out-for-delivery.date",
-    label: "Data in consegna",
-    formatter: date,
-    tdClass: "statuslog--td-out-for-delivery"
-  },
-  {
-    key: "out-for-delivery.user",
-    label: "Manager",
-    tdClass: "statuslog--td-out-for-delivery"
-  },
-  {
-    key: "completed.date",
-    label: "Data completato",
-    formatter: date,
-    tdClass: "statuslog--td-completed"
-  },
-  {
-    key: "completed.user",
-    label: "Corriere",
-    tdClass: "statuslog--td-completed"
   }
 ];
 
@@ -142,6 +159,7 @@ export default {
     selectedStore: {
       immediate: true,
       handler(store, oldStore) {
+        this.items = [];
         if (store !== oldStore && store !== null) this.loadPage();
       }
     },
@@ -156,13 +174,3 @@ export default {
   }
 };
 </script>
-
-<style>
-.statuslog--td-out-for-delivery {
-  box-shadow: inset 0 0 0 999px rgba(52, 144, 220, 0.05);
-}
-
-.statuslog--td-completed {
-  box-shadow: inset 0 0 0 999px rgba(40, 167, 69, 0.05);
-}
-</style>

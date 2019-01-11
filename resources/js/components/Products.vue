@@ -2,11 +2,9 @@
   <b-container class="mt-4">
     <h3>Prodotti</h3>
     <h5 class="mt-4">Negozio</h5>
-    <b-form-radio-group
-      buttons
+    <b-form-select
       v-model="selectedStore"
       :options="options"
-      button-variant="outline-primary"
     />
     <div
       class="text-center mt-4"

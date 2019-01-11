@@ -78,6 +78,27 @@ class WooService
             });
     }
 
+    public function ordersWithId($store, $ids)
+    {
+        $wc = $this->createClient($store);
+        return collect(
+            $wc->get('orders', [
+                'include' => $ids,
+                'per_page' => 100,
+            ])
+        )->map(function ($order) {
+            list($slot_from, $slot_to) = $this->getTimeslots($order);
+
+            return [
+                'number' => $order->number,
+                'first_name' => $order->shipping->first_name,
+                'last_name' => $order->shipping->last_name,
+                'delivery_date' => $slot_from ?? '',
+                'delivery_date_end' => $slot_to ?? '',
+            ];
+        });
+    }
+
     public function setOutForDelivery($store, $order)
     {
         $wc = $this->createClient($store);
