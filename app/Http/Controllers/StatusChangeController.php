@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\StatusChange;
+use App\Store;
+use App\User;
 use Bouncer;
 use Illuminate\Http\Request;
 
@@ -13,13 +14,18 @@ class StatusChangeController extends Controller
         $this->middleware('auth:api');
     }
 
-    public function index(Request $request)
+    public function index(Request $request, $store)
     {
         if (Bouncer::cannot('view statuslog')) {
             abort(401);
         }
 
-        $q = StatusChange::query();
+        $s = Store::findByCode($store);
+        if (!$s) {
+            abort(404);
+        }
+
+        $q = $s->statusChanges();
 
         $filter = $request->filter;
         if ($filter) {
@@ -35,22 +41,40 @@ class StatusChangeController extends Controller
                     $q->orWhereHas('user', function ($q) use ($token) {
                         $q->where('name', 'like', "%$token%");
                     });
-                    $q->orWhereHas('store', function ($q) use ($token) {
-                        $q->where('name', 'like', "%$token%");
-                    });
                 });
             }
         }
 
-        return $q->with([
-            'user' => function ($q) {
-                $q->select('id', 'name');
-            },
-            'store' => function ($q) {
-                $q->select('id', 'name');
-            },
-        ])
+        $response = $q
             ->orderBy('updated_at', 'desc')
+            ->groupBy('order')
+            ->orderByRaw('MAX(created_at) desc')
+            ->selectRaw('`order`,
+                         GROUP_CONCAT(created_at) as created_ats,
+                         GROUP_CONCAT(user_id) as user_ids,
+                         GROUP_CONCAT(status) as statuses')
+            ->getQuery()
             ->paginate(20);
+
+        // Transform the query result to a proper format
+        $response->getCollection()->transform(function ($row) {
+            $statuses = collect(explode(',', $row->statuses))
+                ->zip(
+                    explode(',', $row->created_ats),
+                    explode(',', $row->user_ids)
+                );
+
+            $res = ['order' => $row->order];
+            foreach ($statuses as $status) {
+                $user = User::find($status[2]); // This might need a refactor
+                $res[$status[0]] = [
+                    'date' => $status[1],
+                    'user' => $user ? $user->name : null,
+                ];
+            }
+            return $res;
+        });
+
+        return $response;
     }
 }

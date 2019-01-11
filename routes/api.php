@@ -42,7 +42,7 @@ Route::group([
     Route::get('/stores/{store}/products', 'WooController@products');
     Route::put('/stores/{store}/products/{product}', 'WooController@updateProduct');
 
-    Route::get('/status_changes', 'StatusChangeController@index');
+    Route::get('/stores/{store}/statuslog', 'StatusChangeController@index');
 
     Route::get('/status/{store}', 'ServerStatusController@check');
 
