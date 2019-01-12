@@ -51,7 +51,7 @@ const date = d =>
         .utc(d)
         .local()
         .format("DD/MM/YYYY HH:mm")
-    : null;
+    : "—";
 
 const fields = [
   {
@@ -62,7 +62,7 @@ const fields = [
     key: "order.name",
     label: "Cliente",
     formatter: (v, k, i) =>
-      i.order ? `${i.order.first_name} ${i.order.last_name}` : "-"
+      i.order ? `${i.order.first_name} ${i.order.last_name}` : "—"
   },
   {
     key: "timeslot",
@@ -71,7 +71,7 @@ const fields = [
       const hour = Vue.filter("hour");
       return i.order
         ? `${hour(i.order.delivery_date)} - ${hour(i.order.delivery_date_end)}`
-        : "";
+        : "—";
     }
   },
   {
@@ -86,13 +86,14 @@ const fields = [
   },
   {
     key: "completed.user",
-    label: "Corriere"
+    label: "Corriere",
+    formatter: s => s || "—"
   },
   {
     key: "time",
     label: "Tempo di consegna",
     formatter: (v, k, i) => {
-      if (!i.completed || !i["out-for-delivery"]) return "–";
+      if (!i.completed || !i["out-for-delivery"]) return "—";
 
       const out = moment.utc(i["out-for-delivery"].date).local();
       const completed = moment.utc(i.completed.date).local();
