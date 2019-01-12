@@ -48,7 +48,6 @@ class StatusChangeController extends Controller
         }
 
         $response = $q
-            ->orderBy('updated_at', 'desc')
             ->groupBy('order')
             ->orderByRaw('MAX(created_at) desc')
             ->selectRaw('`order`,
