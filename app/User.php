@@ -83,24 +83,28 @@ class User extends Authenticatable implements JWTSubject
     public function fb_update_groups()
     {
         $old_device_id = $this->getOriginal('fb_device_id');
-        if (isset($old_device_id)) {
+        if (isset($old_device_id) && $old_device_id !== $this->fb_device_id) {
             $this->fb_unsubscribe_from_groups($old_device_id);
         }
 
         if ($this->fb_device_id) {
-            $this->fb_subscribe_to_groups($this->fb_device_id);
+            $this->fb_subscribe_to_groups();
         }
     }
 
-    public function fb_unsubscribe_from_groups($device_id)
+    public function fb_unsubscribe_from_groups($device_id = null)
     {
+        $device_id = $device_id ?? $this->fb_device_id;
+
         foreach ($this->stores as $store) {
             $this->fb_unsubscribe_from_group($store, $device_id);
         }
     }
 
-    public function fb_subscribe_to_groups($device_id)
+    public function fb_subscribe_to_groups($device_id = null)
     {
+        $device_id = $device_id ?? $this->fb_device_id;
+
         foreach ($this->stores as $store) {
             $this->fb_subscribe_to_group($store, $device_id);
         }
@@ -132,10 +136,10 @@ class User extends Authenticatable implements JWTSubject
         ]);
 
         if ($response && !isset($response->error)) {
-            Log::info("FB: Firebase user unsubscription for user {$this->email} from store {$this->code} completed with response " . print_r($response, true));
+            Log::info("FB: Firebase user unsubscription for user {$this->email} from store {$store->code} completed with response " . print_r($response, true));
             $this->stores()->updateExistingPivot($store->id, ['fb_registered' => false]);
         } else {
-            Log::error("FB: Firebase user unsubscription for user {$this->email} from store {$this->code} failed with response " . print_r($response, true));
+            Log::error("FB: Firebase user unsubscription for user {$this->email} from store {$store->code} failed with response " . print_r($response, true));
         }
     }
 
@@ -165,10 +169,10 @@ class User extends Authenticatable implements JWTSubject
         ]);
 
         if ($response && !isset($response->error)) {
-            Log::info("FB: Firebase user subscription for user {$this->email} to store {$this->code} completed with response " . print_r($response, true));
+            Log::info("FB: Firebase user subscription for user {$this->email} to store {$store->code} completed with response " . print_r($response, true));
             $this->stores()->updateExistingPivot($store->id, ['fb_registered' => true]);
         } else {
-            Log::error("FB: Firebase user subscription for user {$this->email} to store {$this->code} failed with response " . print_r($response, true));
+            Log::error("FB: Firebase user subscription for user {$this->email} to store {$store->code} failed with response " . print_r($response, true));
         }
     }
 
