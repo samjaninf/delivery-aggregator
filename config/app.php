@@ -226,4 +226,13 @@ return [
 
     ],
 
+/*
+|--------------------------------------------------------------------------
+|  Firebase keys
+|--------------------------------------------------------------------------
+ */
+
+    'FIREBASE_API_KEY' => env('FIREBASE_API_KEY', null),
+    'FIREBASE_PROJECT_ID' => env('FIREBASE_PROJECT_ID', null),
+
 ];
