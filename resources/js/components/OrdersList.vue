@@ -106,7 +106,10 @@ export default {
         )
         .toPairs()
         .orderBy(v => v[1][0].delivery_date, "desc")
-        .map(v => ({ day: v[0], dayOrders: v[1] }))
+        .map(v => ({
+          day: v[0],
+          dayOrders: _.orderBy(v[1], v => v.delivery_date, "desc")
+        }))
         .value();
     },
     activeStore() {
