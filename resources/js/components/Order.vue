@@ -38,6 +38,11 @@
           style="color: #28a745;"
         ></i>
         <i
+          v-else-if="order.prepared"
+          class="fas fa-fw fa-check"
+          style="color: #3490dc;"
+        ></i>
+        <i
           v-else
           class="far fa-fw fa-clock"
         ></i>
@@ -80,6 +85,13 @@
           class="text-center mt-2"
           v-if="order.status === 'processing' && $auth.check(['set out for delivery', 'admin'])"
         >
+          <b-button
+            variant="primary"
+            @click="setPrepared"
+            v-if="!order.prepared"
+          >
+            <i class="fas fa-check"></i> Preparato
+          </b-button>
           <b-button
             variant="primary"
             @click="setOutForDelivery"
@@ -172,7 +184,20 @@ export default {
   props: ["order", "detailed", "storeCode"],
   methods: {
     setOutForDelivery: updateState("out-for-delivery", "outfordelivery"),
-    setCompleted: updateState("completed", "completed")
+    setCompleted: updateState("completed", "completed"),
+    setPrepared: function() {
+      this.$http
+        .post(`stores/${this.storeCode}/orders/${this.order.number}/prepared`)
+        .then(() => {
+          this.order.prepared = true;
+        })
+        .catch(() => {
+          this.$notify({
+            type: "error",
+            text: "Errore durante il cambio di stato"
+          });
+        });
+    }
   }
 };
 </script>

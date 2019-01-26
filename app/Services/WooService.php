@@ -52,6 +52,9 @@ class WooService
                 });
 
                 list($slot_from, $slot_to) = $this->getTimeslots($order);
+                $meta = collect($order->meta_data);
+
+                $prepared = $meta->firstWhere('key', 'prepared');
 
                 return [
                     'number' => $order->number,
@@ -74,6 +77,7 @@ class WooService
                             'discount' => ($c->discount ?? 0) + ($c->discount_tax ?? 0),
                         ];
                     }),
+                    'prepared' => !!($prepared ?? false),
                 ];
             });
     }
@@ -203,6 +207,20 @@ class WooService
 
         return $wc->put("products/$product", [
             'in_stock' => $in_stock,
+        ]);
+    }
+
+    public function setPrepared($store, $order)
+    {
+        $wc = $this->createClient($store);
+
+        return $wc->put("orders/$order", [
+            'meta_data' => [
+                [
+                    'key' => 'prepared',
+                    'value' => true,
+                ],
+            ],
         ]);
     }
 }

@@ -71,6 +71,20 @@ class WooController extends Controller
         $s->save();
     }
 
+    public function orderPrepared(Request $request, $store, $order)
+    {
+        $s = Store::findByCode($store);
+        if (!isset($s) || Bouncer::cannot('set out for delivery', $s)) {
+            abort(401);
+        }
+
+        try {
+            $this->woo->setPrepared($store, $order);
+        } catch (\Automattic\WooCommerce\HttpClient\HttpClientException $e) {
+            return abort(422, $e->getMessage());
+        }
+    }
+
     public function products(Request $request, $store)
     {
         $s = Store::findByCode($store);
