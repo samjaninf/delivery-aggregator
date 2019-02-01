@@ -14,10 +14,14 @@ class AuthController extends Controller
         $this->middleware('auth:api', ['except' => ['login', 'refresh']]);
     }
 
+    /**
+     * Attempt to login and get an auth JWT
+     */
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
         if (!$token = JWTAuth::attempt($credentials)) {
+            // If credentials are invalid return error
             return response([
                 'status' => 'error',
                 'error' => 'invalid.credentials',
@@ -28,18 +32,21 @@ class AuthController extends Controller
         $user = auth()->user();
         $fb_device_id = $request->fb_device_id;
 
-        // If a fb_device_id was provided update it
+        // If a new fb_device_id was provided update it
         if ($fb_device_id && $user->fb_device_id != $fb_device_id) {
             $user->fb_device_id = $fb_device_id;
             $user->save();
         }
 
+        // Return a success status and provide the auth token in the Authorization header
         return response([
             'status' => 'success',
-        ])
-            ->header('Authorization', $token);
+        ])->header('Authorization', $token);
     }
 
+    /**
+     * Obtain information about the logged in user
+     */
     public function user(Request $request)
     {
         $user = User::find(Auth::user()->id);
@@ -50,6 +57,9 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Refresh the JWT
+     */
     public function refresh()
     {
         return response([
@@ -57,6 +67,9 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Logout the current user
+     */
     public function logout()
     {
         JWTAuth::invalidate();

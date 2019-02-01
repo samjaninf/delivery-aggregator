@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Create a POST request to Firebase containing the specified body
+ *
+ * @param array $body The body of the Firebase request
+ *
+ * @return array The result of the request or false if it failed
+ */
 function fb_curl_post($body)
 {
     $FIREBASE_API_KEY = config('app.FIREBASE_API_KEY');

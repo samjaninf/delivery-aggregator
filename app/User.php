@@ -17,6 +17,7 @@ class User extends Authenticatable implements JWTSubject
     {
         parent::boot();
 
+        // If the Firebase device ID changed (user changed device) update the group registration
         static::updating(function ($user) {
             if ($user->getOriginal('fb_device_id') != $user->fb_device_id) {
                 // Update the fb registration groups with the new device id
@@ -24,6 +25,7 @@ class User extends Authenticatable implements JWTSubject
             }
         });
 
+        // When the user is deleted detach its relationships with the stores
         static::deleting(function ($user) {
             $user->stores()->detach();
         });
@@ -37,15 +39,9 @@ class User extends Authenticatable implements JWTSubject
         'password',
     ];
 
-    public function getJWTIdentifier()
-    {
-        return $this->getKey();
-    }
-
-    public function getJWTCustomClaims()
-    {
-        return [];
-    }
+    /*******************
+     *  RELATIONSHIPS  *
+     *******************/
 
     public function stores()
     {
@@ -57,20 +53,48 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany('App\StatusChange');
     }
 
+    /********************
+     *  AUTH FUNCTIONS  *
+     ********************/
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
+
     /************************
      *    ROLES FUNCTIONS   *
      ************************/
 
+    /**
+     * Get list of the abilities of the user.
+     * Admins just have the "admin" ability
+     */
     public function getAbilitiesAttribute()
     {
-        return $this->isAn('admin') ?
-        ['admin'] :
-        $this->getAbilities()
-            ->map(function ($a) {
-                return $a->name;
-            });
+        if ($this->isAn('admin')) {
+            return ['admin'];
+        } else {
+            // Return list of abilities name
+            $this->getAbilities()
+                ->map(function ($a) {
+                    return $a->name;
+                });
+        }
     }
 
+    /**
+     * Checks if the user has permissions a specific store
+     *
+     * @param Store $store The store we want to check
+     *
+     * @return bool Whether the user has the required permissions for the specified store
+     */
     public function hasPermissionForStore($store)
     {
         return $this->stores()->where('stores.id', $store->id)->first() !== null;
@@ -80,36 +104,64 @@ class User extends Authenticatable implements JWTSubject
      *  FIREBASE FUNCTIONS  *
      ************************/
 
+    /**
+     * Re-subscribe the user to his store groups.
+     * Necessary when the user changes his Firebase device ID
+     */
     public function fb_update_groups()
     {
         $old_device_id = $this->getOriginal('fb_device_id');
+
+        // If the Firebase device ID changed unsubscribe the user from all of his store groups
         if (isset($old_device_id) && $old_device_id !== $this->fb_device_id) {
             $this->fb_unsubscribe_from_groups($old_device_id);
         }
 
+        // If the new Firebase device ID is valid subscribe the user to store groups he has access to
         if ($this->fb_device_id) {
             $this->fb_subscribe_to_groups();
         }
     }
 
+    /**
+     * Unsubscribe the user from all of his store groups
+     *
+     * @param string $device_id The Firebase device ID to unsubscribe from groups
+     *                          If null is specified use the current user one
+     */
     public function fb_unsubscribe_from_groups($device_id = null)
     {
         $device_id = $device_id ?? $this->fb_device_id;
 
+        // Unsubscribe the user from each store he has access to
         foreach ($this->stores as $store) {
             $this->fb_unsubscribe_from_group($store, $device_id);
         }
     }
 
+    /**
+     * Subscribe the user to all of the store groups he has access to
+     *
+     * @param string $device_id The Firebase device ID to subscribe to groups
+     *                          If null is specified use the current user one
+     */
     public function fb_subscribe_to_groups($device_id = null)
     {
         $device_id = $device_id ?? $this->fb_device_id;
 
+        // Subscribe the user to each store he has access to
         foreach ($this->stores as $store) {
             $this->fb_subscribe_to_group($store, $device_id);
         }
     }
 
+    /**
+     * Unsubscribe the user from the group of a specific store
+     *
+     * @param Store  $store     The store we want to unsubscribe the user from
+     * @param string $device_id The Firebase device ID to unsubscribe from the group
+     *                          If null is specified use the current user one
+     */
     public function fb_unsubscribe_from_group($store, $device_id = null)
     {
         if (!isset($device_id)) {
@@ -117,17 +169,18 @@ class User extends Authenticatable implements JWTSubject
         }
 
         $s = $this->stores->firstWhere('id', $store->id);
-        // User not registered to provided store
+
+        // Make sure that the user was already registered to the store group
         if (!$s || !$s->pivot->fb_registered) {
             return;
         }
 
-        if (!$device_id || !$store->fb_notification_key)
-        // need device id and notification key
-        {
+        // Both Firebase device ID and the store Firebase notification key are needed
+        if (!$device_id || !$store->fb_notification_key) {
             return;
         }
 
+        // Perform the Firebase request with the required parameters
         $response = fb_curl_post([
             "operation" => "remove",
             "notification_key_name" => $store->code,
@@ -135,6 +188,7 @@ class User extends Authenticatable implements JWTSubject
             "registration_ids" => [$device_id],
         ]);
 
+        // Log result of the Firebase request
         if ($response && !isset($response->error)) {
             Log::info("FB: Firebase user unsubscription for user {$this->email} from store {$store->code} completed with response " . print_r($response, true));
             $this->stores()->updateExistingPivot($store->id, ['fb_registered' => false]);
@@ -143,6 +197,13 @@ class User extends Authenticatable implements JWTSubject
         }
     }
 
+    /**
+     * Subscribe the user to the group of a specific store
+     *
+     * @param Store  $store     The store we want to subscribe the user to
+     * @param string $device_id The Firebase device ID to unsubscribe from the group
+     *                          If null is specified use the current user one
+     */
     public function fb_subscribe_to_group($store, $device_id = null)
     {
         if (!isset($device_id)) {
@@ -150,17 +211,17 @@ class User extends Authenticatable implements JWTSubject
         }
 
         $s = $this->stores->firstWhere('id', $store->id);
-        // User already registered to provided store
+        // Make sure that the user isn't already registered to the store group
         if ($s && $s->pivot->fb_registered) {
             return;
         }
 
-        if (!$device_id || !$store->fb_notification_key)
-        // need device id and notification key
-        {
+        // Both Firebase device ID and the store Firebase notification key are needed
+        if (!$device_id || !$store->fb_notification_key) {
             return;
         }
 
+        // Perform the Firebase request with the required parameters
         $response = fb_curl_post([
             "operation" => "add",
             "notification_key_name" => $store->code,
@@ -168,6 +229,7 @@ class User extends Authenticatable implements JWTSubject
             "registration_ids" => [$device_id],
         ]);
 
+        // Log result of the Firebase request
         if ($response && !isset($response->error)) {
             Log::info("FB: Firebase user subscription for user {$this->email} to store {$store->code} completed with response " . print_r($response, true));
             $this->stores()->updateExistingPivot($store->id, ['fb_registered' => true]);

@@ -14,6 +14,8 @@ class CreateBouncerTables extends Migration
      */
     public function up()
     {
+        // Migrate to the "Bouncer" package role system
+
         Schema::create(Models::table('abilities'), function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');

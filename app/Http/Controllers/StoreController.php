@@ -13,6 +13,9 @@ class StoreController extends Controller
         $this->middleware('auth:api');
     }
 
+    /**
+     * Return list of stores the user has access to
+     */
     public function index()
     {
         if (Bouncer::can('view all stores')) {
@@ -23,6 +26,9 @@ class StoreController extends Controller
 
     }
 
+    /**
+     * Create a new store with provided parameters
+     */
     public function store(Request $request)
     {
         if (Bouncer::cannot('manage stores')) {
@@ -33,6 +39,9 @@ class StoreController extends Controller
         $store = Store::create($params);
     }
 
+    /**
+     * Show a specific store data
+     */
     public function show($storeCode)
     {
         if (Bouncer::cannot('manage stores')) {
@@ -42,6 +51,9 @@ class StoreController extends Controller
         return Store::findByCode($storeCode);
     }
 
+    /**
+     * Update the store with the provided parameters
+     */
     public function update(Request $request)
     {
         if (Bouncer::cannot('manage stores')) {
@@ -54,6 +66,9 @@ class StoreController extends Controller
         $store->save();
     }
 
+    /**
+     * Delete a store
+     */
     public function destroy($storeCode)
     {
         if (Bouncer::cannot('manage stores')) {

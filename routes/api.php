@@ -11,6 +11,7 @@
 |
  */
 
+// === Auth-related routes ===
 Route::group([
     'middleware' => 'api',
     'prefix' => 'auth',
@@ -21,30 +22,50 @@ Route::group([
     Route::get('logout', 'AuthController@logout');
 });
 
+// === API routes ===
 Route::group([
     'middleware' => 'api',
 ], function () {
+
+    // === Stores CRUD ===
     Route::get('/stores', 'StoreController@index');
     Route::get('/stores/{store}', 'StoreController@show');
     Route::post('/stores', 'StoreController@store');
     Route::put('/stores', 'StoreController@update');
     Route::delete('/stores/{store}', 'StoreController@destroy');
 
+    // === Users CRUD ===
     Route::get('/users', 'UserController@index');
     Route::get('/users/{user}', 'UserController@show');
     Route::post('/users', 'UserController@store');
     Route::put('/users', 'UserController@update');
     Route::delete('/users/{user}', 'UserController@destroy');
 
-    Route::get('/stores/{store}/orders', 'WooController@orders');
-    Route::post('/stores/{store}/orders/{order}/outfordelivery', 'WooController@orderOutForDelivery');
-    Route::post('/stores/{store}/orders/{order}/completed', 'WooController@orderCompleted');
-    Route::post('/stores/{store}/orders/{order}/prepared', 'WooController@orderPrepared');
-    Route::get('/stores/{store}/products', 'WooController@products');
-    Route::put('/stores/{store}/products/{product}', 'WooController@updateProduct');
+    // === Woocommerce-related routes ===
+    // All of the following routes are store-specific
 
+    // Get list of orders
+    Route::get('/stores/{store}/orders', 'WooController@orders');
+
+    // Get list of all products
+    Route::get('/stores/{store}/products', 'WooController@products');
+
+    // Get status log for store
     Route::get('/stores/{store}/statuslog', 'StatusChangeController@index');
 
+    // Set order state as "Prepared"
+    Route::post('/stores/{store}/orders/{order}/prepared', 'WooController@orderPrepared');
+
+    // Set order state as "Out for delivery"
+    Route::post('/stores/{store}/orders/{order}/outfordelivery', 'WooController@orderOutForDelivery');
+
+    // Set order state as "Completed"
+    Route::post('/stores/{store}/orders/{order}/completed', 'WooController@orderCompleted');
+
+    // Update product availability
+    Route::put('/stores/{store}/products/{product}', 'WooController@updateProduct');
+
+    // Get server status for store (uptime monitor)
     Route::get('/status/{store}', 'ServerStatusController@check');
 
     // Catch-all

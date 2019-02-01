@@ -5,8 +5,14 @@ namespace App\Services;
 use App\Store;
 use Automattic\WooCommerce\Client;
 
+/**
+ * WooService is responsible for the interaction between the server and the WooCommerce stores
+ */
 class WooService
 {
+    /**
+     * Create a client to interact with the API of a specific store
+     */
     public function createClient($storeCode)
     {
         $store = Store::findByCode($storeCode);
@@ -22,6 +28,18 @@ class WooService
         );
     }
 
+    /**********************
+     *  ORDERS FUNCTIONS  *
+     **********************/
+
+    /**
+     * Fetch a paginated list of the orders belonging to a specific store
+     *
+     * @param string $store The code of the desidered store
+     * @param int    $page  The page we want to obtain
+     *
+     * @return array A list of the desidered orders
+     */
     public function orders($store, $page = 1)
     {
         $wc = $this->createClient($store);
@@ -33,10 +51,14 @@ class WooService
 
         return collect($orders)
             ->filter(function ($order) {
+                // Filter out orders with pending status
                 return $order->status != 'pending';
             })
             ->values()
             ->map(function ($order) {
+                // Map each order to the format that the frontend expects
+
+                // Order items list
                 $items = collect($order->line_items)->map(function ($item) {
                     // Group meta by key
                     $meta = collect($item->meta_data)->mapToGroups(function ($m) {
@@ -51,9 +73,10 @@ class WooService
                     ];
                 });
 
+                // Get correct order timeslot
                 list($slot_from, $slot_to) = $this->getTimeslots($order);
-                $meta = collect($order->meta_data);
 
+                $meta = collect($order->meta_data);
                 $prepared = $meta->firstWhere('key', 'prepared');
 
                 return [
@@ -82,6 +105,14 @@ class WooService
             });
     }
 
+    /**
+     * Fetch data about orders with the specified IDs
+     *
+     * @param string $store The code of the desidered store
+     * @param array  $ids   The order IDs we're interested in
+     *
+     * @return array A list of orders about the requested orders
+     */
     public function ordersWithId($store, $ids)
     {
         $wc = $this->createClient($store);
@@ -103,6 +134,12 @@ class WooService
         });
     }
 
+    /**
+     * Update order status to "Out for delivery"
+     *
+     * @param string $store The code of the desidered store
+     * @param string $order The ID of the order we want to update
+     */
     public function setOutForDelivery($store, $order)
     {
         $wc = $this->createClient($store);
@@ -112,6 +149,12 @@ class WooService
         ]);
     }
 
+    /**
+     * Update order status to "Completed"
+     *
+     * @param string $store The code of the desidered store
+     * @param string $order The ID of the order we want to update
+     */
     public function setCompleted($store, $order)
     {
         $wc = $this->createClient($store);
@@ -121,6 +164,34 @@ class WooService
         ]);
     }
 
+    /**
+     * Update order meta "Prepared" value to true
+     *
+     * @param string $store The code of the desidered store
+     * @param string $order The ID of the order we want to update
+     */
+    public function setPrepared($store, $order)
+    {
+        $wc = $this->createClient($store);
+
+        return $wc->put("orders/$order", [
+            'meta_data' => [
+                [
+                    'key' => 'prepared',
+                    'value' => true,
+                ],
+            ],
+        ]);
+    }
+
+    /**
+     * Parse timeslot data from an order meta
+     * Supports both YITH and Iconic timeslot plugins
+     *
+     * @param \WooCommerce\Order $order The order we want to get the timeslot from
+     *
+     * @return array An array with [$timeslot_start, $timeslot_end] in a UNIX timestamp
+     */
     public function getTimeslots($order)
     {
         $meta = collect($order->meta_data);
@@ -128,7 +199,7 @@ class WooService
         $date = $meta->firstWhere('key', 'ywcdd_order_delivery_date');
 
         if ($date) {
-            // --- Using YITH plugin ---
+            // --- Using YITH timeslot plugin ---
 
             $date = $date->value;
 
@@ -152,7 +223,7 @@ class WooService
                 $slot_to = $date->timestamp;
             }
         } else if ($date = $meta->firstWhere('key', 'jckwds_date_ymd')) {
-            // --- Using Iconic plugin ---
+            // --- Using Iconic timeslot plugin ---
 
             $date = $date->value;
             $timeslot = $meta->firstWhere('key', 'jckwds_timeslot');
@@ -181,15 +252,27 @@ class WooService
         return [$slot_from, $slot_to];
     }
 
-    public function products($store, $page = 1)
+    /***********************
+     *  PRODUCT FUNCTIONS  *
+     ***********************/
+
+    /**
+     * Fetch a list of all the products from the specified store
+     *
+     * @param string $store The code of the desidered store
+     *
+     * @return array List of all the products of the specified store
+     */
+    public function products($store)
     {
         $wc = $this->createClient($store);
         $products = $wc->get('products', [
-            'per_page' => 100, // TODO: needs to be fixed for > 100 products
+            'per_page' => 100, // FIXME: needs to be fixed for > 100 products
         ]);
 
         return collect($products)
             ->map(function ($product) {
+                // Map each product to the format that the frontend expects
                 $category = collect($product->categories)->first();
 
                 return [
@@ -201,26 +284,19 @@ class WooService
             });
     }
 
+    /**
+     * Update product stock status
+     *
+     * @param string $store    The code of the desidered store
+     * @param string $product  The ID of the product we want to update
+     * @param bool   $in_stock The new "In stock" value
+     */
     public function updateInStock($store, $product, $in_stock)
     {
         $wc = $this->createClient($store);
 
         return $wc->put("products/$product", [
             'in_stock' => $in_stock,
-        ]);
-    }
-
-    public function setPrepared($store, $order)
-    {
-        $wc = $this->createClient($store);
-
-        return $wc->put("orders/$order", [
-            'meta_data' => [
-                [
-                    'key' => 'prepared',
-                    'value' => true,
-                ],
-            ],
         ]);
     }
 }

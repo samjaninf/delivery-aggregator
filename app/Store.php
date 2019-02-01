@@ -7,14 +7,18 @@ use Illuminate\Support\Facades\Log;
 
 class Store extends Model
 {
-    public static function boot() {
+    public static function boot()
+    {
         parent::boot();
 
-        static::created(function($store) {
+        // When a new store is created, create the required Firebase group too
+        static::created(function ($store) {
             $store->fb_create_group();
         });
-        
-        static::deleting(function($store) {
+
+        // When a store is deleted, delete the Firebase group too
+        // and all users relationships
+        static::deleting(function ($store) {
             $store->fb_delete_group();
             $store->users()->detach();
         });
@@ -25,14 +29,15 @@ class Store extends Model
         'code',
         'url',
         'consumer_key',
-        'consumer_secret'
+        'consumer_secret',
     ];
 
-    public static function findByCode(string $code) {
-        return Store::where('code', $code)->first();
-    }
+    /*******************
+     *  RELATIONSHIPS  *
+     *******************/
 
-    public function users() {
+    public function users()
+    {
         return $this->belongsToMany('App\User')->withPivot('fb_registered');
     }
 
@@ -41,10 +46,29 @@ class Store extends Model
         return $this->hasMany('App\StatusChange');
     }
 
+    /**********************
+     *  HELPER FUNCTIONS  *
+     **********************/
+
+    /**
+     * Finds a store by its code
+     *
+     * @param string $code The code of the desidered store
+     */
+    public static function findByCode(string $code)
+    {
+        return Store::where('code', $code)->first();
+    }
+
     /************************
      *  FIREBASE FUNCTIONS  *
      ************************/
 
+    /**
+     * Create a Firebase group for this store
+     *
+     * @param User $user The first user of the store. If null is specified the current logged user will be used
+     */
     public function fb_create_group($user = null)
     {
         $user = $user ?? auth()->user();
@@ -55,13 +79,15 @@ class Store extends Model
             return;
         }
 
+        // Perform the Firebase request with the required parameters
         $response = fb_curl_post([
             "operation" => "create",
             "notification_key_name" => $this->code,
-            "registration_ids" => [ $deviceId ]
+            "registration_ids" => [$deviceId],
         ]);
 
-        if($response && !isset($response->error)) {
+        // Log result of the Firebase request
+        if ($response && !isset($response->error)) {
             Log::info("FB: Firebase group creation for store {$this->code} completed with response " . print_r($response, true));
             $this->fb_notification_key = $response->notification_key;
             $this->save();
@@ -70,23 +96,29 @@ class Store extends Model
         }
     }
 
+    /**
+     * Delete the Firebase group for this store
+     */
     public function fb_delete_group()
     {
+        // Make sure that the store has a registered Firebase group
         if (!$this->fb_notification_key) {
             Log::warning("FB: Store {$this->code} doesn't have a valid fb_notification_key, ignoring request to delete group from Firebase!");
             return;
         }
 
-        // Deleting all the registered devices
-        $deviceIds = $this->users->pluck('fb_device_id')->filter(function ($id) { return isset($id); });
+        // Deleting all the registered devices deletes the group
+        $deviceIds = $this->users->pluck('fb_device_id')->filter(function ($id) {return isset($id);});
 
+        // Perform the Firebase request with the required parameters
         $response = fb_curl_post([
             "operation" => "remove",
             "notification_key_name" => $this->code,
             "notification_key" => $this->fb_notification_key,
-            "registration_ids" => $deviceIds
+            "registration_ids" => $deviceIds,
         ]);
-        
+
+        // Log result of the Firebase request
         if ($response && !isset($response->error)) {
             Log::info("FB: Firebase group deletion for store {$this->code} completed with response " . print_r($response, true));
         } else {

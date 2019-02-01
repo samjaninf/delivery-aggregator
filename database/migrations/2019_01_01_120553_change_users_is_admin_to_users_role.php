@@ -17,6 +17,7 @@ class ChangeUsersIsAdminToUsersRole extends Migration
             $table->unsignedInteger('role')->after('is_admin')->default(1);
         });
 
+        // Migrate to index based role system
         DB::table('users')->where('is_admin', 1)->update(['role' => 30]);
         DB::table('users')->where('is_admin', 0)->update(['role' => 10]);
 
