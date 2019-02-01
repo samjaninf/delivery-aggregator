@@ -15,13 +15,13 @@ class Users extends Seeder
     {
         $users = [
             [
-                'name' => 'Daniele',
-                'email' => 'daniele@prova.it',
+                'name' => 'Admin',
+                'email' => 'admin@prova.it',
                 'password' => bcrypt('password'),
             ],
             [
-                'name' => 'Luca',
-                'email' => 'luca@prova.it',
+                'name' => 'Manager',
+                'email' => 'manager@prova.it',
                 'password' => bcrypt('password'),
             ],
         ];
