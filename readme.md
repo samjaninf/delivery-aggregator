@@ -16,34 +16,24 @@ $ docker run --rm -v $(pwd):/app composer install
 $ sudo chown -R $USER:$USER .
 ```
 
+Create a `.env` file using `.env.example` as a model
+
+```
+$ cp .env.example .env
+```
+
 Start the Docker containers (might take a while the first time)
 
 ```
 $ docker-compose up -d
 ```
 
-Now create a `.env` file using `.env.example` as a model and be sure to include the following fields
+Update the container settings, the config cache and then apply the database migrations and seeds
 
 ```
-### These are required to connect to the database
-DB_CONNECTION=mysql
-DB_HOST=db
-DB_PORT=3306
-DB_DATABASE=delivery
-DB_USERNAME=root
-DB_PASSWORD=password
-
-### Uncomment and update these with the right keys
-#JWT_SECRET=...
-#FIREBASE_API_KEY=...
-#FIREBASE_PROJECT_ID=...
-```
-
-Update the config cache and then apply the database migrations and seeds
-
-```
+$ docker-compose exec app php artisan key:generate
 $ docker-compose exec app php artisan config:cache
-$ docker-compose exec app php artisan migrate --seed
+$ docker-compose exec app php artisan migrate:fresh --seed
 ```
 
 Server should now be up, visit `http://localost` and try to login with

@@ -31,7 +31,7 @@ class Users extends Seeder
         // Assign roles and stores
 
         // User 1
-        $user = User::where('email', 'daniele@prova.it')->firstOrFail();
+        $user = User::where('email', 'admin@prova.it')->firstOrFail();
         $user->assign('admin');
 
         $stores = Store::all();
@@ -41,7 +41,7 @@ class Users extends Seeder
         }
 
         // User 2
-        $user2 = User::where('email', 'luca@prova.it')->firstOrFail();
+        $user2 = User::where('email', 'manager@prova.it')->firstOrFail();
         $user2->assign('manager');
     }
 }
