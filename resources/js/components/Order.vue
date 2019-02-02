@@ -254,12 +254,12 @@ export default {
 .circle.badge {
   display: block;
   background: red;
-  border-radius: 6px;
-  width: 12px;
-  height: 12px;
+  border-radius: 10px;
+  width: 20px;
+  height: 20px;
   position: absolute;
-  right: -5px;
-  top: -5px;
+  right: -10px;
+  top: -10px;
 }
 
 @media only screen and (max-width: 400px) {
