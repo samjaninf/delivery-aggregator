@@ -88,12 +88,31 @@ class WooController extends Controller
     }
 
     /**
+     * Update an order to set "Seen" as true
+     */
+    public function orderSeen(Request $request, $store, $order)
+    {
+        $s = Store::findByCode($store);
+        // Only managers can do this
+        if (!isset($s) || Bouncer::cannot('set seen', $s)) {
+            abort(401);
+        }
+
+        try {
+            $this->woo->setSeen($store, $order);
+        } catch (\Automattic\WooCommerce\HttpClient\HttpClientException $e) {
+            // Return error message
+            return abort(422, $e->getMessage());
+        }
+    }
+
+    /**
      * Update an order to set "Prepared" as true
      */
     public function orderPrepared(Request $request, $store, $order)
     {
         $s = Store::findByCode($store);
-        if (!isset($s) || Bouncer::cannot('set out for delivery', $s)) {
+        if (!isset($s) || Bouncer::cannot('set prepared', $s)) {
             abort(401);
         }
 

@@ -56,6 +56,9 @@ Route::group([
     // Set order state as "Prepared"
     Route::post('/stores/{store}/orders/{order}/prepared', 'WooController@orderPrepared');
 
+    // Set order state as "Seen"
+    Route::post('/stores/{store}/orders/{order}/seen', 'WooController@orderSeen');
+
     // Set order state as "Out for delivery"
     Route::post('/stores/{store}/orders/{order}/outfordelivery', 'WooController@orderOutForDelivery');
 

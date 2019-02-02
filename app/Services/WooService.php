@@ -78,6 +78,7 @@ class WooService
 
                 $meta = collect($order->meta_data);
                 $prepared = $meta->firstWhere('key', 'prepared');
+                $seen = $meta->firstWhere('key', 'seen');
 
                 return [
                     'number' => $order->number,
@@ -101,6 +102,7 @@ class WooService
                         ];
                     }),
                     'prepared' => !!($prepared ?? false),
+                    'seen' => !!($seen ?? false),
                 ];
             });
     }
@@ -178,6 +180,26 @@ class WooService
             'meta_data' => [
                 [
                     'key' => 'prepared',
+                    'value' => true,
+                ],
+            ],
+        ]);
+    }
+
+    /**
+     * Update order meta "Seen" value to true
+     *
+     * @param string $store The code of the desidered store
+     * @param string $order The ID of the order we want to update
+     */
+    public function setSeen($store, $order)
+    {
+        $wc = $this->createClient($store);
+
+        return $wc->put("orders/$order", [
+            'meta_data' => [
+                [
+                    'key' => 'seen',
                     'value' => true,
                 ],
             ],

@@ -4,6 +4,10 @@
     @click="$emit('click')"
     :class="{ cancelled: order.status === 'cancelled', detailed: detailed, 'mb-4': !detailed }"
   >
+    <span
+      v-if="!detailed && !order.seen"
+      class="circle badge"
+    />
     <div class="card-title">
       <button
         type="button"
@@ -83,18 +87,19 @@
 
         <div
           class="text-center mt-2"
-          v-if="order.status === 'processing' && $auth.check(['set out for delivery', 'admin'])"
+          v-if="order.status === 'processing' && $auth.check(['set prepared', 'set out for delivery', 'admin'])"
         >
           <b-button
             variant="primary"
             @click="setPrepared"
-            v-if="!order.prepared"
+            v-if="!order.prepared && $auth.check(['set prepared', 'admin'])"
           >
             <i class="fas fa-check"></i> Preparato
           </b-button>
           <b-button
             variant="primary"
             @click="setOutForDelivery"
+            v-if="$auth.check(['set out for delivery', 'admin'])"
           >
             <i class="fas fa-motorcycle"></i> In consegna
           </b-button>
@@ -203,6 +208,10 @@ export default {
 </script>
 
 <style scoped>
+.card-body {
+  position: relative;
+}
+
 .card .card-title {
   display: flex;
   flex-direction: row-reverse;
@@ -240,6 +249,17 @@ export default {
 
 .meta .key {
   font-weight: 500;
+}
+
+.circle.badge {
+  display: block;
+  background: red;
+  border-radius: 6px;
+  width: 12px;
+  height: 12px;
+  position: absolute;
+  right: -5px;
+  top: -5px;
 }
 
 @media only screen and (max-width: 400px) {

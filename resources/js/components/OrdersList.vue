@@ -44,7 +44,7 @@
             >
               <order
                 :order="order"
-                @click="selectedOrder = order"
+                @click="selectOrder(order)"
               ></order>
             </div>
           </div>
@@ -177,6 +177,20 @@ export default {
       this.loadPage(0).then(success => {
         if (loaded) loaded("done");
       });
+    },
+    selectOrder(order) {
+      this.selectedOrder = order;
+
+      if (this.$auth.check("set seen")) {
+        this.$http
+          .post(`stores/${this.activeStore.code}/orders/${order.number}/seen`)
+          .then(() => {
+            order.seen = true;
+          })
+          .catch(e => {
+            console.error(e);
+          });
+      }
     }
   },
   watch: {

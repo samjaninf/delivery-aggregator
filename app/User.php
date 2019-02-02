@@ -81,7 +81,7 @@ class User extends Authenticatable implements JWTSubject
             return ['admin'];
         } else {
             // Return list of abilities name
-            $this->getAbilities()
+            return $this->getAbilities()
                 ->map(function ($a) {
                     return $a->name;
                 });
