@@ -186,7 +186,6 @@ export default {
           .post(`stores/${this.activeStore.code}/orders/${order.number}/seen`)
           .then(() => {
             order.seen = true;
-            this.printReceipt(order);
           })
           .catch(e => {
             console.error(e);
@@ -198,13 +197,12 @@ export default {
       const header = `<center><big><bold>${storeName}<br><br><medium2><normal><left>Prodotti<br>`;
       const items = order.items
         .map(i => {
-          const title = `<medium1><normal><left>${i.quantity} x ${
-            i.name
-          }<right>  ${i.total.toFixed(2)}E<br>`;
+          const title = `<medium1><normal><left>${i.quantity} x ${i.name}<br>`;
           const addons = Object.keys(i.meta)
             .map(k => `<small>${k}<br><small>${i.meta[k]}<br>`)
             .join("");
-          return `${title}${addons}<br>`;
+          const price = "<small>${i.total.toFixed(2)} E";
+          return `${title}${addons}${price}<br>`;
         })
         .join("");
       const footer = "<cut>";
