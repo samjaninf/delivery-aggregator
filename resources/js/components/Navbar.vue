@@ -34,6 +34,9 @@
               <b-dropdown-item to="/products">
                 <i class="fas fa-fw fa-box"></i> Prodotti
               </b-dropdown-item>
+              <b-dropdown-item to="/deliveryslots">
+                <i class="fas fa-fw fa-clock"></i> Fasce orarie
+              </b-dropdown-item>
               <div class="dropdown-divider"></div>
             </template>
 

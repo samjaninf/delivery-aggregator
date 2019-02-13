@@ -1,11 +1,11 @@
 <template>
   <b-container class="mt-4">
-    <h3>Prodotti</h3>
+    <h3>Fasce orarie</h3>
     <template v-if="stores.length > 1">
       <h5 class="mt-4">Negozio</h5>
       <b-form-select
         v-model="selectedStore"
-        :options="options"
+        :options="storeOptions"
       />
     </template>
     <div
@@ -19,26 +19,37 @@
         <div></div>
       </div>
     </div>
-    <div
-      v-else
-      v-for="(products, category) in productsByCategory"
-      :key="category"
-    >
-      <h5 class="mt-4">{{ category }} </h5>
-      <b-row>
-        <b-col
-          md="6"
-          lg="4"
-          v-for="product in products"
-          :key="product.id"
-        >
-          <product
-            :store="selectedStore"
-            :product="product"
+
+    <b-row>
+      <b-col lg="6">
+        <b-form-group label="Numero massimo consegne per fascia oraria">
+          <b-form-radio-group
+            :disabled="loading"
+            buttons
+            v-model="lockout"
+            :options="lockoutOptions"
+            button-variant="outline-primary"
+            size="lg"
+            class="button-radio-group"
           />
-        </b-col>
-      </b-row>
-    </div>
+        </b-form-group>
+      </b-col>
+
+      <b-col lg="6">
+        <b-form-group label="Distanza minima ordine">
+          <b-form-radio-group
+            :disabled="loading"
+            buttons
+            v-model="delay"
+            :options="delayOptions"
+            button-variant="outline-primary"
+            size="lg"
+            class="button-radio-group"
+          />
+        </b-form-group>
+      </b-col>
+    </b-row>
+
   </b-container>
 </template>
 
@@ -51,19 +62,31 @@ export default {
       storeCancel: CancelToken.source(),
       loading: false,
       selectedStore: null,
-      products: []
+      lockout: null,
+      delay: null
     };
   },
   props: ["stores"],
   computed: {
-    options() {
+    storeOptions() {
       return this.stores.map(({ name, code }) => ({
         text: name,
         value: code
       }));
     },
-    productsByCategory() {
-      return _.groupBy(this.products, p => p.category);
+    lockoutOptions() {
+      return [
+        { text: "1 ordine", value: 1 },
+        { text: "2 ordini", value: 2 },
+        { text: "3 ordini", value: 3 }
+      ];
+    },
+    delayOptions() {
+      return [
+        { text: "10 minuti", value: 10 },
+        { text: "20 minuti", value: 20 },
+        { text: "30 minuti", value: 30 }
+      ];
     }
   },
   mounted() {
@@ -78,7 +101,8 @@ export default {
     },
     selectedStore(store) {
       if (!store) {
-        this.products = [];
+        this.lockout = null;
+        this.delay = null;
         return;
       }
 
@@ -87,13 +111,17 @@ export default {
         this.storeCancel = CancelToken.source();
       }
 
+      return; //  ==== NYI ====
+
       this.loading = true;
       this.$http
-        .get(`/stores/${store}/products`, {
+        .get(`/stores/${store}/deliveryslots`, {
           cancelToken: this.storeCancel.token
         })
         .then(({ data }) => {
-          this.products = data || [];
+          const { lockout, delay } = data;
+          this.lockout = lockout || null;
+          this.delay = delay || null;
           this.loading = false;
         })
         .catch(e => {
@@ -106,9 +134,15 @@ export default {
           return false; // loading failed
         });
     }
-  },
-  components: {
-    Product: require("./Product.vue").default
   }
 };
 </script>
+
+<style>
+.button-radio-group {
+  width: 100%;
+}
+.button-radio-group > .btn {
+  flex-grow: 1;
+}
+</style>

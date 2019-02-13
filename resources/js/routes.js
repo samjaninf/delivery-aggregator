@@ -56,6 +56,14 @@ module.exports = [
                 }
             },
             {
+                path: "/deliveryslots",
+                props: true,
+                component: require("./components/DeliverySlots.vue").default,
+                meta: {
+                    auth: ["manage products", "admin"]
+                }
+            },
+            {
                 path: "/:storeCode",
                 props: true,
                 component: require("./components/OrdersList.vue").default,
