@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Seeder;
 use App\Store;
+use Illuminate\Database\Seeder;
 
 class Stores extends Seeder
 {
@@ -16,16 +16,16 @@ class Stores extends Seeder
             [
                 'name' => "Imburger",
                 'code' => 'imburger',
-                'url' => 'https://imburger.it',
+                'url' => 'https://livorno.imburger.it',
                 'consumer_key' => 'ck_123456789',
-                'consumer_secret' => 'cs_123456789'
+                'consumer_secret' => 'cs_123456789',
             ],
             [
                 'name' => "Da Scomposto",
                 'code' => 'dascomposto',
-                'url' => 'http://delivery.dascomposto.it',
+                'url' => 'https://delivery.dascomposto.it',
                 'consumer_key' => 'ck_987654321',
-                'consumer_secret' => 'cs_987654321'
+                'consumer_secret' => 'cs_987654321',
             ],
         ];
 
