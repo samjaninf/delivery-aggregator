@@ -25,9 +25,10 @@ class User extends Authenticatable implements JWTSubject
             }
         });
 
-        // When the user is deleted detach its relationships with the stores
+        // When the user is deleted detach its relationships
         static::deleting(function ($user) {
             $user->stores()->detach();
+            $user->statusChanges()->delete();
         });
     }
 
