@@ -60,7 +60,7 @@ module.exports = [
                 props: true,
                 component: require("./components/DeliverySlots.vue").default,
                 meta: {
-                    auth: ["manage products", "admin"]
+                    auth: ["manage delivery slots", "admin"]
                 }
             },
             {
