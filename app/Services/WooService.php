@@ -321,4 +321,35 @@ class WooService
             'in_stock' => $in_stock,
         ]);
     }
+
+    public function deliverySlotsSettings($storeCode)
+    {
+        $store = Store::findByCode($storeCode);
+        $url = "{$store->url}/wp-json/delivery-slots/v1/settings";
+
+        $headers = [
+            "CS: {$store->consumer_secret}",
+            "CK: {$store->consumer_key}",
+        ];
+
+        return curl_get($url, $headers);
+    }
+
+    public function setDeliverySlotsSettings($storeCode, $lockout, $cutoff)
+    {
+        $store = Store::findByCode($storeCode);
+        $url = "{$store->url}/wp-json/delivery-slots/v1/settings";
+
+        $headers = [
+            "CS: {$store->consumer_secret}",
+            "CK: {$store->consumer_key}",
+        ];
+
+        $body = [
+            'lockout' => $lockout,
+            'cutoff' => $cutoff,
+        ];
+
+        return curl_post($url, $headers, $body);
+    }
 }

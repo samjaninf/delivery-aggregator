@@ -23,7 +23,6 @@ class StoreController extends Controller
         } else {
             return auth()->user()->stores()->get(['name', 'code']);
         }
-
     }
 
     /**

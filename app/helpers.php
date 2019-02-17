@@ -34,3 +34,38 @@ function fb_curl_post($body)
 
     return $result ? json_decode($result) : false;
 }
+
+function curl_get($url, $headers)
+{
+    $ch = curl_init();
+
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => 1,
+        CURLOPT_URL => $url,
+        CURLOPT_HTTPHEADER => $headers,
+    ]);
+
+    $result = curl_exec($ch);
+    curl_close($ch);
+
+    return $result ? json_decode($result) : false;
+}
+
+function curl_post($url, $headers, $body)
+{
+    $ch = curl_init();
+
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => 1,
+        CURLOPT_POST => 1,
+        CURLOPT_URL => $url,
+        CURLOPT_HTTPHEADER => $headers,
+        CURLOPT_POSTFIELDS => http_build_query($body),
+        CURLOPT_SSL_VERIFYPEER => false,
+    ]);
+
+    $result = curl_exec($ch);
+    curl_close($ch);
+
+    return $result ? json_decode($result) : false;
+}

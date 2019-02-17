@@ -8,19 +8,8 @@
         :options="storeOptions"
       />
     </template>
-    <div
-      class="text-center mt-4"
-      v-if="loading"
-    >
-      <div class="lds-ring">
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
-    </div>
 
-    <b-row>
+    <b-row class="mt-4">
       <b-col lg="6">
         <b-form-group label="Numero massimo consegne per fascia oraria">
           <b-form-radio-group
@@ -40,8 +29,8 @@
           <b-form-radio-group
             :disabled="loading"
             buttons
-            v-model="delay"
-            :options="delayOptions"
+            v-model="cutoff"
+            :options="cutoffOptions"
             button-variant="outline-primary"
             size="lg"
             class="button-radio-group"
@@ -49,6 +38,26 @@
         </b-form-group>
       </b-col>
     </b-row>
+
+    <b-button
+      variant="success"
+      size="lg"
+      @click="updateLockoutAndCutoff()"
+    >
+      Salva
+    </b-button>
+
+    <div
+      class="text-center mt-4"
+      v-if="loading"
+    >
+      <div class="lds-ring">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
 
   </b-container>
 </template>
@@ -63,8 +72,32 @@ export default {
       loading: false,
       selectedStore: null,
       lockout: null,
-      delay: null
+      cutoff: null
     };
+  },
+  methods: {
+    updateLockoutAndCutoff() {
+      this.loading = true;
+      this.$http
+        .post(`/stores/${this.selectedStore}/deliveryslots`, {
+          lockout: this.lockout,
+          cutoff: this.cutoff
+        })
+        .then(() => {
+          this.$notify({
+            type: "success",
+            text: "Fascia oraria aggiornata con successo"
+          });
+          this.loading = false;
+        })
+        .catch(e => {
+          this.$notify({
+            type: "error",
+            text: "Errore durante la modifica"
+          });
+          this.loading = false;
+        });
+    }
   },
   props: ["stores"],
   computed: {
@@ -81,7 +114,7 @@ export default {
         { text: "3 ordini", value: 3 }
       ];
     },
-    delayOptions() {
+    cutoffOptions() {
       return [
         { text: "10 minuti", value: 10 },
         { text: "20 minuti", value: 20 },
@@ -102,7 +135,7 @@ export default {
     selectedStore(store) {
       if (!store) {
         this.lockout = null;
-        this.delay = null;
+        this.cutoff = null;
         return;
       }
 
@@ -111,17 +144,15 @@ export default {
         this.storeCancel = CancelToken.source();
       }
 
-      return; //  ==== NYI ====
-
       this.loading = true;
       this.$http
         .get(`/stores/${store}/deliveryslots`, {
           cancelToken: this.storeCancel.token
         })
         .then(({ data }) => {
-          const { lockout, delay } = data;
+          const { lockout, cutoff } = data;
           this.lockout = lockout || null;
-          this.delay = delay || null;
+          this.cutoff = cutoff || null;
           this.loading = false;
         })
         .catch(e => {

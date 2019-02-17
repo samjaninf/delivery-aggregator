@@ -163,4 +163,38 @@ class WooController extends Controller
             return abort(422, $e->getMessage());
         }
     }
+
+    public function deliverySlotsSettings(Request $request, $store)
+    {
+        $s = Store::findByCode($store);
+        if (!isset($s) || Bouncer::cannot('manage delivery slots', $s)) {
+            abort(401);
+        }
+
+        try {
+            $settings = $this->woo->deliverySlotsSettings($store);
+            return response()->json($settings);
+        } catch (\Automattic\WooCommerce\HttpClient\HttpClientException $e) {
+            // Return error message
+            return abort(422, $e->getMessage());
+        }
+    }
+
+    public function setDeliverySlotsSettings(Request $request, $store)
+    {
+        $s = Store::findByCode($store);
+        if (!isset($s) || Bouncer::cannot('manage delivery slots', $s)) {
+            abort(401);
+        }
+
+        $lockout = $request->lockout;
+        $cutoff = $request->cutoff;
+
+        try {
+            $this->woo->setDeliverySlotsSettings($store, $lockout, $cutoff);
+        } catch (\Automattic\WooCommerce\HttpClient\HttpClientException $e) {
+            // Return error message
+            return abort(422, $e->getMessage());
+        }
+    }
 }

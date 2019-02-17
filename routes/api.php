@@ -50,6 +50,12 @@ Route::group([
     // Get list of all products
     Route::get('/stores/{store}/products', 'WooController@products');
 
+    // Get store delivery slots settings
+    Route::get('/stores/{store}/deliveryslots', 'WooController@deliverySlotsSettings');
+
+    // Set store delivery slots settings
+    Route::post('/stores/{store}/deliveryslots', 'WooController@setDeliverySlotsSettings');
+
     // Get status log for store
     Route::get('/stores/{store}/statuslog', 'StatusChangeController@index');
 
