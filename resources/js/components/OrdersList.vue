@@ -71,6 +71,7 @@
             :detailed="true"
             :storeCode="storeCode"
             @close="selectedOrder = null"
+            @print="printReceipt(selectedOrder)"
           ></order>
         </div>
       </div>

@@ -1,7 +1,7 @@
 <template>
   <b-card
     class="order"
-    @click="$emit('click')"
+    @click="!detailed && $emit('click')"
     :class="{ cancelled: order.status === 'cancelled', detailed: detailed, 'mb-4': !detailed }"
   >
     <span
@@ -85,34 +85,42 @@
           </div>
         </div>
 
-        <div
-          class="text-center mt-2"
-          v-if="order.status === 'processing' && $auth.check(['set prepared', 'set out for delivery', 'admin'])"
-        >
+        <div class="text-center mt-2">
+          <template v-if="order.status === 'processing' && $auth.check(['set prepared', 'set out for delivery', 'admin'])">
+            <b-button
+              variant="primary"
+              @click="setPrepared"
+              v-if="!order.prepared && $auth.check(['set prepared', 'admin'])"
+            >
+              <i class="fas fa-check"></i> Preparato
+            </b-button>
+            <b-button
+              variant="primary"
+              @click="setOutForDelivery"
+              v-if="$auth.check(['set out for delivery', 'admin'])"
+            >
+              <i class="fas fa-motorcycle"></i> In consegna
+            </b-button>
+          </template>
+
+          <template v-if="order.status === 'out-for-delivery' && $auth.check(['set completed', 'admin'])">
+            <b-button
+              variant="success"
+              @click="setCompleted"
+            >
+              <i class="fas fa-box"></i> Consegnato
+            </b-button>
+          </template>
+
           <b-button
-            variant="primary"
-            @click="setPrepared"
-            v-if="!order.prepared && $auth.check(['set prepared', 'admin'])"
+            variant="secondary"
+            @click="$emit('print')"
+            v-if="$auth.check(['admin'])"
           >
-            <i class="fas fa-check"></i> Preparato
-          </b-button>
-          <b-button
-            variant="primary"
-            @click="setOutForDelivery"
-            v-if="$auth.check(['set out for delivery', 'admin'])"
-          >
-            <i class="fas fa-motorcycle"></i> In consegna
-          </b-button>
-        </div>
-        <div
-          class="text-center mt-2"
-          v-if="order.status === 'out-for-delivery' && $auth.check(['set completed', 'admin'])"
-        >
-          <b-button
-            variant="success"
-            @click="setCompleted"
-          >
-            <i class="fas fa-box"></i> Consegnato
+            <i
+              class="fas fa-print"
+              style="margin-right: 0"
+            ></i>
           </b-button>
         </div>
 
