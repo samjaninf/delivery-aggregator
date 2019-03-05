@@ -202,7 +202,7 @@ export default {
           const addons = Object.keys(i.meta)
             .map(k => `<small>${k}<br><small>${i.meta[k]}<br>`)
             .join("");
-          const price = "<small>${i.total.toFixed(2)} E";
+          const price = `<small>${i.total.toFixed(2)} E`;
           return `${title}${addons}${price}<br>`;
         })
         .join("");
