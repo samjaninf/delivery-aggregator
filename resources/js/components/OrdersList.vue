@@ -84,6 +84,9 @@ const CancelToken = axios.CancelToken;
 const UPDATE_INTERVAL = 30 * 1000;
 const ORDERS_PER_PAGE = 20;
 
+const makeReceipt = require("../util/makeReceipt.js");
+const { formatDate } = require("../util/formatTime");
+
 export default {
   data() {
     return {
@@ -99,12 +102,7 @@ export default {
   computed: {
     ordersByDate() {
       return _(this.orders)
-        .groupBy(o =>
-          moment
-            .unix(o.delivery_date)
-            .utc()
-            .format("LL")
-        )
+        .groupBy(o => formatDate(o.delivery_date))
         .toPairs()
         .orderBy(v => v[1][0].delivery_date, "desc")
         .map(v => ({
@@ -194,21 +192,8 @@ export default {
       }
     },
     printReceipt(order) {
-      const storeName = this.activeStore.name || "";
-      const header = `<center><big><bold>${storeName}<br><br><medium2><normal><left>Prodotti<br>`;
-      const items = order.items
-        .map(i => {
-          const title = `<medium1><normal><left>${i.quantity} x ${i.name}<br>`;
-          const addons = Object.keys(i.meta)
-            .map(k => `<small>${k}<br><small>${i.meta[k]}<br>`)
-            .join("");
-          const price = `<small>${i.total.toFixed(2)} E`;
-          return `${title}${addons}${price}<br>`;
-        })
-        .join("");
-      const footer = "<cut>";
-      const text = `${header}${items}${footer}`;
-      window.location.href = `quickprinter://${encodeURI(text)}`;
+      const receipt = makeReceipt(this.activeStore, order);
+      window.location.href = `quickprinter://${encodeURI(receipt)}`;
     }
   },
   watch: {

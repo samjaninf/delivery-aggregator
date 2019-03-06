@@ -23,8 +23,8 @@ Vue.use(VueRouter);
 const App = require("./components/App.vue").default;
 
 const router = new VueRouter({
-    mode: "history",
-    routes: require("./routes.js")
+  mode: "history",
+  routes: require("./routes.js")
 });
 
 Vue.router = router;
@@ -32,28 +32,24 @@ Vue.router = router;
 // Auth
 
 Vue.use(require("@websanova/vue-auth"), {
-    auth: require("@websanova/vue-auth/drivers/auth/bearer.js"),
-    http: require("@websanova/vue-auth/drivers/http/axios.1.x.js"),
-    router: require("@websanova/vue-auth/drivers/router/vue-router.2.x.js"),
-    tokenStore: ["cookie", "localStorage"],
-    rolesVar: "abilities"
+  auth: require("@websanova/vue-auth/drivers/auth/bearer.js"),
+  http: require("@websanova/vue-auth/drivers/http/axios.1.x.js"),
+  router: require("@websanova/vue-auth/drivers/router/vue-router.2.x.js"),
+  tokenStore: ["cookie", "localStorage"],
+  rolesVar: "abilities"
 });
 
 // Global filters
-Vue.filter("hour", v =>
-    moment
-        .unix(v)
-        .utc()
-        .format("H:mm")
-);
+const { formatTime } = require("./util/formatTime");
+Vue.filter("hour", formatTime);
 Vue.filter("money", v => `€${(+v).toFixed(2)}`);
 
 // Axios
 axios.defaults.baseURL = "/api";
 
 const app = new Vue({
-    el: "#app",
-    template: "<App/>",
-    components: { App },
-    router
+  el: "#app",
+  template: "<App/>",
+  components: { App },
+  router
 });
