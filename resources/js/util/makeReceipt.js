@@ -2,19 +2,22 @@ const { formatTime, formatDate } = require("./formatTime");
 
 const title = s => `<medium2><normal><left>${s}<br>`;
 const subtitle = s => `<medium1><normal><left>${s}<br>`;
-const euro = x => `${(+x).toFixed(2)} E`;
+const euro = x => `${(+x).toFixed(2)} EUR`;
+const replaceHtmlEntities = s => s.replace(/(&euro;|€)/, "EUR");
 
 const products = order => {
   const items = order.items.map(i => {
     const title = subtitle(`${i.quantity} x ${i.name}`);
     const addons = Object.keys(i.meta)
-      .map(k => `<small>  ${k}<br><small>  ${i.meta[k]}<br>`)
+      .map(
+        k => `<small>  ${replaceHtmlEntities(k)}<br><small>  ${i.meta[k]}<br>`
+      )
       .join("");
     const price = `<small>  ${euro(i.total)}`;
     return `${title}${addons}${price}`;
   });
 
-  const shipping = `${subtitle("Spedizione")}  ${euro(order.shipping)}`;
+  const shipping = `${subtitle("Spedizione")}<small>  ${euro(order.shipping)}`;
 
   return `${title("Prodotti")}${[...items, shipping].join("<br>")}`;
 };
@@ -35,7 +38,7 @@ const orderData = order => {
   const couponsData =
     Array.isArray(coupons) && coupons.length > 0
       ? coupons.map(
-          ({ code, discount }) => `Coupon: ${code} (${euro(discount)})`
+          ({ code, discount }) => `* Coupon: ${code} (${euro(discount)})`
         )
       : [];
 
