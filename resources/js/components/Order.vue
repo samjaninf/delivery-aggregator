@@ -115,7 +115,7 @@
           <b-button
             variant="secondary"
             @click="$emit('print')"
-            v-if="$auth.check(['admin'])"
+            v-if="$auth.check(['print receipts', 'admin'])"
           >
             <i
               class="fas fa-print"
