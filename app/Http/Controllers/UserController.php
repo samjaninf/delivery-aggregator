@@ -104,13 +104,15 @@ class UserController extends Controller
         $user->fill($params);
 
         // Assign the correct role to the user
-        $roleName = $params['role'];
-        $role = Bouncer::role()->where('name', $roleName)->first();
-        if (!$role) {
-            // Invalid role provided
-            abort(422);
+        if (isset($params['role'])) {
+            $roleName = $params['role'];
+            $role = Bouncer::role()->where('name', $roleName)->first();
+            if (!$role) {
+                // Invalid role provided
+                abort(422);
+            }
+            Bouncer::sync($user)->roles([$role]);
         }
-        Bouncer::sync($user)->roles([$role]);
 
         // Update permissions
         $wanted = collect($params['permissions']);
