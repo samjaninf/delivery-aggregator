@@ -2,6 +2,8 @@
   <pull-to
     :top-load-method="refresh"
     :top-config="pullToConfig"
+    :is-bottom-bounce="false"
+    :is-throttle-bottom-pull="false"
     @infinite-scroll="loadNextPage"
   >
     <template
@@ -64,6 +66,7 @@
         <div
           class="backdrop"
           v-if="selectedOrder"
+          v-on:touchmove.stop
           @click.self="selectedOrder = null"
         >
           <order
