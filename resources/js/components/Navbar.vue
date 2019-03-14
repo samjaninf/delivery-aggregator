@@ -30,13 +30,16 @@
               <i class="fas fa-fw fa-cog"></i>
             </template>
 
-            <b-dropdown-item to="/deliveryslots" v-if="$auth.check(['manage delivery slots', 'admin'])">
+            <b-dropdown-item
+              to="/deliveryslots"
+              v-if="$auth.check(['manage delivery slots', 'admin'])"
+            >
               <i class="fas fa-fw fa-clock"></i> Fasce orarie
             </b-dropdown-item>
 
             <template v-if="$auth.check(['manage products', 'admin'])">
-              <b-dropdown-item to="/products">
-                <i class="fas fa-fw fa-box"></i> Prodotti
+              <b-dropdown-item to="/availability">
+                <i class="fas fa-fw fa-box"></i> Disponibilità
               </b-dropdown-item>
               <div class="dropdown-divider"></div>
             </template>

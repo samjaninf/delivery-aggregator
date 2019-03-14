@@ -164,6 +164,9 @@ class WooController extends Controller
         }
     }
 
+    /**
+     * Return the delivery slot settings of a store
+     */
     public function deliverySlotsSettings(Request $request, $store)
     {
         $s = Store::findByCode($store);
@@ -174,12 +177,15 @@ class WooController extends Controller
         try {
             $settings = $this->woo->deliverySlotsSettings($store);
             return response()->json($settings);
-        } catch (\Automattic\WooCommerce\HttpClient\HttpClientException $e) {
+        } catch (Exception $e) {
             // Return error message
             return abort(422, $e->getMessage());
         }
     }
 
+    /**
+     * Update the delivery slot settings for a store
+     */
     public function setDeliverySlotsSettings(Request $request, $store)
     {
         $s = Store::findByCode($store);
@@ -192,8 +198,49 @@ class WooController extends Controller
 
         try {
             $this->woo->setDeliverySlotsSettings($store, $lockout, $cutoff);
-        } catch (\Automattic\WooCommerce\HttpClient\HttpClientException $e) {
+        } catch (Exception $e) {
             // Return error message
+            return abort(422, $e->getMessage());
+        }
+    }
+
+    /**
+     * Return the isOpen setting of a store
+     */
+    public function isOpen(Request $request, $store)
+    {
+        $s = Store::findByCode($store);
+        if (!isset($s) || Bouncer::cannot('manage store opening', $s)) {
+            abort(401);
+        }
+
+        try {
+            $isOpen = $this->woo->isOpen($store);
+
+            return [
+                'isOpen' => $isOpen,
+            ];
+
+        } catch (Exception $e) {
+            return abort(422, $e->getMessage());
+        }
+    }
+
+    /**
+     * Update the isOpen setting for a store
+     */
+    public function setIsOpen(Request $request, $store)
+    {
+        $s = Store::findByCode($store);
+        if (!isset($s) || Bouncer::cannot('manage store opening', $s)) {
+            abort(401);
+        }
+
+        $isOpen = $request->isOpen ?? true;
+
+        try {
+            $this->woo->setIsOpen($store, $isOpen);
+        } catch (Exception $e) {
             return abort(422, $e->getMessage());
         }
     }

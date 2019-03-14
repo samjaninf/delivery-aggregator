@@ -46,7 +46,15 @@ function curl_get($url, $headers)
     ]);
 
     $result = curl_exec($ch);
+    $errorNo = curl_errno($ch);
     curl_close($ch);
+
+    if ($errorNo) {
+        throw new Exception([
+            'code' => $errorNo,
+            'error' => curl_error($ch),
+        ]);
+    }
 
     return $result ? json_decode($result) : false;
 }
@@ -65,7 +73,15 @@ function curl_post($url, $headers, $body)
     ]);
 
     $result = curl_exec($ch);
+    $errorNo = curl_errno($ch);
     curl_close($ch);
+
+    if ($errorNo) {
+        throw new Exception([
+            'code' => $errorNo,
+            'error' => curl_error($ch),
+        ]);
+    }
 
     return $result ? json_decode($result) : false;
 }

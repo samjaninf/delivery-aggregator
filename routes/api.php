@@ -50,6 +50,12 @@ Route::group([
     // Get list of all products
     Route::get('/stores/{store}/products', 'WooController@products');
 
+    // Get store isOpen status
+    Route::get('/stores/{store}/isOpen', 'WooController@isOpen');
+    
+    // Set store isOpen status
+    Route::post('/stores/{store}/isOpen', 'WooController@setIsOpen');
+
     // Get store delivery slots settings
     Route::get('/stores/{store}/deliveryslots', 'WooController@deliverySlotsSettings');
 

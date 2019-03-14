@@ -352,4 +352,36 @@ class WooService
 
         return curl_post($url, $headers, $body);
     }
+
+    public function isOpen($storeCode)
+    {
+        $store = Store::findByCode($storeCode);
+        $url = "{$store->url}/wp-json/vacation-state/v1/settings";
+
+        $headers = [
+            "CS: {$store->consumer_secret}",
+            "CK: {$store->consumer_key}",
+        ];
+
+        $response = curl_get($url, $headers);
+
+        return !!($response->isopen ?? false);
+    }
+
+    public function setIsOpen($storeCode, $isOpen)
+    {
+        $store = Store::findByCode($storeCode);
+        $url = "{$store->url}/wp-json/vacation-state/v1/settings";
+
+        $headers = [
+            "CS: {$store->consumer_secret}",
+            "CK: {$store->consumer_key}",
+        ];
+
+        $body = [
+            'isopen' => $isOpen,
+        ];
+
+        return curl_post($url, $headers, $body);
+    }
 }
