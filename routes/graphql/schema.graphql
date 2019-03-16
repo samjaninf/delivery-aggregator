@@ -41,6 +41,8 @@ type Order {
   first_name: String!
   last_name: String!
   delivery_date: DateTime
+  phone: String!
+  address: String!
 }
 
 type OrderPaginator {

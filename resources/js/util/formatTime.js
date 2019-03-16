@@ -1,16 +1,8 @@
 const moment = require("moment");
 moment.locale("it");
 
-const formatTime = d =>
-  moment
-    .unix(d)
-    .utc()
-    .format("H:mm");
+const formatTime = d => moment.utc(d).format("H:mm");
 
-const formatDate = d =>
-  moment
-    .unix(d)
-    .utc()
-    .format("LL");
+const formatDate = d => moment.utc(d).format("LL");
 
 module.exports = { formatTime, formatDate };
