@@ -22,6 +22,7 @@
     "react-apollo-hooks": "^0.4.3",
     "react-dom": "^16.2.0",
     "react-icons": "^3.5.0",
+    "react-router-dom": "^4.4.0",
     "resolve-url-loader": "^2.3.1",
     "sass": "^1.15.3",
     "sass-loader": "^7.1.0"

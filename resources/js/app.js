@@ -1,9 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { ApolloProvider } from "react-apollo-hooks";
+import { BrowserRouter } from "react-router-dom";
 
 import "../sass/app.scss";
-import App from "./components/App";
+import client from "./client";
+import Routes from "./routes/Routes";
 
-if (document.getElementById("app")) {
-  ReactDOM.render(<App />, document.getElementById("app"));
-}
+ReactDOM.render(
+  <BrowserRouter>
+    <ApolloProvider client={client}>
+      <Routes />
+    </ApolloProvider>
+  </BrowserRouter>,
+  document.getElementById("app")
+);
