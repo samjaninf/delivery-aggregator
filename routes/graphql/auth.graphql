@@ -1,0 +1,14 @@
+input LoginInput {
+  username: String!
+  password: String!
+}
+
+type LogoutResponse {
+  status: String!
+  message: String
+}
+
+extend type Mutation {
+  login(data: LoginInput): User
+  logout: LogoutResponse! @protect(guards: ["api"])
+}

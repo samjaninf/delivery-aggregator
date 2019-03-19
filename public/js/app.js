@@ -66652,12 +66652,11 @@ __webpack_require__.r(__webpack_exports__);
 
 var link = new apollo_link_http__WEBPACK_IMPORTED_MODULE_1__["HttpLink"]({
   uri: "/graphql",
-  credentials: "same-origin"
+  credentials: "include"
 });
 /* harmony default export */ __webpack_exports__["default"] = (new apollo_client__WEBPACK_IMPORTED_MODULE_0__["ApolloClient"]({
   link: link,
-  cache: new apollo_cache_inmemory__WEBPACK_IMPORTED_MODULE_2__["InMemoryCache"](),
-  credentials: "same-origin"
+  cache: new apollo_cache_inmemory__WEBPACK_IMPORTED_MODULE_2__["InMemoryCache"]()
 }));
 
 /***/ }),
@@ -66824,6 +66823,8 @@ var App = function App() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_apollo_hooks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-apollo-hooks */ "./node_modules/react-apollo-hooks/es/index.js");
+/* harmony import */ var apollo_boost__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! apollo-boost */ "./node_modules/apollo-boost/lib/bundle.esm.js");
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
@@ -66832,7 +66833,22 @@ function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = 
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
+function _templateObject() {
+  var data = _taggedTemplateLiteral(["\n  mutation login($username: String!, $password: String!) {\n    login(data: { username: $username, password: $password })\n  }\n"]);
 
+  _templateObject = function _templateObject() {
+    return data;
+  };
+
+  return data;
+}
+
+function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+
+
+
+var LOGIN_MUTATION = Object(apollo_boost__WEBPACK_IMPORTED_MODULE_2__["gql"])(_templateObject());
 
 var Login = function Login() {
   var _useState = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(""),
@@ -66845,17 +66861,30 @@ var Login = function Login() {
       password = _useState4[0],
       setPassword = _useState4[1];
 
+  var login = Object(react_apollo_hooks__WEBPACK_IMPORTED_MODULE_1__["useMutation"])(LOGIN_MUTATION, {
+    variables: {
+      username: email,
+      password: password
+    }
+  });
   return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("form", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
     type: "text",
     placeholder: "email",
     value: email,
-    onChange: setEmail
+    onChange: function onChange(e) {
+      return setEmail(e.target.value);
+    }
   }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
     type: "text",
     placeholder: "password",
     value: password,
-    onChange: setPassword
-  }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", null, "Login"));
+    onChange: function onChange(e) {
+      return setPassword(e.target.value);
+    }
+  }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+    type: "button",
+    onClick: login
+  }, "Login"));
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (Login);
@@ -66912,7 +66941,7 @@ var PrivateRoute = function PrivateRoute(_ref) {
   if (loading) return null;
   return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_3__["Route"], _extends({}, rest, {
     render: function render(props) {
-      return !error && data.email ? react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Component, props) : react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_3__["Redirect"], {
+      return !error && data.me.email ? react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Component, props) : react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_3__["Redirect"], {
         to: {
           pathname: "/login",
           state: {

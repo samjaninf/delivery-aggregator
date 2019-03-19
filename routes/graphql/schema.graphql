@@ -5,7 +5,7 @@ scalar DateTime
 "A date string with format 'Y-m-d', e.g. '2011-05-23'."
 scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
 
-type Query {
+type Query @protect(guards: ["api"]) {
   users: [User!]! @paginate(type: "paginator", model: "App\\User")
   user(id: ID @eq): User @find(model: "App\\User")
 
@@ -13,6 +13,8 @@ type Query {
   store(id: ID @eq): Store @find(model: "App\\Store")
 
   orders(storeId: ID!, count: Int!, page: Int): OrderPaginator!
+
+  me: User @auth
 }
 
 type User {
@@ -59,4 +61,9 @@ type PaginatorInfo {
   lastPage: Int!
   perPage: Int!
   total: Int!
+}
+
+type Mutation @protect(guards: ["api"]) {
+  deleteUser(id: ID! @rules(apply: ["required"])): User
+    @delete(model: "App\\User")
 }

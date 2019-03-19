@@ -20,7 +20,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
     <Route
       {...rest}
       render={props =>
-        !error && data.email ? (
+        !error && data.me.email ? (
           <Component {...props} />
         ) : (
           <Redirect

@@ -11,17 +11,6 @@
 |
  */
 
-// === Auth-related routes ===
-Route::group([
-    'middleware' => 'api',
-    'prefix' => 'auth',
-], function () {
-    Route::post('login', 'AuthController@login');
-    Route::get('user', 'AuthController@user');
-    Route::middleware('jwt.refresh')->get('refresh', 'AuthController@refresh');
-    Route::get('logout', 'AuthController@logout');
-});
-
 // === API routes ===
 Route::group([
     'middleware' => 'api',
@@ -52,7 +41,7 @@ Route::group([
 
     // Get store isOpen status
     Route::get('/stores/{store}/isOpen', 'WooController@isOpen');
-    
+
     // Set store isOpen status
     Route::post('/stores/{store}/isOpen', 'WooController@setIsOpen');
 

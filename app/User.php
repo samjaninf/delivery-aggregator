@@ -5,13 +5,14 @@ namespace App;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Log;
+use Laravel\Passport\HasApiTokens;
 use Silber\Bouncer\Database\HasRolesAndAbilities;
-use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable implements JWTSubject
+class User extends Authenticatable
 {
     use Notifiable;
     use HasRolesAndAbilities;
+    use HasApiTokens;
 
     public static function boot()
     {
@@ -52,20 +53,6 @@ class User extends Authenticatable implements JWTSubject
     public function statusChanges()
     {
         return $this->hasMany('App\StatusChange');
-    }
-
-    /********************
-     *  AUTH FUNCTIONS  *
-     ********************/
-
-    public function getJWTIdentifier()
-    {
-        return $this->getKey();
-    }
-
-    public function getJWTCustomClaims()
-    {
-        return [];
     }
 
     /************************

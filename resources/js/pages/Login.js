@@ -1,8 +1,20 @@
 import React, { useState } from "react";
+import { useMutation } from "react-apollo-hooks";
+import { gql } from "apollo-boost";
+
+const LOGIN_MUTATION = gql`
+  mutation login($username: String!, $password: String!) {
+    login(data: { username: $username, password: $password })
+  }
+`;
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const login = useMutation(LOGIN_MUTATION, {
+    variables: { username: email, password }
+  });
 
   return (
     <form>
@@ -10,15 +22,17 @@ const Login = () => {
         type="text"
         placeholder="email"
         value={email}
-        onChange={setEmail}
+        onChange={e => setEmail(e.target.value)}
       />
       <input
         type="text"
         placeholder="password"
         value={password}
-        onChange={setPassword}
+        onChange={e => setPassword(e.target.value)}
       />
-      <button>Login</button>
+      <button type="button" onClick={login}>
+        Login
+      </button>
     </form>
   );
 };

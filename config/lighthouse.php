@@ -12,7 +12,7 @@ return [
     | Set the endpoint to which the GraphQL server responds.
     | The default route endpoint is "yourdomain.com/graphql".
     |
-    */
+     */
     'route_name' => 'graphql',
 
     /*
@@ -22,7 +22,7 @@ return [
     |
     | This setting controls if GET requests to the GraphQL endpoint are allowed.
     |
-    */
+     */
     'route_enable_get' => true,
 
     /*
@@ -39,10 +39,10 @@ return [
     | to add middleware to single fields in the schema.
     | Read more about this in the docs https://lighthouse-php.netlify.com/docs/auth.html#apply-auth-middleware
     |
-    */
+     */
     'route' => [
         'prefix' => '',
-        // 'middleware' => ['loghttp']
+        'middleware' => ['api'],
     ],
 
     /*
@@ -54,7 +54,7 @@ return [
     | relative to the app path. You should define your entire GraphQL
     | schema in this file (additional files may be imported).
     |
-    */
+     */
     'schema' => [
         'register' => base_path('routes/graphql/schema.graphql'),
     ],
@@ -68,7 +68,7 @@ return [
     | This operation is pretty expensive so it is recommended to enable
     | caching in production mode.
     |
-    */
+     */
     'cache' => [
         'enable' => env('LIGHTHOUSE_CACHE_ENABLE', false),
         'key' => env('LIGHTHOUSE_CACHE_KEY', 'lighthouse-schema'),
@@ -81,8 +81,8 @@ return [
     |
     | List directories that will be scanned for custom server-side directives.
     |
-    */
-    'directives' => [__DIR__.'/../app/Http/GraphQL/Directives'],
+     */
+    'directives' => [__DIR__ . '/../app/Http/GraphQL/Directives'],
 
     /*
     |--------------------------------------------------------------------------
@@ -92,7 +92,7 @@ return [
     | These are the default namespaces where Lighthouse looks for classes
     | that extend functionality of the schema.
     |
-    */
+     */
     'namespaces' => [
         'models' => 'App\\Models',
         'queries' => 'App\\Http\\GraphQL\\Queries',
@@ -111,7 +111,7 @@ return [
     | This configures the options from http://webonyx.github.io/graphql-php/security/
     | A setting of "0" means that the validation rule is disabled.
     |
-    */
+     */
     'security' => [
         'max_query_complexity' => 0,
         'max_query_depth' => 0,
@@ -126,7 +126,7 @@ return [
     | Control the debug level as described in http://webonyx.github.io/graphql-php/error-handling/
     | Debugging is only applied if the global Laravel debug config is set to true.
     |
-    */
+     */
     'debug' => Debug::INCLUDE_DEBUG_MESSAGE | Debug::INCLUDE_TRACE,
 
     /*
@@ -138,7 +138,7 @@ return [
     | handle them. You may use this to log, filter or format the errors.
     | The classes must implement Nuwave\Lighthouse\Execution\ErrorHandler
     |
-    */
+     */
     'error_handlers' => [
         \Nuwave\Lighthouse\Execution\ExtensionErrorHandler::class,
     ],
@@ -150,18 +150,18 @@ return [
     |
     | Register extension classes that extend \Nuwave\Lighthouse\Schema\Extensions\GraphQLExtension
     |
-    */
+     */
     'extensions' => [
         // \Nuwave\Lighthouse\Schema\Extensions\TracingExtension::class
     ],
 
-     /*
-     |--------------------------------------------------------------------------
-     | GraphQL Controller
-     |--------------------------------------------------------------------------
-     |
-     | Specify which controller (and method) you want to handle GraphQL requests.
-     |
+    /*
+    |--------------------------------------------------------------------------
+    | GraphQL Controller
+    |--------------------------------------------------------------------------
+    |
+    | Specify which controller (and method) you want to handle GraphQL requests.
+    |
      */
     'controller' => 'Nuwave\Lighthouse\Support\Http\Controllers\GraphQLController@query',
 
@@ -173,7 +173,7 @@ return [
     | The name that is used for the global id field on the Node interface.
     | When creating a Relay compliant server, this must be named "id".
     |
-    */
+     */
     'global_id_field' => 'id',
 
     /*
