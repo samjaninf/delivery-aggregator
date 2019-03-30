@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { useQuery } from "react-apollo-hooks";
 import { Route, Redirect } from "react-router-dom";
 
@@ -14,20 +15,29 @@ const PrivateRoute = ({ inverted, component: Component, ...rest }) => {
   return (
     <Route
       {...rest}
-      render={props =>
+      render={({ location, ...props }) =>
         authorized ? (
           <Component {...props} />
         ) : (
           <Redirect
             to={{
               pathname: inverted ? "/" : "/login",
-              state: { from: props.location }
+              state: { from: location }
             }}
           />
         )
       }
     />
   );
+};
+
+PrivateRoute.propTypes = {
+  inverted: PropTypes.bool,
+  component: PropTypes.func.isRequired
+};
+
+PrivateRoute.defaultProps = {
+  inverted: false
 };
 
 export default PrivateRoute;

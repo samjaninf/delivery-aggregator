@@ -1,5 +1,5 @@
 import React from "react";
-import { formatTime } from "../util/formatTime";
+import PropTypes from "prop-types";
 
 import {
   FaRegClock,
@@ -8,6 +8,7 @@ import {
   FaPhone,
   FaMoneyBillAlt
 } from "react-icons/fa";
+import { formatTime } from "../util/formatTime";
 
 const Order = ({
   number,
@@ -20,24 +21,43 @@ const Order = ({
 }) => {
   return (
     <div className="card">
-      <h4>Ordine #{number}</h4>
+      <h4>{`Ordine #${number}`}</h4>
       <p>
-        <FaRegClock /> {formatTime(deliveryDate)}
+        <FaRegClock /> 
+        {' '}
+        {formatTime(deliveryDate)}
       </p>
       <p>
-        <FaUser /> {firstName} {lastName}
+        <FaUser /> 
+        {' '}
+        {`${firstName} ${lastName}`}
       </p>
       <p>
-        <FaMapPin /> {address}
+        <FaMapPin /> 
+        {' '}
+        {address}
       </p>
       <p>
-        <FaPhone /> {phone}
+        <FaPhone /> 
+        {' '}
+        {phone}
       </p>
       <p>
-        <FaMoneyBillAlt /> €{(+total).toFixed(2)} (Contanti)
+        <FaMoneyBillAlt />
+        {` €${(+total).toFixed(2)} (Contanti)`}
       </p>
     </div>
   );
+};
+
+Order.propTypes = {
+  number: PropTypes.string.isRequired,
+  deliveryDate: PropTypes.string.isRequired,
+  total: PropTypes.string.isRequired,
+  firstName: PropTypes.string.isRequired,
+  lastName: PropTypes.string.isRequired,
+  phone: PropTypes.string.isRequired,
+  address: PropTypes.string.isRequired
 };
 
 export default Order;

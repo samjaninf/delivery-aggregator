@@ -1,35 +1,23 @@
 import React from "react";
-import { gql } from "apollo-boost";
 import { useQuery } from "react-apollo-hooks";
 
 import Order from "./Order";
-
-const GET_ORDERS = gql`
-  {
-    orders(id: 1, count: 10) {
-      data {
-        id
-        number
-        deliveryDate
-        total
-        firstName
-        lastName
-        phone
-        address
-      }
-    }
-  }
-`;
+import { ORDERS_QUERY } from "../graphql/queries";
 
 const Orders = () => {
-  const { data, error, loading } = useQuery(GET_ORDERS);
+  const { data, error, loading } = useQuery(ORDERS_QUERY);
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
   if (error) {
-    return <div>Error! {error.message}</div>;
+    return (
+      <div>
+        Error!
+        {error.message}
+      </div>
+    );
   }
 
   return (

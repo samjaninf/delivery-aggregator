@@ -1,4 +1,4 @@
-const { formatTime, formatDate } = require("./formatTime");
+import { formatTime, formatDate } from "./formatTime";
 
 const title = s => `<medium2><normal><left>${s}<br>`;
 const subtitle = s => `<medium1><normal><left>${s}<br>`;
@@ -7,14 +7,14 @@ const replaceHtmlEntities = s => s.replace(/(&euro;|€)/, "EUR");
 
 const products = order => {
   const items = order.items.map(i => {
-    const title = subtitle(`${i.quantity} x ${i.name}`);
+    const heading = subtitle(`${i.quantity} x ${i.name}`);
     const addons = Object.keys(i.meta)
       .map(
         k => `<small>  ${replaceHtmlEntities(k)}<br><small>  ${i.meta[k]}<br>`
       )
       .join("");
     const price = `<small>  ${euro(i.total)}`;
-    return `${title}${addons}${price}`;
+    return `${heading}${addons}${price}`;
   });
 
   const shipping = `${subtitle("Spedizione")}<small>  ${euro(order.shipping)}`;
@@ -26,14 +26,14 @@ const orderData = order => {
   const {
     number,
     total,
-    payment_method,
-    delivery_date,
-    delivery_date_end,
+    paymentMethod,
+    deliveryDate,
+    deliveryDateEnd,
     coupons,
     notes
   } = order;
 
-  const toPay = payment_method === "cod" ? "da pagare" : "già pagato";
+  const toPay = paymentMethod === "cod" ? "da pagare" : "già pagato";
   const notesData = notes ? [`Note: ${notes}`] : [];
   const couponsData =
     Array.isArray(coupons) && coupons.length > 0
@@ -44,8 +44,8 @@ const orderData = order => {
 
   const data = [
     `Totale: ${euro(total)} (${toPay})`,
-    `Data: ${formatDate(delivery_date)}`,
-    `Orario: ${formatTime(delivery_date)} ~ ${formatTime(delivery_date_end)}`,
+    `Data: ${formatDate(deliveryDate)}`,
+    `Orario: ${formatTime(deliveryDate)} ~ ${formatTime(deliveryDateEnd)}`,
     ...couponsData,
     ...notesData
   ]
@@ -56,10 +56,10 @@ const orderData = order => {
 };
 
 const clientData = order => {
-  const { first_name, last_name, address, city, phone } = order;
+  const { firstName, lastName, address, city, phone } = order;
 
   const data = [
-    `Nome: ${first_name} ${last_name}`,
+    `Nome: ${firstName} ${lastName}`,
     `Indirizzo: ${address}, ${city}`,
     `Telefono: ${phone}`
   ]
@@ -82,4 +82,4 @@ const makeReceipt = (store, order) => {
   return text;
 };
 
-module.exports = makeReceipt;
+export default makeReceipt;
