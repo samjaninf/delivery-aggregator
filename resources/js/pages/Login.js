@@ -1,23 +1,31 @@
 import React, { useState } from "react";
-import { useMutation } from "react-apollo-hooks";
-import { gql } from "apollo-boost";
+import { withRouter } from "react-router-dom";
 
-const LOGIN_MUTATION = gql`
-  mutation login($username: String!, $password: String!) {
-    login(data: { username: $username, password: $password })
-  }
-`;
+import { useMutation } from "react-apollo-hooks";
+import { LOGIN_MUTATION } from "../graphql/mutations";
+import { ME_QUERY } from "../graphql/queries";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const login = useMutation(LOGIN_MUTATION, {
-    variables: { username: email, password }
+    variables: { username: email, password },
+    refetchQueries: [
+      {
+        query: ME_QUERY
+      }
+    ],
+    awaitRefetchQueries: true
   });
 
   return (
-    <form>
+    <form
+      onSubmit={e => {
+        e.preventDefault();
+        login();
+      }}
+    >
       <input
         type="text"
         placeholder="email"
@@ -30,11 +38,9 @@ const Login = () => {
         value={password}
         onChange={e => setPassword(e.target.value)}
       />
-      <button type="button" onClick={login}>
-        Login
-      </button>
+      <button type="submit">Login</button>
     </form>
   );
 };
 
-export default Login;
+export default withRouter(Login);
