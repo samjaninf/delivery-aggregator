@@ -1,4 +1,4 @@
-extend type Query @protect(guards: ["api"]) {
+extend type Query @protect {
   orders(id: ID!, count: Int!, page: Int): OrderPaginator!
     @ability(if: "view orders", model: "App\\Store")
 }

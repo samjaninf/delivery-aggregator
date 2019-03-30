@@ -1,4 +1,4 @@
-extend type Query @protect(guards: ["api"]) {
+extend type Query @protect {
   users: [User!]! @paginate(type: "paginator", model: "App\\User")
   user(id: ID @eq): User @find(model: "App\\User")
 }

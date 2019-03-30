@@ -1,10 +1,10 @@
 extend type Query {
-  me: User @auth @protect(guards: ["api"])
+  me: User @auth @protect(suppressErrors: true)
 }
 
 extend type Mutation {
   login(data: LoginInput): User
-  logout: LogoutResponse! @protect(guards: ["api"])
+  logout: LogoutResponse! @protect
 }
 
 input LoginInput {

@@ -1,4 +1,4 @@
-type Query @protect(guards: ["api"]) {
+type Query @protect {
   stores: [Store!]! @paginate(builder: "App\\Store@visibleStores")
   store(id: ID @eq): Store
     @find(model: "App\\Store")

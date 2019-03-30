@@ -61,7 +61,9 @@ class ProtectDirective extends BaseDirective implements NodeManipulator, FieldMi
         return $next($value->setResolver(function ($root, array $args, GraphQLContext $context, ResolveInfo $resolveInfo) use ($resolver) {
 
             $guards = $this->directiveArgValue('guards', []);
-            $this->authenticate($context->request, $guards);
+            $suppressErrors = $this->directiveArgValue('suppressErrors', false);
+
+            $this->authenticate($context->request, $guards, $suppressErrors);
             return $resolver(
                 $root,
                 $args,
@@ -124,16 +126,18 @@ class ProtectDirective extends BaseDirective implements NodeManipulator, FieldMi
      *
      * @throws \App\Containers\Core\GraphQL\Exceptions\AuthException
      */
-    protected function authenticate($request, array $guards)
+    protected function authenticate($request, array $guards, $suppressErrors)
     {
         if (empty($guards)) {
-            $guards = [null];
+            $guards = ["api"];
         }
         foreach ($guards as $guard) {
             if ($this->auth->guard($guard)->check()) {
                 return $this->auth->shouldUse($guard);
             }
         }
-        throw new AuthenticationException("You are not authorized to view this resource");
+        if (!$suppressErrors) {
+            throw new AuthenticationException("You are not authorized to view this resource");
+        }
     }
 }
