@@ -6,14 +6,14 @@ import Order from "./Order";
 
 const GET_ORDERS = gql`
   {
-    orders(storeId: 1, count: 10) {
+    orders(id: 1, count: 10) {
       data {
         id
         number
-        delivery_date
+        deliveryDate
         total
-        first_name
-        last_name
+        firstName
+        lastName
         phone
         address
       }

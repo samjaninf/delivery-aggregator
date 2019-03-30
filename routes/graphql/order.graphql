@@ -1,0 +1,20 @@
+extend type Query @protect(guards: ["api"]) {
+  orders(id: ID!, count: Int!, page: Int): OrderPaginator!
+    @ability(if: "view orders", model: "App\\Store")
+}
+
+type Order {
+  id: ID!
+  number: String!
+  total: String!
+  firstName: String!
+  lastName: String!
+  deliveryDate: DateTime
+  phone: String!
+  address: String!
+}
+
+type OrderPaginator {
+  data: [Order!]!
+  paginatorInfo: PaginatorInfo!
+}

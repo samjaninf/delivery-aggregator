@@ -15,11 +15,11 @@ class Orders
 
     public function resolve($rootValue, array $args, $context, ResolveInfo $resolveInfo)
     {
-        $storeId = $args['storeId'];
+        $id = $args['id'];
         $count = $args['count'];
         $page = $args['page'] ?? 1;
 
-        $store = Store::findOrFail($storeId);
+        $store = Store::findOrFail($id);
 
         return $this->woo->orders($store, $count, $page);
     }

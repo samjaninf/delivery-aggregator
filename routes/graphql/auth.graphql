@@ -1,3 +1,12 @@
+extend type Query {
+  me: User @auth @protect(guards: ["api"])
+}
+
+extend type Mutation {
+  login(data: LoginInput): User
+  logout: LogoutResponse! @protect(guards: ["api"])
+}
+
 input LoginInput {
   username: String!
   password: String!
@@ -6,9 +15,4 @@ input LoginInput {
 type LogoutResponse {
   status: String!
   message: String
-}
-
-extend type Mutation {
-  login(data: LoginInput): User
-  logout: LogoutResponse! @protect(guards: ["api"])
 }

@@ -5,65 +5,27 @@ scalar DateTime
 "A date string with format 'Y-m-d', e.g. '2011-05-23'."
 scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
 
-type Query @protect(guards: ["api"]) {
-  users: [User!]! @paginate(type: "paginator", model: "App\\User")
-  user(id: ID @eq): User @find(model: "App\\User")
-
-  stores: [Store!]! @paginate(type: "paginator", model: "App\\Store")
-  store(id: ID @eq): Store @find(model: "App\\Store")
-
-  orders(storeId: ID!, count: Int!, page: Int): OrderPaginator!
-
-  me: User @auth
+type Query {
+  healthCheck: Boolean!
+    @field(resolver: "App\\Http\\GraphQL\\Common\\HealthCheck@resolve")
 }
 
-type User {
-  id: ID!
-  name: String!
-  email: String!
-  created_at: DateTime!
-  updated_at: DateTime!
-  stores: [Store!]!
-  abilities: [String!]!
-}
-
-type Store {
-  id: ID!
-  code: String!
-  name: String!
-  created_at: DateTime!
-  updated_at: DateTime!
-  users: [User!]!
-}
-
-type Order {
-  id: ID!
-  number: String!
-  total: String!
-  first_name: String!
-  last_name: String!
-  delivery_date: DateTime
-  phone: String!
-  address: String!
-}
-
-type OrderPaginator {
-  data: [Order!]!
-  paginatorInfo: PaginatorInfo!
+type Mutation {
+  healthCheck: Boolean!
+    @field(resolver: "App\\Http\\GraphQL\\Common\\HealthCheck@resolve")
 }
 
 type PaginatorInfo {
   count: Int!
   currentPage: Int!
   firstItem: Int!
-  hasMorePages: Bool!
+  hasMorePages: Boolean!
   lastItem: Int!
   lastPage: Int!
   perPage: Int!
   total: Int!
 }
 
-type Mutation @protect(guards: ["api"]) {
-  deleteUser(id: ID! @rules(apply: ["required"])): User
-    @delete(model: "App\\User")
-}
+#import user.graphql
+#import store.graphql
+#import order.graphql

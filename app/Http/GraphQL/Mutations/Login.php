@@ -26,10 +26,8 @@ class Login
         $user = Auth::user();
 
         //Create Personal Access Tokena and return a JWT
-        if (!$context->request->hasCookie('_token')) {
-            $token = $user->createToken('Access Token')->accessToken;
-            Cookie::queue('_token', $token, 1800, '/', $context->request->getHost(), false, true);
-        }
+        $token = $user->createToken('Access Token')->accessToken;
+        Cookie::queue('_token', $token, 1800, '/', $context->request->getHost(), false, true);
 
         return $user;
     }

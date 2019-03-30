@@ -11,10 +11,10 @@ import {
 
 const Order = ({
   number,
-  delivery_date,
+  deliveryDate,
   total,
-  first_name,
-  last_name,
+  firstName,
+  lastName,
   phone,
   address
 }) => {
@@ -22,10 +22,10 @@ const Order = ({
     <div className="card">
       <h4>Ordine #{number}</h4>
       <p>
-        <FaRegClock /> {formatTime(delivery_date)}
+        <FaRegClock /> {formatTime(deliveryDate)}
       </p>
       <p>
-        <FaUser /> {first_name} {last_name}
+        <FaUser /> {firstName} {lastName}
       </p>
       <p>
         <FaMapPin /> {address}

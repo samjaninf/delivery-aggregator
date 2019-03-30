@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Bouncer;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 
@@ -58,6 +59,17 @@ class Store extends Model
     public static function findByCode(string $code)
     {
         return Store::where('code', $code)->first();
+    }
+
+    public static function visibleStores()
+    {
+        $user = auth()->user();
+
+        if (!$user || Bouncer::can('view all stores')) {
+            return \App\Store::query();
+        } else {
+            return $user->stores()->select(['name', 'code'])->distinct();
+        }
     }
 
     /************************

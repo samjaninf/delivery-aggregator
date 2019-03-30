@@ -1,0 +1,15 @@
+type Query @protect(guards: ["api"]) {
+  stores: [Store!]! @paginate(builder: "App\\Store@visibleStores")
+  store(id: ID @eq): Store
+    @find(model: "App\\Store")
+    @ability(if: "manage stores")
+}
+
+type Store {
+  id: ID!
+  code: String!
+  name: String!
+  created_at: DateTime!
+  updated_at: DateTime!
+  users: [User!]!
+}
