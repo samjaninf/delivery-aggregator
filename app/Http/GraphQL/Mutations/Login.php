@@ -19,7 +19,7 @@ class Login
      */
     public function resolve($rootValue, array $args, GraphQLContext $context = null, ResolveInfo $resolveInfo)
     {
-        if (!Auth::once(['email' => $args['data']['username'], 'password' => $args['data']['password']])) {
+        if (!Auth::once(['email' => $args['input']['username'], 'password' => $args['input']['password']])) {
             throw new AuthenticationException('Authentication Failed');
         }
 

@@ -1,15 +1,39 @@
-type Query @protect {
+extend type Query @protect {
   stores: [Store!]! @paginate(builder: "App\\Store@visibleStores")
-  store(id: ID @eq): Store
-    @find(model: "App\\Store")
-    @ability(if: "manage stores")
+  store(id: ID @eq): Store @find(model: "Store") @can(if: "manage stores")
 }
 
-type Store {
+extend type Mutation @protect @can(if: "manage stores") {
+  createStore(input: StoreCreateInput!): Store @create(flatten: true)
+  updateStore(input: StoreUpdateInput!): Store @update(flatten: true)
+  deleteStore(id: ID!): Store @delete
+}
+
+type Store @protect {
   id: ID!
   code: String!
   name: String!
-  created_at: DateTime!
-  updated_at: DateTime!
-  users: [User!]!
+  url: String!
+  users: [User!]! @belongsToMany
+  created_at: DateTime
+  updated_at: DateTime
+  consumer_key: String! @can(if: "manage stores", model: "Store")
+  consumer_secret: String! @can(if: "manage stores", model: "Store")
+}
+
+input StoreCreateInput {
+  code: String @rules(apply: ["required"])
+  name: String @rules(apply: ["required"])
+  url: String @rules(apply: ["required", "url"])
+  consumer_key: String @rules(apply: ["required"])
+  consumer_secret: String @rules(apply: ["required"])
+}
+
+input StoreUpdateInput {
+  id: ID!
+  code: String
+  name: String
+  url: String @rules(apply: ["url"])
+  consumer_key: String
+  consumer_secret: String
 }

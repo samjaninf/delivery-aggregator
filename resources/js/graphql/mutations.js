@@ -2,7 +2,7 @@ import { gql } from "apollo-boost";
 
 export const LOGIN_MUTATION = gql`
   mutation login($username: String!, $password: String!) {
-    login(data: { username: $username, password: $password }) {
+    login(input: { username: $username, password: $password }) {
       email
     }
   }

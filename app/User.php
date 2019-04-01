@@ -2,6 +2,8 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Log;
@@ -45,12 +47,12 @@ class User extends Authenticatable
      *  RELATIONSHIPS  *
      *******************/
 
-    public function stores()
+    public function stores(): BelongsToMany
     {
         return $this->belongsToMany('App\Store')->withPivot('fb_registered');
     }
 
-    public function statusChanges()
+    public function statusChanges(): HasMany
     {
         return $this->hasMany('App\StatusChange');
     }

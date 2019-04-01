@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class StatusChange extends Model
 {
@@ -12,12 +13,12 @@ class StatusChange extends Model
      *  RELATIONSHIPS  *
      *******************/
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo('App\User');
     }
 
-    public function store()
+    public function store(): BelongsTo
     {
         return $this->belongsTo('App\Store');
     }

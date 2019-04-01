@@ -7,12 +7,10 @@ scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
 
 type Query {
   healthCheck: Boolean!
-    @field(resolver: "App\\Http\\GraphQL\\Common\\HealthCheck@resolve")
 }
 
 type Mutation {
   healthCheck: Boolean!
-    @field(resolver: "App\\Http\\GraphQL\\Common\\HealthCheck@resolve")
 }
 
 type PaginatorInfo {
@@ -29,3 +27,4 @@ type PaginatorInfo {
 #import user.graphql
 #import store.graphql
 #import order.graphql
+#import auth.graphql

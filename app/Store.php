@@ -4,6 +4,8 @@ namespace App;
 
 use Bouncer;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Log;
 
 class Store extends Model
@@ -37,12 +39,12 @@ class Store extends Model
      *  RELATIONSHIPS  *
      *******************/
 
-    public function users()
+    public function users(): BelongsToMany
     {
         return $this->belongsToMany('App\User')->withPivot('fb_registered');
     }
 
-    public function statusChanges()
+    public function statusChanges(): HasMany
     {
         return $this->hasMany('App\StatusChange');
     }

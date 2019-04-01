@@ -15,8 +15,9 @@
     "laravel/framework": "5.7.*",
     "laravel/passport": "^7.2",
     "laravel/tinker": "^1.0",
-    "nuwave/lighthouse": "^2.6",
-    "silber/bouncer": "v1.0.0-rc.4"
+    "nuwave/lighthouse": "v3.0-beta.4",
+    "silber/bouncer": "v1.0.0-rc.4",
+    "webonyx/graphql-php": "v0.13.1"
   },
   "require-dev": {
     "beyondcode/laravel-dump-server": "^1.0",

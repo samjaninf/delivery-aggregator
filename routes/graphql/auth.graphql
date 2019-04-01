@@ -3,7 +3,7 @@ extend type Query {
 }
 
 extend type Mutation {
-  login(data: LoginInput): User
+  login(input: LoginInput): User
   logout: LogoutResponse! @protect
 }
 

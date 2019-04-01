@@ -1,6 +1,6 @@
 extend type Query @protect {
-  users: [User!]! @paginate(type: "paginator", model: "App\\User")
-  user(id: ID @eq): User @find(model: "App\\User")
+  users: [User!]! @paginate(type: "paginator")
+  user(id: ID @eq): User @find
 }
 
 type User {

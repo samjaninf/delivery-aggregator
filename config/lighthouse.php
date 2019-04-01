@@ -76,16 +76,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Directives
-    |--------------------------------------------------------------------------
-    |
-    | List directories that will be scanned for custom server-side directives.
-    |
-     */
-    'directives' => [__DIR__ . '/../app/Http/GraphQL/Directives'],
-
-    /*
-    |--------------------------------------------------------------------------
     | Namespaces
     |--------------------------------------------------------------------------
     |
@@ -94,12 +84,13 @@ return [
     |
      */
     'namespaces' => [
-        'models' => 'App\\Models',
-        'queries' => 'App\\Http\\GraphQL\\Queries',
-        'mutations' => 'App\\Http\\GraphQL\\Mutations',
+        'models' => 'App',
+        'queries' => ['App\\Http\\GraphQL\\Queries', 'App\\Http\\GraphQL\\Common'],
+        'mutations' => ['App\\Http\\GraphQL\\Mutations', 'App\\Http\\GraphQL\\Common'],
         'interfaces' => 'App\\Http\\GraphQL\\Interfaces',
         'unions' => 'App\\Http\\GraphQL\\Unions',
         'scalars' => 'App\\Http\\GraphQL\\Scalars',
+        'directives' => 'App\\Http\\GraphQL\\Directives',
     ],
 
     /*
