@@ -67596,7 +67596,7 @@ function _templateObject2() {
 }
 
 function _templateObject() {
-  var data = _taggedTemplateLiteral(["\n  mutation login($username: String!, $password: String!) {\n    login(data: { username: $username, password: $password }) {\n      email\n    }\n  }\n"]);
+  var data = _taggedTemplateLiteral(["\n  mutation login($username: String!, $password: String!) {\n    login(input: { username: $username, password: $password }) {\n      email\n    }\n  }\n"]);
 
   _templateObject = function _templateObject() {
     return data;
