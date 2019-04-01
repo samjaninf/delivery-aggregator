@@ -17,18 +17,18 @@ Route::group([
 ], function () {
 
     // === Stores CRUD ===
-    Route::get('/stores', 'StoreController@index');
-    Route::get('/stores/{store}', 'StoreController@show');
-    Route::post('/stores', 'StoreController@store');
-    Route::put('/stores', 'StoreController@update');
-    Route::delete('/stores/{store}', 'StoreController@destroy');
+    // Route::get('/stores', 'StoreController@index');
+    // Route::get('/stores/{store}', 'StoreController@show');
+    // Route::post('/stores', 'StoreController@store');
+    // Route::put('/stores', 'StoreController@update');
+    // Route::delete('/stores/{store}', 'StoreController@destroy');
 
-    // === Users CRUD ===
-    Route::get('/users', 'UserController@index');
-    Route::get('/users/{user}', 'UserController@show');
-    Route::post('/users', 'UserController@store');
-    Route::put('/users', 'UserController@update');
-    Route::delete('/users/{user}', 'UserController@destroy');
+    // // === Users CRUD ===
+    // Route::get('/users', 'UserController@index');
+    // Route::get('/users/{user}', 'UserController@show');
+    // Route::post('/users', 'UserController@store');
+    // Route::put('/users', 'UserController@update');
+    // Route::delete('/users/{user}', 'UserController@destroy');
 
     // === Woocommerce-related routes ===
     // All of the following routes are store-specific

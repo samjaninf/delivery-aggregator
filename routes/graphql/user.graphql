@@ -1,14 +1,33 @@
-extend type Query @protect {
+extend type Query @protect @can(if: "manage users") {
   users: [User!]! @paginate(type: "paginator")
   user(id: ID @eq): User @find
+}
+
+extend type Mutation @protect @can(if: "manage users") {
+  createUser(input: UserCreateInput!): User @create(flatten: true)
+  updateUser(input: UserUpdateInput!): User @update(flatten: true)
+  deleteUser(id: ID!): User @delete
 }
 
 type User {
   id: ID!
   name: String!
   email: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  stores: [Store!]!
+  created_at: DateTime!
+  updated_at: DateTime!
+  stores: [Store!]! @belongsToMany
   abilities: [String!]!
+}
+
+input UserCreateInput {
+  name: String @rules(apply: ["required"])
+  email: String @rules(apply: ["required", "email"])
+  password: String @rules(apply: ["required", "min:10"]) @bcrypt
+}
+
+input UserUpdateInput {
+  id: ID!
+  name: String
+  email: String @rules(apply: ["email"])
+  password: String @rules(apply: ["min:10"]) @bcrypt
 }
