@@ -67506,7 +67506,7 @@ var Order = function Order(_ref) {
       address = _ref.address;
   return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
     className: "card"
-  }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4", null, "Ordine #", number), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_icons_fa__WEBPACK_IMPORTED_MODULE_2__["FaRegClock"], null), ' ', Object(_util_formatTime__WEBPACK_IMPORTED_MODULE_3__["formatTime"])(deliveryDate)), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_icons_fa__WEBPACK_IMPORTED_MODULE_2__["FaUser"], null), ' ', firstName, ' ', lastName), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_icons_fa__WEBPACK_IMPORTED_MODULE_2__["FaMapPin"], null), ' ', address), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_icons_fa__WEBPACK_IMPORTED_MODULE_2__["FaPhone"], null), ' ', phone), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_icons_fa__WEBPACK_IMPORTED_MODULE_2__["FaMoneyBillAlt"], null), " €", (+total).toFixed(2), " (Contanti)"));
+  }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4", null, "Ordine #".concat(number)), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_icons_fa__WEBPACK_IMPORTED_MODULE_2__["FaRegClock"], null), ' ', Object(_util_formatTime__WEBPACK_IMPORTED_MODULE_3__["formatTime"])(deliveryDate)), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_icons_fa__WEBPACK_IMPORTED_MODULE_2__["FaUser"], null), ' ', "".concat(firstName, " ").concat(lastName)), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_icons_fa__WEBPACK_IMPORTED_MODULE_2__["FaMapPin"], null), ' ', address), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_icons_fa__WEBPACK_IMPORTED_MODULE_2__["FaPhone"], null), ' ', phone), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_icons_fa__WEBPACK_IMPORTED_MODULE_2__["FaMoneyBillAlt"], null), " \u20AC".concat((+total).toFixed(2), " (Contanti)")));
 };
 
 Order.propTypes = {
@@ -67809,7 +67809,7 @@ var Logout = function Logout() {
 
               case 2:
                 _context.next = 4;
-                return client.clearStore();
+                return client.cache.reset();
 
               case 4:
               case "end":

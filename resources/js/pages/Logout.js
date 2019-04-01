@@ -17,7 +17,7 @@ const Logout = () => {
   useEffect(() => {
     async function doLogout() {
       await logout();
-      await client.clearStore();
+      await client.cache.reset();
     }
 
     doLogout();
