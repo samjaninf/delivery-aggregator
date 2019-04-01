@@ -307,14 +307,15 @@ class WooServiceGQL
      *
      * @return array List of all the products of the specified store
      */
-    public function products($store)
+    public function products($store, $count = 20, $page = 1)
     {
         $wc = $this->createClient($store);
         $products = $wc->get('products', [
-            'per_page' => 100, // FIXME: needs to be fixed for > 100 products
+            'per_page' => $count,
+            'page' => $page,
         ]);
 
-        return collect($products)
+        $data = collect($products)
             ->map(function ($product) {
                 // Map each product to the format that the frontend expects
                 $category = collect($product->categories)->first();
@@ -323,9 +324,14 @@ class WooServiceGQL
                     'id' => $product->id,
                     'name' => $product->name,
                     'category' => $category->name ?? 'Senza categoria',
-                    'in_stock' => $product->in_stock,
+                    'inStock' => $product->stock_status === 'instock',
                 ];
             });
+
+        return [
+            'data' => $data,
+            'paginatorInfo' => $this->paginatorInfo($wc, $count, $page, $data),
+        ];
     }
 
     /**

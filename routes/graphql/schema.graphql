@@ -24,7 +24,8 @@ type PaginatorInfo {
   total: Int!
 }
 
-#import user.graphql
-#import store.graphql
-#import order.graphql
 #import auth.graphql
+#import product.graphql
+#import order.graphql
+#import store.graphql
+#import user.graphql

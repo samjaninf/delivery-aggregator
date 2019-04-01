@@ -1,0 +1,16 @@
+extend type Query @protect {
+  products(id: ID!, count: Int!, page: Int): ProductPaginator!
+    @can(if: "manage products", model: "Store")
+}
+
+type Product {
+  id: ID!
+  name: String!
+  category: String!
+  inStock: Boolean
+}
+
+type ProductPaginator {
+  data: [Product!]!
+  paginatorInfo: PaginatorInfo!
+}

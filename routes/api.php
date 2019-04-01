@@ -34,10 +34,10 @@ Route::group([
     // All of the following routes are store-specific
 
     // Get list of orders
-    Route::get('/stores/{store}/orders', 'WooController@orders');
+    // Route::get('/stores/{store}/orders', 'WooController@orders');
 
     // Get list of all products
-    Route::get('/stores/{store}/products', 'WooController@products');
+    // Route::get('/stores/{store}/products', 'WooController@products');
 
     // Get store isOpen status
     Route::get('/stores/{store}/isOpen', 'WooController@isOpen');
