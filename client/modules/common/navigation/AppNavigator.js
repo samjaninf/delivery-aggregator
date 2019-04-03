@@ -1,8 +1,8 @@
 import { createAppContainer, createSwitchNavigator } from "react-navigation";
 
-import AuthLoadingScreen from "../screens/AuthLoadingScreen/AuthLoadingScreen";
-import MainTabNavigator from "./MainTabNavigator";
-import AuthStack from "./AuthStack";
+import AuthLoadingScreen from "../../auth/screens/AuthLoadingScreen/AuthLoadingScreen";
+import CourierTabNavigator from "../../courier/navigation/TabNavigator";
+import AuthStack from "../../auth/navigation/AuthStack";
 
 export default createAppContainer(
   createSwitchNavigator({
@@ -10,6 +10,6 @@ export default createAppContainer(
     // Read more at https://reactnavigation.org/docs/en/auth-flow.html
     AuthLoading: AuthLoadingScreen,
     Auth: AuthStack,
-    Main: MainTabNavigator
+    CourierMain: CourierTabNavigator
   })
 );

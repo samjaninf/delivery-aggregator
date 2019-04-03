@@ -12,7 +12,7 @@ class AuthLoadingScreen extends React.Component {
       props: { navigation }
     } = this;
     const userToken = await AsyncStorage.getItem("userToken");
-    navigation.navigate(userToken ? "Main" : "Auth");
+    navigation.navigate(userToken ? "CourierMain" : "Auth");
   };
 
   // Render any loading content that you like here

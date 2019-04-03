@@ -2,9 +2,9 @@ import React from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { WebBrowser } from "expo";
 
-import { MonoText } from "../../components/StyledText";
-import robotDev from "../../assets/images/robot-dev.png";
-import robotProd from "../../assets/images/robot-prod.png";
+import { MonoText } from "../../../../components/StyledText";
+import robotDev from "../../../../assets/images/robot-dev.png";
+import robotProd from "../../../../assets/images/robot-prod.png";
 import styles from "./styles";
 
 export default class HomeScreen extends React.Component {

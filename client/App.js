@@ -3,7 +3,7 @@ import { Platform, StatusBar, StyleSheet, View } from "react-native";
 import { AppLoading, Asset, Font, Icon } from "expo";
 import { Provider } from "@ant-design/react-native";
 
-import AppNavigator from "./navigation/AppNavigator";
+import AppNavigator from "./modules/common/navigation/AppNavigator";
 import robotDev from "./assets/images/robot-dev.png";
 import robotProd from "./assets/images/robot-prod.png";
 import spaceMono from "./assets/fonts/SpaceMono-Regular.ttf";
