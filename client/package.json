@@ -11,11 +11,15 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@ant-design/icons-react-native": "^1.0.2",
     "@ant-design/react-native": "^3.1.5",
     "@expo/samples": "2.1.1",
+    "apollo-boost": "^0.3.1",
     "babel-plugin-import": "^1.11.0",
     "expo": "^32.0.0",
+    "graphql": "^14.2.1",
     "react": "16.5.0",
+    "react-apollo": "^2.5.3",
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
     "react-navigation": "^3.0.9"
   },

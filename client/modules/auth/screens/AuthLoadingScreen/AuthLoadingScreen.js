@@ -1,5 +1,5 @@
 import React from "react";
-import { ActivityIndicator, AsyncStorage, StatusBar, View } from "react-native";
+import { ActivityIndicator, StatusBar, View } from "react-native";
 
 class AuthLoadingScreen extends React.Component {
   componentDidMount() {
@@ -11,7 +11,8 @@ class AuthLoadingScreen extends React.Component {
     const {
       props: { navigation }
     } = this;
-    const userToken = await AsyncStorage.getItem("userToken");
+    // const userToken = await AsyncStorage.getItem("userToken");
+    const userToken = null;
     navigation.navigate(userToken ? "CourierMain" : "Auth");
   };
 

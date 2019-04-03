@@ -2,12 +2,15 @@ import React from "react";
 import { Platform, StatusBar, StyleSheet, View } from "react-native";
 import { AppLoading, Asset, Font, Icon } from "expo";
 import { Provider } from "@ant-design/react-native";
+import { ApolloProvider } from "react-apollo";
 
+import antoutline from "@ant-design/icons-react-native/fonts/antoutline.ttf";
 import AppNavigator from "./modules/common/navigation/AppNavigator";
+import client from "./graphql/client";
+import theme from "./constants/theme";
 import robotDev from "./assets/images/robot-dev.png";
 import robotProd from "./assets/images/robot-prod.png";
 import spaceMono from "./assets/fonts/SpaceMono-Regular.ttf";
-import theme from "./constants/theme";
 
 const styles = StyleSheet.create({
   container: {
@@ -26,7 +29,8 @@ export default class App extends React.Component {
       Asset.loadAsync([robotDev, robotProd]),
       Font.loadAsync({
         ...Icon.Ionicons.font,
-        "space-mono": spaceMono
+        "space-mono": spaceMono,
+        antoutline
       })
     ]);
   };
@@ -55,12 +59,14 @@ export default class App extends React.Component {
       );
     }
     return (
-      <Provider theme={theme}>
-        <View style={styles.container}>
-          {Platform.OS === "ios" && <StatusBar barStyle="default" />}
-          <AppNavigator />
-        </View>
-      </Provider>
+      <ApolloProvider client={client}>
+        <Provider theme={theme}>
+          <View style={styles.container}>
+            {Platform.OS === "ios" && <StatusBar barStyle="default" />}
+            <AppNavigator />
+          </View>
+        </Provider>
+      </ApolloProvider>
     );
   }
 }
