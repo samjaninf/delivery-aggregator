@@ -1,52 +1,15 @@
 import React from "react";
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { WebBrowser } from "expo";
+import { ScrollView, View, Text } from "react-native";
+import { Query } from "react-apollo";
+import { ActivityIndicator, WingBlank, Card } from "@ant-design/react-native";
 
-import { MonoText } from "../../../../components/StyledText";
-import robotDev from "../../../../assets/images/robot-dev.png";
-import robotProd from "../../../../assets/images/robot-prod.png";
 import styles from "./styles";
+import ORDERS_QUERY from "../../graphql/ordersQuery";
 
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
     header: null
   };
-
-  handleLearnMorePress = () => {
-    WebBrowser.openBrowserAsync(
-      "https://docs.expo.io/versions/latest/guides/development-mode"
-    );
-  };
-
-  handleHelpPress = () => {
-    WebBrowser.openBrowserAsync(
-      "https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes"
-    );
-  };
-
-  maybeRenderDevelopmentModeWarning() {
-    if (__DEV__) {
-      const learnMoreButton = (
-        <Text onPress={this.handleLearnMorePress} style={styles.helpLinkText}>
-          Learn more
-        </Text>
-      );
-
-      return (
-        <Text style={styles.developmentModeText}>
-          Development mode is enabled, your app will be slower but you can use
-          useful development tools.
-          {learnMoreButton}
-        </Text>
-      );
-    }
-
-    return (
-      <Text style={styles.developmentModeText}>
-        You are not in development mode, your app will run at full speed.
-      </Text>
-    );
-  }
 
   render() {
     return (
@@ -55,56 +18,39 @@ export default class HomeScreen extends React.Component {
           style={styles.container}
           contentContainerStyle={styles.contentContainer}
         >
-          <View style={styles.welcomeContainer}>
-            <Image
-              source={__DEV__ ? robotDev : robotProd}
-              style={styles.welcomeImage}
-            />
-          </View>
+          <WingBlank size="lg" style={{ marginTop: 30 }}>
+            <Query query={ORDERS_QUERY} variables={{ id: 1 }}>
+              {({ loading, error, data }) => {
+                if (loading) return <ActivityIndicator />;
+                if (error)
+                  return (
+                    <Text>
+                      Error
+                      {JSON.stringify(error)}
+                    </Text>
+                  );
 
-          <View style={styles.getStartedContainer}>
-            {this.maybeRenderDevelopmentModeWarning()}
-
-            <Text style={styles.getStartedText}>Get started by opening</Text>
-
-            <View
-              style={[styles.codeHighlightContainer, styles.homeScreenFilename]}
-            >
-              <MonoText style={styles.codeHighlightText}>
-                screens/HomeScreen.js
-              </MonoText>
-            </View>
-
-            <Text style={styles.getStartedText}>
-              Change this text and your app will automatically reload.
-            </Text>
-          </View>
-
-          <View style={styles.helpContainer}>
-            <TouchableOpacity
-              onPress={this.handleHelpPress}
-              style={styles.helpLink}
-            >
-              <Text style={styles.helpLinkText}>
-                Help, it didn’t automatically reload!
-              </Text>
-            </TouchableOpacity>
-          </View>
+                return data.orders.data.map(order => (
+                  <Card style={{ marginTop: 20 }} key={order.id}>
+                    <Card.Header
+                      title={`Order #${order.id}`}
+                      extra={`${(+order.total).toFixed(2)}€`}
+                      thumbStyle={{ width: 30, height: 30 }}
+                    />
+                    <Card.Body>
+                      <View style={{ height: 42 }}>
+                        <Text style={{ marginLeft: 16 }}>
+                          {`${order.firstName} ${order.lastName}`}
+                        </Text>
+                      </View>
+                    </Card.Body>
+                    <Card.Footer content="20:30 ~ 21:00" />
+                  </Card>
+                ));
+              }}
+            </Query>
+          </WingBlank>
         </ScrollView>
-
-        <View style={styles.tabBarInfoContainer}>
-          <Text style={styles.tabBarInfoText}>
-            This is a tab bar. You can edit it in:
-          </Text>
-
-          <View
-            style={[styles.codeHighlightContainer, styles.navigationFilename]}
-          >
-            <MonoText style={styles.codeHighlightText}>
-              navigation/MainTabNavigator.js
-            </MonoText>
-          </View>
-        </View>
       </View>
     );
   }
