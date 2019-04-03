@@ -1,20 +1,23 @@
 import React from "react";
 import { ActivityIndicator, StatusBar, View } from "react-native";
+import { withApollo } from "react-apollo";
+
+import ME_QUERY from "../../graphql/meQuery";
 
 class AuthLoadingScreen extends React.Component {
-  componentDidMount() {
-    this.bootstrapAsync();
+  async componentDidMount() {
+    const { client, navigation } = this.props;
+    const data = await client.query({
+      query: ME_QUERY
+    });
+    if (data && data.data && data.data.me) {
+      // already logged in
+      navigation.navigate("CourierMain");
+    } else {
+      // need to relog
+      navigation.navigate("Auth");
+    }
   }
-
-  // Fetch the token from storage then navigate to our appropriate place
-  bootstrapAsync = async () => {
-    const {
-      props: { navigation }
-    } = this;
-    // const userToken = await AsyncStorage.getItem("userToken");
-    const userToken = null;
-    navigation.navigate(userToken ? "CourierMain" : "Auth");
-  };
 
   // Render any loading content that you like here
   render() {
@@ -27,4 +30,4 @@ class AuthLoadingScreen extends React.Component {
   }
 }
 
-export default AuthLoadingScreen;
+export default withApollo(AuthLoadingScreen);
