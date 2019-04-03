@@ -1,11 +1,13 @@
 import React from "react";
 import { Platform, StatusBar, StyleSheet, View } from "react-native";
 import { AppLoading, Asset, Font, Icon } from "expo";
-import AppNavigator from "./navigation/AppNavigator";
+import { Provider } from "@ant-design/react-native";
 
+import AppNavigator from "./navigation/AppNavigator";
 import robotDev from "./assets/images/robot-dev.png";
 import robotProd from "./assets/images/robot-prod.png";
 import spaceMono from "./assets/fonts/SpaceMono-Regular.ttf";
+import theme from "./constants/theme";
 
 const styles = StyleSheet.create({
   container: {
@@ -23,10 +25,7 @@ export default class App extends React.Component {
     return Promise.all([
       Asset.loadAsync([robotDev, robotProd]),
       Font.loadAsync({
-        // This is the font that we are using for our tab bar
         ...Icon.Ionicons.font,
-        // We include SpaceMono because we use it in HomeScreen.js. Feel free
-        // to remove this if you are not using it in your app
         "space-mono": spaceMono
       })
     ]);
@@ -34,7 +33,6 @@ export default class App extends React.Component {
 
   handleLoadingError = error => {
     // In this case, you might want to report the error to your error
-    // reporting service, for example Sentry
     // eslint-disable-next-line no-console
     console.warn(error);
   };
@@ -57,10 +55,12 @@ export default class App extends React.Component {
       );
     }
     return (
-      <View style={styles.container}>
-        {Platform.OS === "ios" && <StatusBar barStyle="default" />}
-        <AppNavigator />
-      </View>
+      <Provider theme={theme}>
+        <View style={styles.container}>
+          {Platform.OS === "ios" && <StatusBar barStyle="default" />}
+          <AppNavigator />
+        </View>
+      </Provider>
     );
   }
 }
