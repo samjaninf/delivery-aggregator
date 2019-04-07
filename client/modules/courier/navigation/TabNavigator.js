@@ -6,38 +6,34 @@ import {
 } from "react-navigation";
 
 import TabBarIcon from "../../../components/TabBarIcon";
-import HomeScreen from "../screens/HomeScreen/HomeScreen";
-import LinksScreen from "../screens/LinkScreen/LinksScreen";
+import MapScreen from "../screens/MapScreen/MapScreen";
+import OrdersScreen from "../screens/OrdersScreen/OrdersScreen";
 import SettingsScreen from "../screens/SettingsScreen/SettingsScreen";
 
 const HomeStack = createStackNavigator({
-  Home: HomeScreen
+  Home: MapScreen
 });
 
 HomeStack.navigationOptions = {
-  tabBarLabel: "Home",
+  tabBarLabel: "Mappa",
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
-      name={
-        Platform.OS === "ios"
-          ? `ios-information-circle${focused ? "" : "-outline"}`
-          : "md-information-circle"
-      }
+      name={Platform.OS === "ios" ? `ios-navigate` : "md-navigate"}
     />
   )
 };
 
 const LinksStack = createStackNavigator({
-  Links: LinksScreen
+  Links: OrdersScreen
 });
 
 LinksStack.navigationOptions = {
-  tabBarLabel: "Links",
+  tabBarLabel: "Ordini",
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
-      name={Platform.OS === "ios" ? "ios-link" : "md-link"}
+      name={Platform.OS === "ios" ? "ios-basket" : "md-basket"}
     />
   )
 };

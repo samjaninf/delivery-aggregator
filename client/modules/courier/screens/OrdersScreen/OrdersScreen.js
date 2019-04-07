@@ -6,9 +6,9 @@ import { ActivityIndicator, WingBlank, Card } from "@ant-design/react-native";
 import styles from "./styles";
 import ORDERS_QUERY from "../../graphql/ordersQuery";
 
-export default class HomeScreen extends React.Component {
+export default class OrdersScreen extends React.Component {
   static navigationOptions = {
-    header: null
+    title: "Ordini"
   };
 
   render() {
@@ -33,7 +33,7 @@ export default class HomeScreen extends React.Component {
                 return data.orders.data.map(order => (
                   <Card style={{ marginTop: 20 }} key={order.id}>
                     <Card.Header
-                      title={`Order #${order.id}`}
+                      title={`Ordine #${order.id}`}
                       extra={`${(+order.total).toFixed(2)}€`}
                       thumbStyle={{ width: 30, height: 30 }}
                     />
