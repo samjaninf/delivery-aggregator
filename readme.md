@@ -32,11 +32,12 @@ Update the container settings, the config cache and then apply the database migr
 
 ```
 $ docker-compose exec app php artisan key:generate
+$ docker-compose exec app php artisan passport:install
 $ docker-compose exec app php artisan config:cache
 $ docker-compose exec app php artisan migrate:fresh --seed
 ```
 
-Server should now be up, visit `http://localost` and try to login with
+Server should now be up, visit `http://localhost` and try to login with
 
 ```
 admin@prova.it
