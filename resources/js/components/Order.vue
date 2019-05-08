@@ -142,7 +142,7 @@
             </div>
             <ul class="meta">
               <li
-                v-for="(value, key) in item.meta"
+                v-for="(value, key) in filteredMeta"
                 class="mt-2"
                 :key="key"
               >
@@ -195,6 +195,11 @@ const updateState = (state, endpoint) => {
 
 export default {
   props: ["order", "detailed", "storeCode"],
+  helpers: {
+    filteredItemMeta(item) {
+      return item.meta.entries().filter(([k, v]) => k[0] !== "_");
+    }
+  },
   methods: {
     setOutForDelivery: updateState("out-for-delivery", "outfordelivery"),
     setCompleted: updateState("completed", "completed"),
