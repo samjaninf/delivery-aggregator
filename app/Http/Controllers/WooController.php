@@ -28,7 +28,17 @@ class WooController extends Controller
             abort(401);
         }
         try {
-            return $this->woo->orders($s, $request->page);
+            // Own orders
+            $orders = $this->woo->orders($s, $request->page);
+
+            // Load orders from superstores
+            foreach ($s->superstores as $ss) {
+                $ssOrders = $this->woo->orders($ss, $request->page, $s);
+                $orders = $orders->merge($ssOrders);
+            }
+
+            return $orders;
+
         } catch (\Automattic\WooCommerce\HttpClient\HttpClientException $e) {
             // Return error message
             return abort(422, $e->getMessage());

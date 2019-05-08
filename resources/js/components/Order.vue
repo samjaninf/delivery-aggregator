@@ -2,7 +2,7 @@
   <b-card
     class="order"
     @click="!detailed && $emit('click')"
-    :class="{ cancelled: order.status === 'cancelled', detailed: detailed, 'mb-4': !detailed, 'pickup': pickUp }"
+    :class="{ cancelled: order.status === 'cancelled', detailed: detailed, 'mb-4': !detailed, 'pickup': order.from_superstore }"
   >
     <span
       v-if="!detailed && !order.seen"

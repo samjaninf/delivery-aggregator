@@ -38,14 +38,25 @@ class WooService
      *
      * @return array A list of the desidered orders
      */
-    public function orders($store, $page = 1)
+    public function orders($store, $page = 1, $vendor = null)
     {
         $wc = $this->createClient($store);
-        $orders = $wc->get('orders', [
+        $args = [
             'per_page' => 20,
             'page' => $page,
-            'parent' => 0,
-        ]);
+        ];
+        if ($vendor) {
+            $args['excluding_parent'] = 0;
+            $args['vendor'] = $vendor->code;
+
+            $fromSuperstore = $store->code;
+        } else {
+            $args['parent'] = 0;
+
+            $fromSuperstore = false;
+        }
+
+        $orders = $wc->get('orders', $args);
 
         return collect($orders)
             ->filter(function ($order) {
@@ -53,7 +64,7 @@ class WooService
                 return $order->status != 'pending';
             })
             ->values()
-            ->map(function ($order) {
+            ->map(function ($order) use ($fromSuperstore) {
                 // Map each order to the format that the frontend expects
 
                 // Order items list
@@ -103,6 +114,7 @@ class WooService
                     }),
                     'prepared' => !!($prepared ?? false),
                     'seen' => !!($seen ?? false),
+                    'from_superstore' => $fromSuperstore,
                 ];
             });
     }
