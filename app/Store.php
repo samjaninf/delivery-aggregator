@@ -32,6 +32,10 @@ class Store extends Model
         'consumer_secret',
     ];
 
+    protected $casts = [
+        'is_superstore' => 'boolean',
+    ];
+
     /*******************
      *  RELATIONSHIPS  *
      *******************/
@@ -51,7 +55,7 @@ class Store extends Model
         return $this->belongsToMany('App\Store', 'store_superstore', 'store_id', 'superstore_id');
     }
 
-    public function stores()
+    public function substores()
     {
         return $this->belongsToMany('App\Store', 'store_superstore', 'superstore_id', 'store_id');
     }
@@ -68,6 +72,18 @@ class Store extends Model
     public static function findByCode(string $code)
     {
         return Store::where('code', $code)->first();
+    }
+
+    public function toArray()
+    {
+        $array = parent::toArray();
+        $res = [];
+        foreach ($array as $name => $value) {
+            // Rename __attribute with just attribute
+            $newName = preg_replace('/^__/', '', $name);
+            $res[$newName] = $value;
+        }
+        return $res;
     }
 
     /************************

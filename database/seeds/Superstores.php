@@ -21,7 +21,7 @@ class Superstores extends Seeder
             'is_superstore' => true,
         ]);
 
-        $superstore->stores()->sync([
+        $superstore->substores()->sync([
             1, 2,
         ]);
     }

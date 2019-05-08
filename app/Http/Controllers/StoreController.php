@@ -47,7 +47,11 @@ class StoreController extends Controller
             abort(401);
         }
 
-        return Store::findByCode($storeCode);
+        $store = Store::findByCode($storeCode);
+        $store->__substores = $store->substores->pluck('code');
+        $store->makeHidden('substores');
+
+        return $store;
     }
 
     /**
@@ -62,6 +66,29 @@ class StoreController extends Controller
         $params = $request->json()->all();
         $store = Store::find($params['id']);
         $store->fill($params);
+
+        if ($params['is_superstore']) {
+            // Update selected substores
+            $store->is_superstore = true;
+            $substoresIds = collect($params['substores'])
+                ->map(function ($code) {
+                    $store = Store::findByCode($code);
+                    if (!$store) {
+                        return null;
+                    }
+                    return $store->id;
+                })
+                ->filter(function ($store) {
+                    return isset($store);
+                });
+
+            $store->substores()->sync($substoresIds);
+        } else {
+            // Detach all substores
+            $store->is_superstore = false;
+            $store->substores()->detach();
+        }
+
         $store->save();
     }
 
