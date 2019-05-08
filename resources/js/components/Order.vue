@@ -2,7 +2,7 @@
   <b-card
     class="order"
     @click="!detailed && $emit('click')"
-    :class="{ cancelled: order.status === 'cancelled', detailed: detailed, 'mb-4': !detailed }"
+    :class="{ cancelled: order.status === 'cancelled', detailed: detailed, 'mb-4': !detailed, 'pickup': pickUp }"
   >
     <span
       v-if="!detailed && !order.seen"
@@ -50,12 +50,12 @@
           v-else
           class="far fa-fw fa-clock"
         ></i>
-        {{ order.delivery_date | hour }}–{{ order.delivery_date_end | hour }}
+        {{ deliveryTime }}
       </h4>
     </div>
     <div class="card-text">
       <p><i class="fas fa-fw fa-user"></i><span>{{ order.first_name }} {{ order.last_name }}</span></p>
-      <p><i class="fas fa-fw fa-map-pin"></i><span>{{ order.address }}, {{ order.city }}</span></p>
+      <p><i class="fas fa-fw fa-map-pin"></i><span>{{ address }}</span></p>
       <p v-if="order.phone"><i class="fas fa-fw fa-phone"></i>
         <a
           v-if="detailed"
@@ -142,7 +142,7 @@
             </div>
             <ul class="meta">
               <li
-                v-for="(value, key) in filteredMeta"
+                v-for="(value, key) in filteredItemMeta(item)"
                 class="mt-2"
                 :key="key"
               >
@@ -195,9 +195,48 @@ const updateState = (state, endpoint) => {
 
 export default {
   props: ["order", "detailed", "storeCode"],
-  helpers: {
-    filteredItemMeta(item) {
-      return item.meta.entries().filter(([k, v]) => k[0] !== "_");
+  computed: {
+    pickUp() {
+      if (!this.order) return null;
+      return !!this.order.delivery_location;
+    },
+    address() {
+      if (!this.order) return null;
+
+      const { address, city, delivery_location } = this.order;
+
+      if (delivery_location)
+        return this.snakeCaseToWords(delivery_location) + " ⛱️";
+
+      return [address, city].filter(s => s).join(", ");
+    },
+    deliveryTime() {
+      if (!this.order) return null;
+
+      const {
+        delivery_date,
+        delivery_date_end,
+        delivery_location
+      } = this.order;
+      const hour = this.$options.filters.hour;
+
+      // fix me
+      const minutesTable = {
+        tre_ponti: "05",
+        sale: "25",
+        pendola: "35",
+        scogli_piatti: "15",
+        vaschette: "25",
+        sassoscritto: "35",
+        calignaia: "45"
+      };
+
+      if (delivery_location) {
+        const time = hour(delivery_date);
+        return time.replace(/\d\d$/, minutesTable[delivery_location] || "00");
+      }
+
+      return `${hour(delivery_date)}–${hour(delivery_date_end)}`;
     }
   },
   methods: {
@@ -215,6 +254,17 @@ export default {
             text: "Errore durante il cambio di stato"
           });
         });
+    },
+    filteredItemMeta(item) {
+      return Object.entries(item.meta)
+        .filter(([k, v]) => k[0] !== "_")
+        .reduce((obj, [k, v]) => ({ ...obj, [k]: v }), {});
+    },
+    snakeCaseToWords(s) {
+      return s
+        .split("_")
+        .map(w => w[0].toUpperCase() + w.slice(1))
+        .join(" ");
     }
   }
 };
@@ -273,6 +323,10 @@ export default {
   position: absolute;
   right: -10px;
   top: -10px;
+}
+
+.pickup {
+  border-color: var(--orange);
 }
 
 @media only screen and (max-width: 400px) {

@@ -28,7 +28,7 @@ class WooController extends Controller
             abort(401);
         }
         try {
-            return $this->woo->orders($store, $request->page);
+            return $this->woo->orders($s, $request->page);
         } catch (\Automattic\WooCommerce\HttpClient\HttpClientException $e) {
             // Return error message
             return abort(422, $e->getMessage());
@@ -46,7 +46,7 @@ class WooController extends Controller
         }
 
         try {
-            $this->woo->setOutForDelivery($store, $order);
+            $this->woo->setOutForDelivery($s, $order);
         } catch (\Automattic\WooCommerce\HttpClient\HttpClientException $e) {
             // Return error message
             return abort(422, $e->getMessage());
@@ -57,7 +57,7 @@ class WooController extends Controller
         $s->order = $order;
         $s->status = 'out-for-delivery';
         $s->user()->associate(auth()->user());
-        $s->store()->associate(Store::findByCode($store));
+        $s->store()->associate($s);
         $s->save();
     }
 
@@ -72,7 +72,7 @@ class WooController extends Controller
         }
 
         try {
-            $this->woo->setCompleted($store, $order);
+            $this->woo->setCompleted($s, $order);
         } catch (\Automattic\WooCommerce\HttpClient\HttpClientException $e) {
             // Return error message
             return abort(422, $e->getMessage());
@@ -83,7 +83,7 @@ class WooController extends Controller
         $s->order = $order;
         $s->status = 'completed';
         $s->user()->associate(auth()->user());
-        $s->store()->associate(Store::findByCode($store));
+        $s->store()->associate($s);
         $s->save();
     }
 
@@ -99,7 +99,7 @@ class WooController extends Controller
         }
 
         try {
-            $this->woo->setSeen($store, $order);
+            $this->woo->setSeen($s, $order);
         } catch (\Automattic\WooCommerce\HttpClient\HttpClientException $e) {
             // Return error message
             return abort(422, $e->getMessage());
@@ -117,7 +117,7 @@ class WooController extends Controller
         }
 
         try {
-            $this->woo->setPrepared($store, $order);
+            $this->woo->setPrepared($s, $order);
         } catch (\Automattic\WooCommerce\HttpClient\HttpClientException $e) {
             // Return error message
             return abort(422, $e->getMessage());
@@ -135,7 +135,7 @@ class WooController extends Controller
         }
 
         try {
-            return $this->woo->products($store);
+            return $this->woo->products($s);
         } catch (\Automattic\WooCommerce\HttpClient\HttpClientException $e) {
             // Return error message
             return abort(422, $e->getMessage());
@@ -156,7 +156,7 @@ class WooController extends Controller
         $in_stock = $request->in_stock;
 
         try {
-            $product = $this->woo->updateInStock($store, $product, $in_stock);
+            $product = $this->woo->updateInStock($s, $product, $in_stock);
             return response()->json($product);
         } catch (\Automattic\WooCommerce\HttpClient\HttpClientException $e) {
             // Return error message
@@ -175,7 +175,7 @@ class WooController extends Controller
         }
 
         try {
-            $settings = $this->woo->deliverySlotsSettings($store);
+            $settings = $this->woo->deliverySlotsSettings($s);
             return response()->json($settings);
         } catch (Exception $e) {
             // Return error message
@@ -197,7 +197,7 @@ class WooController extends Controller
         $cutoff = $request->cutoff;
 
         try {
-            $this->woo->setDeliverySlotsSettings($store, $lockout, $cutoff);
+            $this->woo->setDeliverySlotsSettings($s, $lockout, $cutoff);
         } catch (Exception $e) {
             // Return error message
             return abort(422, $e->getMessage());
@@ -215,7 +215,7 @@ class WooController extends Controller
         }
 
         try {
-            $isOpen = $this->woo->isOpen($store);
+            $isOpen = $this->woo->isOpen($s);
 
             return [
                 'isOpen' => $isOpen,
@@ -239,7 +239,7 @@ class WooController extends Controller
         $isOpen = $request->isOpen ?? true;
 
         try {
-            $this->woo->setIsOpen($store, $isOpen);
+            $this->woo->setIsOpen($s, $isOpen);
         } catch (Exception $e) {
             return abort(422, $e->getMessage());
         }

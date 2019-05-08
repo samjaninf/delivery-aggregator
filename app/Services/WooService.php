@@ -13,10 +13,8 @@ class WooService
     /**
      * Create a client to interact with the API of a specific store
      */
-    public function createClient($storeCode)
+    public function createClient($store)
     {
-        $store = Store::findByCode($storeCode);
-
         return new Client(
             $store->url,
             $store->consumer_key,
@@ -35,7 +33,7 @@ class WooService
     /**
      * Fetch a paginated list of the orders belonging to a specific store
      *
-     * @param string $store The code of the desidered store
+     * @param string $store The desidered store
      * @param int    $page  The page we want to obtain
      *
      * @return array A list of the desidered orders
@@ -79,6 +77,7 @@ class WooService
                 $meta = collect($order->meta_data);
                 $prepared = $meta->firstWhere('key', 'prepared');
                 $seen = $meta->firstWhere('key', 'seen');
+                $deliveryLocation = $meta->firstWhere('key', '_billing_place');
 
                 return [
                     'number' => $order->number,
@@ -87,6 +86,7 @@ class WooService
                     'first_name' => $order->shipping->first_name,
                     'last_name' => $order->shipping->last_name,
                     'address' => $order->shipping->address_1,
+                    'delivery_location' => $deliveryLocation->value ?? null,
                     'city' => $order->shipping->city,
                     'phone' => $order->billing->phone,
                     'payment_method' => $order->payment_method,
@@ -110,7 +110,7 @@ class WooService
     /**
      * Fetch data about orders with the specified IDs
      *
-     * @param string $store The code of the desidered store
+     * @param string $store The desidered store
      * @param array  $ids   The order IDs we're interested in
      *
      * @return array A list of orders about the requested orders
@@ -139,7 +139,7 @@ class WooService
     /**
      * Update order status to "Out for delivery"
      *
-     * @param string $store The code of the desidered store
+     * @param string $store The desidered store
      * @param string $order The ID of the order we want to update
      */
     public function setOutForDelivery($store, $order)
@@ -154,7 +154,7 @@ class WooService
     /**
      * Update order status to "Completed"
      *
-     * @param string $store The code of the desidered store
+     * @param string $store The desidered store
      * @param string $order The ID of the order we want to update
      */
     public function setCompleted($store, $order)
@@ -169,7 +169,7 @@ class WooService
     /**
      * Update order meta "Prepared" value to true
      *
-     * @param string $store The code of the desidered store
+     * @param string $store The desidered store
      * @param string $order The ID of the order we want to update
      */
     public function setPrepared($store, $order)
@@ -189,7 +189,7 @@ class WooService
     /**
      * Update order meta "Seen" value to true
      *
-     * @param string $store The code of the desidered store
+     * @param string $store The desidered store
      * @param string $order The ID of the order we want to update
      */
     public function setSeen($store, $order)
@@ -281,7 +281,7 @@ class WooService
     /**
      * Fetch a list of all the products from the specified store
      *
-     * @param string $store The code of the desidered store
+     * @param string $store The desidered store
      *
      * @return array List of all the products of the specified store
      */
@@ -309,7 +309,7 @@ class WooService
     /**
      * Update product stock status
      *
-     * @param string $store    The code of the desidered store
+     * @param string $store    The desidered store
      * @param string $product  The ID of the product we want to update
      * @param bool   $in_stock The new "In stock" value
      */
@@ -322,9 +322,8 @@ class WooService
         ]);
     }
 
-    public function deliverySlotsSettings($storeCode)
+    public function deliverySlotsSettings($store)
     {
-        $store = Store::findByCode($storeCode);
         $url = "{$store->url}/wp-json/delivery-slots/v1/settings";
 
         $headers = [
@@ -335,9 +334,8 @@ class WooService
         return curl_get($url, $headers);
     }
 
-    public function setDeliverySlotsSettings($storeCode, $lockout, $cutoff)
+    public function setDeliverySlotsSettings($store, $lockout, $cutoff)
     {
-        $store = Store::findByCode($storeCode);
         $url = "{$store->url}/wp-json/delivery-slots/v1/settings";
 
         $headers = [
@@ -353,9 +351,8 @@ class WooService
         return curl_post($url, $headers, $body);
     }
 
-    public function isOpen($storeCode)
+    public function isOpen($store)
     {
-        $store = Store::findByCode($storeCode);
         $url = "{$store->url}/wp-json/vacation-state/v1/settings";
 
         $headers = [
@@ -368,9 +365,8 @@ class WooService
         return !!($response->isopen ?? false);
     }
 
-    public function setIsOpen($storeCode, $isOpen)
+    public function setIsOpen($store, $isOpen)
     {
-        $store = Store::findByCode($storeCode);
         $url = "{$store->url}/wp-json/vacation-state/v1/settings";
 
         $headers = [
