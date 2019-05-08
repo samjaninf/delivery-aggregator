@@ -46,6 +46,16 @@ class Store extends Model
         return $this->hasMany('App\StatusChange');
     }
 
+    public function superstores()
+    {
+        return $this->belongsToMany('App\Store', 'store_superstore', 'store_id', 'superstore_id');
+    }
+
+    public function stores()
+    {
+        return $this->belongsToMany('App\Store', 'store_superstore', 'superstore_id', 'store_id');
+    }
+
     /**********************
      *  HELPER FUNCTIONS  *
      **********************/
@@ -72,6 +82,11 @@ class Store extends Model
     public function fb_create_group($user = null)
     {
         $user = $user ?? auth()->user();
+
+        // Using CLI: cannot create group
+        if (!$user) {
+            return;
+        }
 
         $deviceId = $user->fb_device_id;
         if (!$deviceId) {
