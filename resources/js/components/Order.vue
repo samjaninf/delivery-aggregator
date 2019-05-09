@@ -198,15 +198,15 @@ export default {
   computed: {
     pickUp() {
       if (!this.order) return null;
-      return !!this.order.delivery_location;
+      return !!this.order.pickup_location;
     },
     address() {
       if (!this.order) return null;
 
-      const { address, city, delivery_location } = this.order;
+      const { address, city, pickup_location } = this.order;
 
-      if (delivery_location)
-        return this.snakeCaseToWords(delivery_location) + " ⛱️";
+      if (pickup_location)
+        return this.snakeCaseToWords(pickup_location) + " ⛱️";
 
       return [address, city].filter(s => s).join(", ");
     },
@@ -216,26 +216,14 @@ export default {
       const {
         delivery_date,
         delivery_date_end,
-        delivery_location
+        pickup_time
       } = this.order;
-      const hour = this.$options.filters.hour;
 
-      // fix me
-      const minutesTable = {
-        tre_ponti: "05",
-        sale: "25",
-        pendola: "35",
-        scogli_piatti: "15",
-        vaschette: "25",
-        sassoscritto: "35",
-        calignaia: "45"
-      };
-
-      if (delivery_location) {
-        const time = hour(delivery_date);
-        return time.replace(/\d\d$/, minutesTable[delivery_location] || "00");
+      if (pickup_time) {
+        return pickup_time;
       }
 
+      const hour = this.$options.filters.hour;
       return `${hour(delivery_date)}–${hour(delivery_date_end)}`;
     }
   },

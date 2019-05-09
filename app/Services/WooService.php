@@ -88,7 +88,8 @@ class WooService
                 $meta = collect($order->meta_data);
                 $prepared = $meta->firstWhere('key', 'prepared');
                 $seen = $meta->firstWhere('key', 'seen');
-                $deliveryLocation = $meta->firstWhere('key', '_billing_place');
+                $pickupLocation = $meta->firstWhere('key', '_billing_place');
+                $pickupTime = $meta->firstWhere('key', 'da_time');
 
                 return [
                     'number' => $order->number,
@@ -97,7 +98,6 @@ class WooService
                     'first_name' => $order->shipping->first_name,
                     'last_name' => $order->shipping->last_name,
                     'address' => $order->shipping->address_1,
-                    'delivery_location' => $deliveryLocation->value ?? null,
                     'city' => $order->shipping->city,
                     'phone' => $order->billing->phone,
                     'payment_method' => $order->payment_method,
@@ -115,6 +115,8 @@ class WooService
                     'prepared' => !!($prepared ?? false),
                     'seen' => !!($seen ?? false),
                     'from_superstore' => $fromSuperstore,
+                    'pickup_location' => $pickupLocation->value ?? null,
+                    'pickup_time' => $pickupTime->value ?? null,
                 ];
             });
     }
