@@ -89,7 +89,7 @@ class WooService
                 $prepared = $meta->firstWhere('key', 'prepared');
                 $seen = $meta->firstWhere('key', 'seen');
                 $pickupLocation = $meta->firstWhere('key', '_billing_place');
-                $pickupTime = $meta->firstWhere('key', 'da_time');
+                $pickupTime = $fromSuperstore ? null : $meta->firstWhere('key', 'da_time');
 
                 return [
                     'number' => $order->number,
