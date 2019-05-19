@@ -41,6 +41,13 @@ Route::group([
     Route::put('/users', 'UserController@update');
     Route::delete('/users/{user}', 'UserController@destroy');
 
+    // === Availabilities CRUD ===
+    Route::get('/availabilities', 'AvailabilityController@index');
+    Route::get('/availabilities/{availability}', 'AvailabilityController@show');
+    Route::post('/availabilities', 'AvailabilityController@store');
+    Route::put('/availabilities', 'AvailabilityController@update');
+    Route::delete('/availabilities/{availability}', 'AvailabilityController@destroy');
+
     // === Woocommerce-related routes ===
     // All of the following routes are store-specific
 
@@ -52,7 +59,7 @@ Route::group([
 
     // Get store isOpen status
     Route::get('/stores/{store}/isOpen', 'WooController@isOpen');
-    
+
     // Set store isOpen status
     Route::post('/stores/{store}/isOpen', 'WooController@setIsOpen');
 
