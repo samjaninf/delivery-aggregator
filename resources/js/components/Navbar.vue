@@ -38,8 +38,8 @@
             </b-dropdown-item>
 
             <template v-if="$auth.check(['manage products', 'admin'])">
-              <b-dropdown-item to="/availability">
-                <i class="fas fa-fw fa-box"></i> Disponibilità
+              <b-dropdown-item to="/managestore">
+                <i class="fas fa-fw fa-box"></i> Gestione negozio
               </b-dropdown-item>
               <div class="dropdown-divider"></div>
             </template>

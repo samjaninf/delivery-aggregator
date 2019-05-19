@@ -1,6 +1,6 @@
 <template>
   <b-container class="mt-4">
-    <h3>Disponibilità</h3>
+    <h3>Gestione negozio</h3>
     <template v-if="stores.length > 1">
       <h5 class="mt-4">Negozio</h5>
       <b-form-select

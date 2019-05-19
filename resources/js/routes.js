@@ -46,9 +46,9 @@ module.exports = [
         }
       },
       {
-        path: "/availability",
+        path: "/managestore",
         props: true,
-        component: require("./components/Availability.vue").default,
+        component: require("./components/ManageStore.vue").default,
         meta: {
           auth: ["manage products", "admin"]
         }
