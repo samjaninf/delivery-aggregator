@@ -16,8 +16,8 @@
         "bootstrap": "^4.0.0",
         "bootstrap-vue": "^2.0.0-rc.11",
         "cross-env": "^5.1",
-        "jquery": "^3.2",
-        "laravel-mix": "^4.0.13",
+        "jquery": "^3.4.1",
+        "laravel-mix": "^4.0.15",
         "lodash": "^4.17.5",
         "moment": "^2.22.2",
         "popper.js": "^1.12",
@@ -30,5 +30,8 @@
         "vue-pull-to": "^0.1.6",
         "vue-router": "^3.0.1",
         "vue-template-compiler": "^2.6.8"
+    },
+    "dependencies": {
+        "v-calendar": "^0.9.7"
     }
 }
