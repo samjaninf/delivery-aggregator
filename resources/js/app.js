@@ -14,6 +14,16 @@ Vue.use(require("vue-notification").default);
 const VueRouter = require("vue-router").default;
 Vue.use(VueRouter);
 
+import VCalendar from "v-calendar";
+// Use v-calendar, v-date-picker & v-popover components
+Vue.use(VCalendar, {
+  firstDayOfWeek: 2,
+  locale: "it",
+  datePickerTintColor: "#3490dc",
+  datePickerShowDayPopover: false,
+  datePickerShowCaps: true
+});
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application

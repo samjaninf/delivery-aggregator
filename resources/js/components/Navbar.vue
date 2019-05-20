@@ -30,6 +30,13 @@
               <i class="fas fa-fw fa-cog"></i>
             </template>
 
+            <template v-if="$auth.check(['manage own availabilities', 'admin'])">
+              <b-dropdown-item to="/availabilities">
+                <i class="fas fa-fw fa-business-time"></i> Disponibilità
+              </b-dropdown-item>
+              <div class="dropdown-divider"></div>
+            </template>
+
             <b-dropdown-item
               to="/deliveryslots"
               v-if="$auth.check(['manage delivery slots', 'admin'])"

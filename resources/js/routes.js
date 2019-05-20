@@ -62,6 +62,14 @@ module.exports = [
         }
       },
       {
+        path: "/availabilities",
+        props: true,
+        component: require("./components/Availabilities.vue").default,
+        meta: {
+          auth: ["manage own availabilities", "admin"]
+        }
+      },
+      {
         path: "/:storeCode",
         props: true,
         component: require("./components/OrdersList.vue").default,
