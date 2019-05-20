@@ -44,8 +44,8 @@ class Users extends Seeder
         $manager->assign('manager');
 
         // Courier
-        $courier = User::where('email', 'manager@prova.it')->firstOrFail();
-        $courier->assign('manager');
+        $courier = User::where('email', 'courier@prova.it')->firstOrFail();
+        $courier->assign('courier');
 
         $stores = Store::all();
 
