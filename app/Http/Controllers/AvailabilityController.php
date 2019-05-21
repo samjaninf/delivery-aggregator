@@ -6,15 +6,24 @@ use App\Availability;
 use Bouncer;
 use Illuminate\Http\Request;
 
-class AvailabilitiesController extends Controller
+class AvailabilityController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         if (Bouncer::cannot('manage own availabilities')) {
             abort(401);
         }
 
-        return auth()->user()->availabilities()->paginate();
+        $params = $request->validate([
+            'from' => 'required|date',
+            'to' => 'required|date|after:from',
+        ]);
+
+        return auth()->user()
+            ->availabilities()
+            ->where('start', '>=', $params['from'])
+            ->where('end', '<=', $params['to'])
+            ->get(['id', 'start', 'end']);
     }
 
     public function show($availability)

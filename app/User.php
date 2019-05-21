@@ -57,12 +57,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function availabilities()
     {
-        if ($this->isAn('courier')) {
-            return $this->hasMany('App\Availability');
-        }
-
-        // return empty relationship if not a courier
-        return new BelongsTo($this->newQuery(), $this, '', '', '');
+        return $this->hasMany('App\Availability');
     }
 
     /********************
