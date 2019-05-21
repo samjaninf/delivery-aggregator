@@ -16,14 +16,14 @@
           ></b-form-radio-group>
         </b-form-group>
 
-        <b-form-checkbox
+        <!-- <b-form-checkbox
           class="mb-2"
           v-model="range"
           name="check-button"
           switch
         >
           Ripeti per periodo
-        </b-form-checkbox>
+        </b-form-checkbox> -->
 
         <b-form-group :label="range ? 'Periodo' : 'Data'">
           <v-date-picker
@@ -67,6 +67,7 @@
           <b-button
             type="submit"
             variant="success"
+            :disabled="!date || !start || !end"
           >
             Salva disponibilità
           </b-button>
@@ -109,12 +110,12 @@ export default {
 
       switch (this.meal) {
         case "lunch":
-          return [1100, 1200, 1300, 1400, 1500].map(x => ({
+          return [1200, 1430].map(x => ({
             text: formatHHMM(x),
             value: x
           }));
         case "dinner":
-          return [1800, 1900, 2000, 2100, 2200, 2300].map(x => ({
+          return [1900, 2230].map(x => ({
             text: formatHHMM(x),
             value: x
           }));
@@ -140,6 +141,48 @@ export default {
       this.date = null;
       this.start = null;
       this.end = null;
+    },
+    handleSubmit() {
+      const { date, start, end } = this;
+      const dateStart = moment(date).set({
+        hour: Math.floor(start / 100),
+        minute: start % 100
+      });
+      const dateEnd = moment(date).set({
+        hour: Math.floor(end / 100),
+        minute: end % 100
+      });
+
+      const body = {
+        start: dateStart.format(),
+        end: dateEnd.format()
+      };
+
+      this.$http
+        .post("availabilities", body)
+        .then(() => {
+          this.$notify({
+            type: "success",
+            text: "Disponibilità salvata"
+          });
+          this.resetForm();
+        })
+        .catch(e => {
+          this.$notify({
+            type: "error",
+            text: "Errore durante il salvataggio"
+          });
+        });
+    }
+  },
+  watch: {
+    timeOptions(options) {
+      if (options.length >= 2) {
+        this.start = options[0].value;
+        this.end = options[options.length - 1].value;
+      } else {
+        this.resetStartEnd();
+      }
     }
   }
 };

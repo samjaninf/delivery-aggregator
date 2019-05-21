@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h4>Lista disponibilità</h4>
+    <h4>Calendario disponibilità</h4>
     <v-calendar
       :attributes="calendar"
       :rows="numberOfRows"

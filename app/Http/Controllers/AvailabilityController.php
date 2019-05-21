@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Availability;
 use Bouncer;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class AvailabilityController extends Controller
@@ -41,33 +42,24 @@ class AvailabilityController extends Controller
         return $avail;
     }
 
-    public function create(Request $request)
+    public function store(Request $request)
     {
         if (Bouncer::cannot('manage own availabilities')) {
             abort(401);
         }
 
-        $params = $request->json()->all();
+        $params = $request->validate([
+            'start' => 'required|date',
+            'end' => 'required|date|after:start',
+        ]);
+
         $avail = new Availability();
-        $avail->fill($params);
+        $avail->start = Carbon::parse($params['start']);
+        $avail->end = Carbon::parse($params['end']);
         $avail->user()->associate(auth()->user());
-    }
-
-    public function update(Request $request)
-    {
-        if (Bouncer::cannot('manage own availabilities')) {
-            abort(401);
-        }
-
-        $avail = Availability::findOrFail($params['id']);
-
-        if ($avail->user->id !== auth()->user()->id && Bouncer::cannot('manage others availabilities')) {
-            return abort(403);
-        }
-
-        $params = $request->json()->all();
-        $avail->fill($params);
         $avail->save();
+
+        return $avail->makeHidden(['type', 'user', 'created_at', 'updated_at', 'user_id']);
     }
 
     public function destroy($availability)
