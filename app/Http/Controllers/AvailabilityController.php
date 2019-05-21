@@ -34,7 +34,7 @@ class AvailabilityController extends Controller
 
         $avail = Availability::findOrFail($availability);
 
-        if ($avail->user !== auth()->user() && Bouncer::cannot('manage others availabilities')) {
+        if ($avail->user->id !== auth()->user()->id && Bouncer::cannot('manage others availabilities')) {
             return abort(403);
         }
 
@@ -61,7 +61,7 @@ class AvailabilityController extends Controller
 
         $avail = Availability::findOrFail($params['id']);
 
-        if ($avail->user !== auth()->user() && Bouncer::cannot('manage others availabilities')) {
+        if ($avail->user->id !== auth()->user()->id && Bouncer::cannot('manage others availabilities')) {
             return abort(403);
         }
 
@@ -78,8 +78,12 @@ class AvailabilityController extends Controller
 
         $avail = Availability::findOrFail($availability);
 
-        if ($avail->user !== auth()->user() && Bouncer::cannot('manage others availabilities')) {
+        if ($avail->user->id !== auth()->user()->id && Bouncer::cannot('manage others availabilities')) {
             return abort(403);
+        }
+
+        if ($avail->end->isPast()) {
+            return abort(422, "Can't delete past availability");
         }
 
         $avail->delete();
