@@ -5,12 +5,13 @@
     <b-row>
       <b-col
         cols="12"
-        lg="8"
+        :lg="admin ? 12 : 8"
         class="mb-4"
       >
-        <ShowAvailabilities />
+        <ShowAvailabilities :admin="admin" />
       </b-col>
       <b-col
+        v-if="!admin"
         cols="12"
         lg="4"
         class="mb-4"
@@ -28,6 +29,11 @@ export default {
       .default,
     ShowAvailabilities: require("./Availabilities/ShowAvailabilities.vue")
       .default
+  },
+  computed: {
+    admin() {
+      return this.$auth.check(["admin"]);
+    }
   }
 };
 </script>

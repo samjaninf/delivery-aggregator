@@ -20,11 +20,26 @@ class AvailabilityController extends Controller
             'to' => 'required|date|after:from',
         ]);
 
-        return auth()->user()
-            ->availabilities()
-            ->where('start', '>=', $params['from'])
-            ->where('end', '<=', $params['to'])
-            ->get(['id', 'start', 'end']);
+        if (Bouncer::can('manage others availabilities')) {
+            // admins
+            return Availability::query()
+                ->where('start', '>=', $params['from'])
+                ->where('end', '<=', $params['to'])
+                ->get(['id', 'start', 'end', 'user_id'])
+                ->map(function ($a) {
+                    $a->user_name = $a->user->name;
+                    $a->makeHidden(['user', 'user_id']);
+                    return $a;
+                });
+        } else {
+            // couriers
+            return auth()->user()
+                ->availabilities()
+                ->where('start', '>=', $params['from'])
+                ->where('end', '<=', $params['to'])
+                ->get(['id', 'start', 'end']);
+        }
+
     }
 
     public function show($availability)
