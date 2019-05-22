@@ -37,6 +37,7 @@
 </template>
 
 <script>
+import eventBus from "../../util/eventBus";
 const CancelToken = axios.CancelToken;
 
 export default {
@@ -45,6 +46,13 @@ export default {
       data: [],
       pageCancel: null
     };
+  },
+  created() {
+    const bus = new Vue();
+    eventBus.$on("availability-created", this.availabilityCreated);
+  },
+  destroyed() {
+    eventBus.$off("availability-created", this.availabilityCreated);
   },
   computed: {
     calendar() {
@@ -77,9 +85,6 @@ export default {
     }
   },
   methods: {
-    deleteAvailability(id) {
-      // fixme
-    },
     fetchAvailabilities({ year, month }) {
       const calendarMonths = this.numberOfRows ** 2;
       const date = moment([year, month - 1]);
@@ -131,6 +136,10 @@ export default {
           });
           console.error(e);
         });
+    },
+    availabilityCreated(availability) {
+      console.log(availability);
+      this.data = [...this.data, availability];
     }
   }
 };
