@@ -16,14 +16,14 @@
           ></b-form-radio-group>
         </b-form-group>
 
-        <!-- <b-form-checkbox
+        <b-form-checkbox
           class="mb-2"
           v-model="range"
           name="check-button"
           switch
         >
           Ripeti per periodo
-        </b-form-checkbox> -->
+        </b-form-checkbox>
 
         <b-form-group :label="range ? 'Periodo' : 'Data'">
           <v-date-picker
@@ -138,26 +138,21 @@ export default {
       this.end = null;
     },
     resetForm() {
-      this.range = false;
       this.meal = null;
       this.date = null;
       this.start = null;
       this.end = null;
     },
     handleSubmit() {
-      const { date, start, end } = this;
-      const dateStart = moment(date).set({
-        hour: Math.floor(start / 100),
-        minute: start % 100
-      });
-      const dateEnd = moment(date).set({
-        hour: Math.floor(end / 100),
-        minute: end % 100
-      });
+      const { range, date, start, end } = this;
+      const dateStart = moment(range ? date.start : date);
+      const dateEnd = moment(range ? date.end : date);
 
       const body = {
-        start: dateStart.format(),
-        end: dateEnd.format()
+        startDate: dateStart.format(),
+        endDate: dateEnd.format(),
+        startTime: start,
+        endTime: end
       };
 
       this.$http
@@ -169,8 +164,8 @@ export default {
           });
           this.resetForm();
 
-          const availability = response.data;
-          eventBus.$emit("availability-created", availability);
+          const availabilities = response.data;
+          eventBus.$emit("availabilities-created", availabilities);
         })
         .catch(e => {
           this.$notify({

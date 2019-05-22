@@ -49,17 +49,40 @@ class AvailabilityController extends Controller
         }
 
         $params = $request->validate([
-            'start' => 'required|date',
-            'end' => 'required|date|after:start',
+            'startDate' => 'required|date',
+            'endDate' => 'required|date|after_or_equal:start',
+            'startTime' => 'required|numeric|min:0|max:2359',
+            'endTime' => 'required|numeric|min:0|max:2359|gt:startTime',
         ]);
 
-        $avail = new Availability();
-        $avail->start = Carbon::parse($params['start']);
-        $avail->end = Carbon::parse($params['end']);
-        $avail->user()->associate(auth()->user());
-        $avail->save();
+        $date = Carbon::parse($params['startDate']);
+        $endDate = Carbon::parse($params['endDate']);
+        $startH = intdiv($params['startTime'], 100);
+        $startM = $params['startTime'] % 100;
+        $endH = intdiv($params['endTime'], 100);
+        $endM = $params['endTime'] % 100;
 
-        return $avail->makeHidden(['type', 'user', 'created_at', 'updated_at', 'user_id']);
+        if ($startH >= 24 || $endH >= 24 || $startM >= 60 || $endM >= 60) {
+            abort(422, "Invalid start/end time. Please provice an HHMM number");
+        }
+
+        $results = [];
+        $i = 0; // make sure there aren't too many
+        while ($date <= $endDate && $i++ < 100) {
+            $avail = new Availability();
+
+            $avail->start = $date->copy()->setTime($startH, $startM);
+            $avail->end = $date->copy()->setTime($endH, $endM);
+            $avail->user()->associate(auth()->user());
+            $avail->save();
+
+            $avail->makeHidden(['type', 'user', 'created_at', 'updated_at', 'user_id']);
+            $results[] = $avail;
+
+            $date->addDay();
+        }
+
+        return $results;
     }
 
     public function destroy($availability)

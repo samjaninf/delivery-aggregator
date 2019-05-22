@@ -49,10 +49,10 @@ export default {
   },
   created() {
     const bus = new Vue();
-    eventBus.$on("availability-created", this.availabilityCreated);
+    eventBus.$on("availabilities-created", this.createdAvailabilities);
   },
   destroyed() {
-    eventBus.$off("availability-created", this.availabilityCreated);
+    eventBus.$off("availabilities-created", this.createdAvailabilities);
   },
   computed: {
     calendar() {
@@ -137,9 +137,8 @@ export default {
           console.error(e);
         });
     },
-    availabilityCreated(availability) {
-      console.log(availability);
-      this.data = [...this.data, availability];
+    createdAvailabilities(availabilities) {
+      this.data = [...this.data, ...availabilities];
     }
   }
 };
