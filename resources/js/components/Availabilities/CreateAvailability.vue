@@ -78,8 +78,6 @@
 </template>
 
 <script>
-import eventBus from "../../util/eventBus";
-
 export default {
   data() {
     return {
@@ -165,7 +163,7 @@ export default {
           this.resetForm();
 
           const availabilities = response.data;
-          eventBus.$emit("availabilities-created", availabilities);
+          this.$emit("createdAvailabilities", availabilities);
         })
         .catch(e => {
           this.$notify({
