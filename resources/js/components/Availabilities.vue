@@ -57,7 +57,7 @@ export default {
     },
     calendar() {
       return [
-        ...this.data.map(({ id, start, end }) => {
+        ...this.dataFiltered.map(({ id, start, end }) => {
           const startDate = moment(start);
           const endDate = moment(end);
 
@@ -80,17 +80,49 @@ export default {
         }
       ];
     },
+    dataFiltered() {
+      return this.data.filter(a => {
+        return (
+          moment(a.start).isAfter(this.fromDate) &&
+          moment(a.end).isBefore(this.toDate)
+        );
+      });
+    },
     availabilitiesByDay() {
-      return _(this.data)
-        .groupBy(a => moment(a.start).format("L"))
+      return _(this.dataFiltered)
+        .groupBy(a => moment(a.start).format("YYYY-MM-DD"))
         .value();
+    },
+    allDates() {
+      if (
+        !this.fromDate ||
+        !this.toDate ||
+        this.availabilitiesByDay.length == 0
+      )
+        return {};
+
+      const all = {};
+      for (
+        const d = this.fromDate.clone();
+        d.isBefore(this.toDate);
+        d.add(1, "day")
+      ) {
+        all[d.format("YYYY-MM-DD")] = [];
+      }
+
+      return all;
     },
     adminCalendar() {
       return [
-        ..._(this.availabilitiesByDay)
+        ..._({
+          ...(this.data.length > 0 ? this.allDates : []),
+          ...this.availabilitiesByDay
+        })
           .map((avails, key) => {
-            const startDate = moment(avails[0].start);
-            const endDate = moment(avails[0].end);
+            const startDate =
+              avails.length > 0 ? moment(avails[0].start) : moment(key);
+            const endDate =
+              avails.length > 0 ? moment(avails[0].end) : moment(key);
 
             const tresholds = [3, 2, 0];
             const colorIndex = tresholds.findIndex(t => avails.length >= t);
@@ -129,18 +161,21 @@ export default {
     },
     availabilitiesInSelectedDay() {
       if (!this.selectedDay) return [];
-      const day = moment(this.selectedDay).format("L");
+      const day = moment(this.selectedDay).format("YYYY-MM-DD");
       return this.availabilitiesByDay[day] || [];
     }
   },
   methods: {
-    fetchAvailabilities({ year, month }, calendarMonths) {
+    fetchAvailabilities({ year, month }) {
       const date = moment([year, month - 1]);
-      this.fromDate = date.clone().add(-calendarMonths, "months");
-      this.toDate = date.clone().add(calendarMonths * 2, "months");
+      this.fromDate = date.clone();
+      this.toDate = date.clone().add(1, "month");
 
-      const fromDateParam = this.fromDate.format("YYYY-MM-DD");
-      const toDateParam = this.toDate.format("YYYY-MM-DD");
+      const fromDateEx = this.fromDate.clone().add(-1, "months");
+      const toDateEx = this.toDate.clone().add(1, "months");
+
+      const fromDateParam = fromDateEx.format("YYYY-MM-DD");
+      const toDateParam = toDateEx.format("YYYY-MM-DD");
 
       if (this.pageCancel) this.pageCancel.cancel("Changed calendar page");
       this.pageCancel = CancelToken.source();

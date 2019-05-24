@@ -3,12 +3,10 @@
     <h4>Calendario disponibilità</h4>
     <v-calendar
       :attributes="calendar"
-      :rows="numberOfRows"
-      :columns="numberOfRows"
       :is-expanded="true"
       style="border: 1px solid rgba(0, 0, 0, 0.125); border-radius: 0.25rem;"
       locale="it"
-      @update:fromPage="$emit('pageChanged', $event, numberOfRows ** 2)"
+      @update:fromPage="$emit('pageChanged', $event)"
       @dayclick="$emit('selectDay', $event.date)"
     >
       <div
@@ -45,12 +43,7 @@
 
 <script>
 export default {
-  props: ["admin", "calendar"],
-  computed: {
-    numberOfRows() {
-      return this.$screens({ default: 1, lg: 2 });
-    }
-  }
+  props: ["admin", "calendar"]
 };
 </script>
 

@@ -12,7 +12,7 @@
           :style="{ borderLeft: `5px solid ${parseInt(time) > 14 ? 'var(--primary)' : '#dd6b20'}`}"
         >
           <h5>
-            {{ time }}
+            {{ time }} ({{ group.length }})
           </h5>
           <ul style="list-style-type: none; padding-left: 1em; margin-bottom: 0;">
             <li
