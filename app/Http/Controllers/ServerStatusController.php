@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\WooService;
+use App\Store;
 use Illuminate\Http\Request;
 
 class ServerStatusController extends Controller
@@ -19,7 +20,8 @@ class ServerStatusController extends Controller
     public function check(Request $request, $store)
     {
         try {
-            $orders = $this->woo->orders($store);
+            $s = Store::findByCode($store);
+            $orders = $this->woo->orders($s);
         } catch (\Exception $e) {
             // Return some diagnostic data
             return response()->json([
