@@ -55,7 +55,14 @@
     </div>
     <div class="card-text">
       <p><i class="fas fa-fw fa-user"></i><span>{{ order.first_name }} {{ order.last_name }}</span></p>
-      <p><i class="fas fa-fw fa-map-pin"></i><span>{{ address }}</span></p>
+      <p><i class="fas fa-fw fa-map-pin"></i>
+        <a
+          v-if="detailed"
+          :href="googleDirectionsUrl"
+          target="_blank"
+        ><span>{{ address }}</span></a>
+        <span v-else>{{ address }}</span>
+      </p>
       <p v-if="order.phone"><i class="fas fa-fw fa-phone"></i>
         <a
           v-if="detailed"
@@ -213,11 +220,7 @@ export default {
     deliveryTime() {
       if (!this.order) return null;
 
-      const {
-        delivery_date,
-        delivery_date_end,
-        pickup_time
-      } = this.order;
+      const { delivery_date, delivery_date_end, pickup_time } = this.order;
 
       if (pickup_time) {
         return pickup_time;
@@ -225,6 +228,11 @@ export default {
 
       const hour = this.$options.filters.hour;
       return `${hour(delivery_date)}–${hour(delivery_date_end)}`;
+    },
+    googleDirectionsUrl() {
+      if (this.pickUp) return null;
+      const addressComponent = encodeURIComponent(this.address);
+      return `https://www.google.com/maps/dir/?api=1&destination=${addressComponent}`;
     }
   },
   methods: {
