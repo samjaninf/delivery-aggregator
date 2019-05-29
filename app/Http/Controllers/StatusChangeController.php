@@ -73,7 +73,7 @@ class StatusChangeController extends Controller
         $ids = $response->getCollection()->pluck('order');
 
         // Fetch WooCommerce data for the required orders
-        $orders = $this->woo->ordersWithId($store, $ids)->keyBy('number');
+        $orders = $this->woo->ordersWithId($s, $ids)->keyBy('number');
 
         // Transform the query result to a proper format
         $response->getCollection()->transform(function ($row) use ($orders) {
