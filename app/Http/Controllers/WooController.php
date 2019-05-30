@@ -63,12 +63,12 @@ class WooController extends Controller
         }
 
         // Log order status change
-        $s = new StatusChange;
-        $s->order = $order;
-        $s->status = 'out-for-delivery';
-        $s->user()->associate(auth()->user());
-        $s->store()->associate($s);
-        $s->save();
+        $status = new StatusChange;
+        $status->order = $order;
+        $status->status = 'out-for-delivery';
+        $status->user()->associate(auth()->user());
+        $status->store()->associate($s);
+        $status->save();
     }
 
     /**
@@ -89,12 +89,12 @@ class WooController extends Controller
         }
 
         // Log order status change
-        $s = new StatusChange;
-        $s->order = $order;
-        $s->status = 'completed';
-        $s->user()->associate(auth()->user());
-        $s->store()->associate($s);
-        $s->save();
+        $status = new StatusChange;
+        $status->order = $order;
+        $status->status = 'completed';
+        $status->user()->associate(auth()->user());
+        $status->store()->associate($s);
+        $status->save();
     }
 
     /**
