@@ -70,8 +70,8 @@ class AvailabilityController extends Controller
             'endTime' => 'required|numeric|min:0|max:2359|gt:startTime',
         ]);
 
-        $date = Carbon::parse($params['startDate']);
-        $endDate = Carbon::parse($params['endDate']);
+        $date = new Carbon(Carbon::parse($params['startDate'])->toDateString()); // going through toDateString to manually
+        $endDate = new Carbon(Carbon::parse($params['endDate'])->toDateString()); // force timezone to UTC
         $startH = intdiv($params['startTime'], 100);
         $startM = $params['startTime'] % 100;
         $endH = intdiv($params['endTime'], 100);
@@ -81,19 +81,46 @@ class AvailabilityController extends Controller
             abort(422, "Invalid start/end time. Please provice an HHMM number");
         }
 
+        $user = auth()->user();
+
         $results = [];
         $i = 0; // make sure there aren't too many
         while ($date <= $endDate && $i++ < 100) {
-            $avail = new Availability();
 
-            $avail->start = $date->copy()->setTime($startH, $startM);
-            $avail->end = $date->copy()->setTime($endH, $endM);
-            $avail->user()->associate(auth()->user());
+            // calculate availability start/end
+            $start = $date->copy()->setTime($startH, $startM);
+            $end = $date->copy()->setTime($endH, $endM);
+
+            // find overlaps
+            $overlaps = Availability::findOverlaps($user, $start, $end);
+
+            // if there are overlaps merge them with the new availability
+            if ($overlaps->isNotEmpty()) {
+
+                // find overlaps min start and max end
+                $min = $overlaps->min('start');
+                $max = $overlaps->max('end');
+
+                // update start/end
+                $start = $start->min($min);
+                $end = $end->max($max);
+
+                // delete them
+                Availability::whereIn('id', $overlaps->pluck('id'))->delete();
+            }
+
+            // create new availability
+            $avail = new Availability();
+            $avail->start = $start;
+            $avail->end = $end;
+            $avail->user()->associate($user);
             $avail->save();
 
+            // store a list of results
             $avail->makeHidden(['type', 'user', 'created_at', 'updated_at', 'user_id']);
             $results[] = $avail;
 
+            // process the next day
             $date->addDay();
         }
 
@@ -114,6 +141,10 @@ class AvailabilityController extends Controller
 
         if ($avail->end->isPast()) {
             return abort(422, "Can't delete past availability");
+        }
+
+        if (Bouncer::cannot('manage others availabilities') && $avail->end->subHours(48)->isPast()) {
+            return abort(422, "Can only delete availabilities until 48 hours before their start");
         }
 
         $avail->delete();
