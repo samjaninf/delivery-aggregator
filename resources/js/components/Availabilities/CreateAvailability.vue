@@ -4,18 +4,6 @@
 
     <b-card class="p-1">
       <b-form @submit.prevent="handleSubmit">
-        <b-form-group label="Pasto">
-          <b-form-radio-group
-            class="meal-selector"
-            v-model="meal"
-            :options="mealOptions"
-            @change="resetStartEnd()"
-            buttons
-            button-variant="outline-primary"
-            size="sm"
-          ></b-form-radio-group>
-        </b-form-group>
-
         <b-form-checkbox
           class="mb-2"
           v-model="range"
@@ -43,10 +31,7 @@
         </b-form-group>
         <b-form-row>
           <b-col>
-            <b-form-group
-              label="Inizio"
-              :disabled="!meal"
-            >
+            <b-form-group label="Inizio">
               <b-form-select
                 v-model="start"
                 :options="startOptions"
@@ -58,7 +43,7 @@
               <b-form-select
                 v-model="end"
                 :options="endOptions"
-                :disabled="!meal || !start"
+                :disabled="!start"
               ></b-form-select>
             </b-form-group>
           </b-col>
@@ -82,19 +67,12 @@ export default {
   data() {
     return {
       range: false,
-      meal: null,
       date: null,
       start: null,
       end: null
     };
   },
   computed: {
-    mealOptions() {
-      return [
-        { text: "Pranzo", value: "lunch" },
-        { text: "Cena", value: "dinner" }
-      ];
-    },
     minDate() {
       return new Date();
     },
@@ -108,20 +86,10 @@ export default {
       const formatHHMM = x =>
         `${padTime(Math.floor(x / 100))}:${padTime(x % 100)}`;
 
-      switch (this.meal) {
-        case "lunch":
-          return [1200, 1430].map(x => ({
-            text: formatHHMM(x),
-            value: x
-          }));
-        case "dinner":
-          return [1900, 2230].map(x => ({
-            text: formatHHMM(x),
-            value: x
-          }));
-        default:
-          return [];
-      }
+      return Array.from({ length: 25 }, (x, i) => i * 100).map(x => ({
+        text: formatHHMM(x),
+        value: x
+      }));
     },
     startOptions() {
       return this.timeOptions.slice(0, -1);
@@ -136,7 +104,6 @@ export default {
       this.end = null;
     },
     resetForm() {
-      this.meal = null;
       this.date = null;
       this.start = null;
       this.end = null;
@@ -194,22 +161,5 @@ export default {
 .btn-group-toggle.btn-group > .btn {
   flex-grow: 1;
   flex-basis: 0;
-}
-.meal-selector .btn-outline-primary:first-child:not(.disabled):active,
-.meal-selector .btn-outline-primary:first-child:hover,
-.meal-selector
-  .btn-outline-primary:first-child:not(:disabled):not(.disabled).active {
-  background-color: #dd6b20;
-  border-color: #dd6b20;
-  color: white;
-}
-.meal-selector .btn-outline-primary:first-child {
-  color: #dd6b20;
-  border-color: #dd6b20;
-}
-.meal-selector
-  .btn-outline-primary:first-child:not(:disabled):not(.disabled).active:focus,
-.meal-selector .btn-outline-primary:first-child.focus {
-  box-shadow: 0 0 0 0.2rem rgba(221, 107, 32, 0.5);
 }
 </style>
