@@ -168,7 +168,15 @@
         >
           <div class="media-body">
             <div>
-              <p class="float-right">{{ order.shipping | money }}</p>
+              <p class="float-right">
+                <span v-if="shippingBonus">
+                  {{ 2 | money }}
+                  <strong style="font-size: 1.2em;">+ {{ shippingBonus | money }}</strong>
+                </span>
+                <span v-else>
+                  {{ order.shipping | money }}
+                </span>
+              </p>
               <h6 class="d-inline font-italic">Costi di spedizione</h6>
             </div>
           </div>
@@ -206,6 +214,16 @@ export default {
     pickUp() {
       if (!this.order) return null;
       return !!this.order.pickup_location;
+    },
+    shippingBonus() {
+      const money = this.$options.filters.money;
+      const bonus = this.order.shipping - 2;
+      if (
+        this.$auth.check(["set out for delivery"]) &&
+        this.order.shipping > 0
+      ) {
+        return bonus;
+      }
     },
     address() {
       if (!this.order) return null;
