@@ -64,7 +64,7 @@ export default {
           return {
             key: id,
             dates: startDate.toDate(),
-            bar: startDate.hours() > 14 ? "blue" : "orange",
+            dot: startDate.hours() > 14 ? "blue" : "orange",
             customData: { id, start: startDate, end: endDate },
             order: startDate.hours(),
             popover: {
@@ -166,6 +166,11 @@ export default {
     }
   },
   methods: {
+    refreshAvailabilities() {
+      const year = this.fromDate.year();
+      const month = this.fromDate.month() + 1; // js month weirdness
+      this.fetchAvailabilities({ year, month });
+    },
     fetchAvailabilities({ year, month }) {
       const date = moment([year, month - 1]);
       this.fromDate = date.clone();
@@ -220,8 +225,8 @@ export default {
           console.error(e);
         });
     },
-    createdAvailabilities(availabilities) {
-      this.data = [...this.data, ...availabilities];
+    createdAvailabilities() {
+      this.refreshAvailabilities();
     }
   },
   components: {
