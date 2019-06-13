@@ -29,7 +29,7 @@
               {{attr.customData.start.format("HH:mm")}} - {{attr.customData.end.format("HH:mm")}}
             </span>
             <a
-              v-if="attr.customData.end.isAfter()"
+              v-if="isFuture(attr.customData.start)"
               class="delete-availability"
               @click="$emit('deleteAvailability', attr.customData.id); hide()"
               style="margin-left: 2em;"
@@ -43,7 +43,15 @@
 
 <script>
 export default {
-  props: ["admin", "calendar"]
+  props: ["admin", "calendar"],
+  methods: {
+    isFuture(datetime) {
+      // can only delete availabilities that don't start in 48 hours
+      return moment(datetime)
+        .subtract(48, "hours")
+        .isAfter();
+    }
+  }
 };
 </script>
 

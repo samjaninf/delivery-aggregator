@@ -16,11 +16,11 @@
           </h5>
           <ul style="list-style-type: none; padding-left: 1em; margin-bottom: 0;">
             <li
-              v-for="({id, user_name, end}) in group"
+              v-for="({id, user_name, start}) in group"
               :key="id"
             >
               <a
-                v-if="isFuture(end)"
+                v-if="isFuture(start)"
                 class="delete-availability"
                 @click="$emit('deleteAvailability', id)"
                 style="margin-right: 0.5em;"
