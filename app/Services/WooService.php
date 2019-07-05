@@ -146,6 +146,7 @@ class WooService
                 'last_name' => $order->shipping->last_name,
                 'delivery_date' => $slot_from ?? '',
                 'delivery_date_end' => $slot_to ?? '',
+                'shipping' => $order->shipping_total,
             ];
         });
     }

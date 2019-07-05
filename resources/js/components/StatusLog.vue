@@ -1,5 +1,8 @@
 <template>
-  <b-container class="mt-4">
+  <b-container
+    class="mt-4"
+    fluid
+  >
     <h3>Registro Consegne</h3>
     <h5 class="mt-4">Negozio</h5>
     <b-form-select
@@ -28,6 +31,16 @@
       :items="items"
       :fields="fields"
     ></b-table>
+    <div class="d-flex justify-content-end flex-wrap mt-4 ">
+      <b-pagination
+        class="mt-2"
+        size="md"
+        v-model="currentPage"
+        :total-rows="total"
+        :per-page="perPage"
+      >
+      </b-pagination>
+    </div>
     <div
       class="text-center mt-4"
       v-if="loading"
@@ -43,6 +56,8 @@
 </template>
 
 <script>
+import { formatMoney } from "../util/formatMoney";
+
 const CancelToken = axios.CancelToken;
 
 const date = d =>
@@ -100,6 +115,11 @@ const fields = [
 
       return `${completed.diff(out, "minutes")} minuti`;
     }
+  },
+  {
+    key: "order.shipping",
+    label: "Spese spedizione",
+    formatter: formatMoney
   }
 ];
 
@@ -140,9 +160,7 @@ export default {
 
       this.$http
         .get(
-          `/stores/${this.selectedStore}/statuslog?page=${
-            this.currentPage
-          }&filter=${this.filter}`,
+          `/stores/${this.selectedStore}/statuslog?page=${this.currentPage}&filter=${this.filter}`,
           {
             cancelToken: this.pageCancel.token
           }
@@ -157,6 +175,11 @@ export default {
     }
   },
   watch: {
+    stores(stores) {
+      if (Array.isArray(stores) && stores.length > 0) {
+        this.selectedStore = stores[0].code;
+      }
+    },
     selectedStore: {
       immediate: true,
       handler(store, oldStore) {

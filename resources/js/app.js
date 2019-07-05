@@ -51,8 +51,10 @@ Vue.use(require("@websanova/vue-auth"), {
 
 // Global filters
 const { formatTime } = require("./util/formatTime");
+const { formatMoney } = require("./util/formatMoney");
+
 Vue.filter("hour", formatTime);
-Vue.filter("money", v => `€${(+v).toFixed(2)}`);
+Vue.filter("money", formatMoney);
 
 // Axios
 axios.defaults.baseURL = "/api";
