@@ -218,10 +218,7 @@ export default {
     shippingBonus() {
       const money = this.$options.filters.money;
       const bonus = this.order.shipping - 2;
-      if (
-        this.$auth.check(["set out for delivery"]) &&
-        this.order.shipping > 0
-      ) {
+      if (this.$auth.check(["set out for delivery"]) && bonus > 0) {
         return bonus;
       }
     },
