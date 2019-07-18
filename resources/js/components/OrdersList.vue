@@ -218,7 +218,7 @@ export default {
   },
   components: {
     Order: require("./Order.vue").default,
-    PullTo: require("vue-pull-to")
+    PullTo: require("vue-pull-to").default
   }
 };
 
