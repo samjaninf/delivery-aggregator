@@ -9,7 +9,11 @@
         v-if="isDesktop"
         :stores="stores"
       />
-      <slot></slot>
+      <div class="content">
+        <div>
+          <slot></slot>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -34,6 +38,23 @@ export default {
   display: flex;
   flex-direction: row;
   height: calc(100vh - 58px);
+  z-index: 0;
+}
+
+.content {
+  width: 100%;
+  height: auto;
+  max-height: unset;
+  overflow-y: auto;
+}
+
+@media only screen and (max-width: 768px) {
+  .content {
+    overflow-x: hidden;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 120px;
+  }
 }
 </style>
 

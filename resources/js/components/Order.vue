@@ -341,7 +341,7 @@ export default {
   border-color: var(--orange);
 }
 
-@media only screen and (max-width: 400px) {
+@media only screen and (max-width: 768px) {
   .card.detailed {
     border-radius: 0;
     max-height: 100%;
@@ -349,7 +349,7 @@ export default {
     overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
     padding-bottom: 100px;
-    padding-top: 20px;
+    padding-top: 68px;
   }
 }
 </style>

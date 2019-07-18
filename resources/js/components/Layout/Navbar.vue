@@ -93,5 +93,6 @@ export default {
 <style scoped>
 .navbar {
   z-index: 1;
+  transform: translate3d(0, 0, 0);
 }
 </style>

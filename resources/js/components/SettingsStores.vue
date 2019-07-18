@@ -6,7 +6,7 @@
         md="6"
         class="mt-2"
       >
-        <b-list-group class="stores-list">
+        <b-list-group>
           <b-list-group-item
             href="#"
             @click="editing = null"
@@ -27,7 +27,7 @@
       </b-col>
       <b-col
         md="6"
-        class="mt-2"
+        class="mt-2 store-detail"
       >
         <b-card class="p-1">
           <b-form @submit.prevent="handleSubmit">
@@ -221,8 +221,9 @@ export default {
 </script>
 
 <style scoped>
-.stores-list {
-  max-height: calc(100vh - 150px);
-  overflow-y: auto;
+.store-detail {
+  position: sticky;
+  top: 30px;
+  height: 100%;
 }
 </style>
