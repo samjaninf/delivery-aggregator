@@ -5,7 +5,7 @@
     type="dark"
     style="z-index: 100;"
   >
-    <b-container>
+    <b-container :style="{paddingLeft: desktop ? '250px' : 0}">
       <b-navbar-brand>Delivery Aggregator</b-navbar-brand>
       <b-navbar-toggle target="nav-collapse">
       </b-navbar-toggle>
@@ -82,7 +82,7 @@
 
 <script>
 export default {
-  props: ["stores"]
+  props: ["stores", "desktop"]
 };
 </script>
 

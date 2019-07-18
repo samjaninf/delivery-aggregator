@@ -1,8 +1,9 @@
 <template>
   <div>
     <template v-if="$auth.ready()">
-      <navbar :stores="stores"></navbar>
-      <router-view :stores="stores"></router-view>
+      <layout :stores="stores">
+        <router-view :stores="stores"></router-view>
+      </layout>
     </template>
   </div>
 </template>
@@ -11,7 +12,7 @@
 export default {
   data() {
     return {
-      stores: [],
+      stores: []
     };
   },
   methods: {
@@ -19,21 +20,21 @@ export default {
       this.$http.get("stores").then(response => {
         this.stores = response.data;
 
-        if (this.stores.length > 0 && this.$route.path === '/') {
+        if (this.stores.length > 0 && this.$route.path === "/") {
           const firstStore = this.stores[0];
           this.$router.replace(`/${firstStore.code}`);
         }
       });
-    },
+    }
   },
   mounted: function() {
     this.loadStores();
   },
   components: {
-    OrdersList: require('./OrdersList.vue').default,
-    Navbar: require('./Navbar.vue').default,
+    OrdersList: require("./OrdersList.vue").default,
+    Layout: require("./Layout.vue").default
   }
-}
+};
 </script>
 
 <style scoped>
