@@ -1,19 +1,16 @@
 <template>
   <div>
-
-    <template v-if="isDesktop">
-      <navbar :desktop="isDesktop"></navbar>
-      <div class="desktop-layout">
-        <sidebar :stores="stores" />
-        <slot></slot>
-      </div>
-    </template>
-
-    <template v-else>
-      <navbar :stores="stores"></navbar>
+    <navbar
+      :desktop="isDesktop"
+      :stores="stores"
+    ></navbar>
+    <div class="layout">
+      <sidebar
+        v-if="isDesktop"
+        :stores="stores"
+      />
       <slot></slot>
-    </template>
-
+    </div>
   </div>
 </template>
 
@@ -33,9 +30,10 @@ export default {
 </script>
 
 <style scoped>
-.desktop-layout {
+.layout {
   display: flex;
   flex-direction: row;
+  height: calc(100vh - 58px);
 }
 </style>
 

@@ -3,7 +3,7 @@
     toggleable="md"
     variant="dark"
     type="dark"
-    style="z-index: 100;"
+    class="navbar"
   >
     <b-container :style="{paddingLeft: desktop ? '250px' : 0}">
       <b-navbar-brand>Delivery Aggregator</b-navbar-brand>
@@ -14,7 +14,11 @@
         is-nav
         id="nav-collapse"
       >
-        <b-navbar-nav class="navbar-nav mr-auto">
+        <b-navbar-nav
+          class="navbar-nav mr-auto"
+          v-if="!desktop"
+        >
+
           <b-nav-item
             v-for="store in stores"
             :key="store.code"
@@ -86,3 +90,8 @@ export default {
 };
 </script>
 
+<style scoped>
+.navbar {
+  z-index: 1;
+}
+</style>

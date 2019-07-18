@@ -1,85 +1,87 @@
 <template>
-  <pull-to
-    :top-load-method="refresh"
-    :top-config="pullToConfig"
-    :is-bottom-bounce="false"
-    :is-throttle-bottom-pull="false"
-    @infinite-scroll="loadNextPage"
-  >
-    <template
-      slot="top-block"
-      slot-scope="props"
+  <div :class="{ 'backdrop-open' : selectedOrder }">
+    <div
+      class="backdrop"
+      v-if="selectedOrder"
+      v-on:touchmove.stop
+      @click.self="selectedOrder = null"
     >
-      <div class="loading-bar">
-        <span v-html="props.stateText"></span>
-      </div>
-    </template>
-    <main
-      role="main"
-      class="container mt-4"
-      v-if="activeStore"
+      <order
+        :order="selectedOrder"
+        :detailed="true"
+        :storeCode="storeCode"
+        @close="selectedOrder = null"
+        @print="printReceipt(selectedOrder)"
+      ></order>
+    </div>
+    <pull-to
+      :top-load-method="refresh"
+      :top-config="pullToConfig"
+      :is-bottom-bounce="false"
+      :is-throttle-bottom-pull="false"
+      @infinite-scroll="loadNextPage"
     >
-      <h1 class="text-center mt-4 mb-4">Ordini —
-        <span style="white-space: pre;">{{ activeStore.name }}</span>
-      </h1>
-      <div>
-        <div
-          v-for="{dayOrders, day} in ordersByDate"
-          class="mb-3"
-          :key="day"
-        >
-          <div class="day-header">
-            <h3 class="text-primary">{{ day }}</h3>
-            <h3
-              class="text-primary"
-              v-if="$auth.check(['view totals', 'admin'])"
-            >
-              {{ dayOrders.reduce((acc, o) => acc + Number(o.total), 0) | money }}
-            </h3>
+      <template
+        slot="top-block"
+        slot-scope="props"
+      >
+        <div class="loading-bar">
+          <span v-html="props.stateText"></span>
+        </div>
+      </template>
+      <main
+        role="main"
+        class="container mt-4"
+        v-if="activeStore"
+      >
+        <h1 class="text-center mt-4 mb-4">Ordini —
+          <span style="white-space: pre;">{{ activeStore.name }}</span>
+        </h1>
+        <div>
+          <div
+            v-for="{dayOrders, day} in ordersByDate"
+            class="mb-3"
+            :key="day"
+          >
+            <div class="day-header">
+              <h3 class="text-primary">{{ day }}</h3>
+              <h3
+                class="text-primary"
+                v-if="$auth.check(['view totals', 'admin'])"
+              >
+                {{ dayOrders.reduce((acc, o) => acc + Number(o.total), 0) | money }}
+              </h3>
+            </div>
+            <hr />
+            <div class="orders row">
+              <div
+                class="col-lg-4 col-md-6"
+                v-for="order in dayOrders"
+                :key="order.number"
+              >
+                <order
+                  :order="order"
+                  @click="selectOrder(order)"
+                ></order>
+              </div>
+            </div>
           </div>
-          <hr />
-          <div class="orders row">
+          <div class="loading-bar infinite-loading-bar">
+            <h6 v-if="noMoreOrders">Non sono presenti altri ordini</h6>
             <div
-              class="col-lg-4 col-md-6"
-              v-for="order in dayOrders"
-              :key="order.number"
+              class="lds-ring"
+              v-else
             >
-              <order
-                :order="order"
-                @click="selectOrder(order)"
-              ></order>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
             </div>
           </div>
         </div>
-        <div class="loading-bar infinite-loading-bar">
-          <h6 v-if="noMoreOrders">Non sono presenti altri ordini</h6>
-          <div
-            class="lds-ring"
-            v-else
-          >
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-          </div>
-        </div>
-        <div
-          class="backdrop"
-          v-if="selectedOrder"
-          v-on:touchmove.stop
-          @click.self="selectedOrder = null"
-        >
-          <order
-            :order="selectedOrder"
-            :detailed="true"
-            :storeCode="storeCode"
-            @close="selectedOrder = null"
-            @print="printReceipt(selectedOrder)"
-          ></order>
-        </div>
-      </div>
-    </main>
-  </pull-to>
+      </main>
+    </pull-to>
+  </div>
 </template>
 
 <script>
@@ -250,15 +252,23 @@ const pullToConfig = {
 }
 
 .backdrop {
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.8);
   position: fixed;
   top: 0;
   left: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1;
+}
+
+.backdrop-open .scroll-container {
+  overflow: hidden !important;
+  pointer-events: none;
+  position: fixed;
+  height: 100%;
 }
 
 .day-header {

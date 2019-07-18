@@ -298,6 +298,7 @@ export default {
 
 .card .card-text i {
   margin-right: 1em;
+  margin-top: 5px;
 }
 
 .card.cancelled {
@@ -310,9 +311,9 @@ export default {
 }
 
 .order.detailed {
-  width: 400px;
+  width: 500px;
   max-width: 100vw;
-  max-height: 100vh;
+  max-height: calc(100vh - 100px);
   overflow-y: auto;
 }
 
@@ -341,8 +342,14 @@ export default {
 }
 
 @media only screen and (max-width: 400px) {
-  .card .card.detailed {
+  .card.detailed {
     border-radius: 0;
+    max-height: 100%;
+    height: 100%;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 100px;
+    padding-top: 20px;
   }
 }
 </style>
