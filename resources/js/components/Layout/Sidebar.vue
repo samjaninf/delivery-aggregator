@@ -29,7 +29,7 @@ export default {
   width: 250px;
   position: sticky;
   top: 0;
-  height: 100vh;
+  height: calc(100vh - 58px);
   background: white;
   border-right: 1px solid rgba(0, 0, 0, 0.125);
   flex-shrink: 0;

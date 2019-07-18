@@ -6,7 +6,14 @@
         md="6"
         class="mt-2"
       >
-        <b-list-group>
+        <b-list-group class="user-list">
+          <b-list-group-item
+            href="#"
+            @click="editing = null"
+            :active="editing === null"
+          >
+            <i class="fas fa-fw fa-plus"></i> Aggiungi
+          </b-list-group-item>
           <b-list-group-item
             v-for="user in users"
             :key="user.id"
@@ -15,13 +22,6 @@
             :active="editing === user.id"
           >
             {{ user.name }}
-          </b-list-group-item>
-          <b-list-group-item
-            href="#"
-            @click="editing = null"
-            :active="editing === null"
-          >
-            <i class="fas fa-fw fa-plus"></i> Aggiungi
           </b-list-group-item>
         </b-list-group>
       </b-col>
@@ -230,3 +230,10 @@ export default {
   props: ["stores"]
 };
 </script>
+
+<style scoped>
+.user-list {
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+}
+</style>
