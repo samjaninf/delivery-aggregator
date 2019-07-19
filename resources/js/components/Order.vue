@@ -104,13 +104,13 @@
             <b-button
               variant="primary"
               @click="setOutForDelivery"
-              v-if="$auth.check(['set out for delivery', 'admin'])"
+              v-if="$auth.check(['set out for delivery', 'admin']) && shippingRequired"
             >
               <i class="fas fa-motorcycle"></i> In consegna
             </b-button>
           </template>
 
-          <template v-if="order.status === 'out-for-delivery' && $auth.check(['set completed', 'admin'])">
+          <template v-if="order.status === 'out-for-delivery' && $auth.check(['set completed', 'admin']) && shippingRequired">
             <b-button
               variant="success"
               @click="setCompleted"
@@ -215,6 +215,9 @@ export default {
       if (!this.order) return null;
       return !!this.order.pickup_location;
     },
+    shippingRequired() {
+      return this.order.shipping > 0;
+    },
     shippingBonus() {
       const money = this.$options.filters.money;
       const bonus = this.order.shipping - 2;
@@ -227,8 +230,11 @@ export default {
 
       const { address, city, pickup_location } = this.order;
 
-      if (pickup_location)
+      if (pickup_location) {
         return this.snakeCaseToWords(pickup_location) + " ⛱️";
+      }
+
+      if (!this.shippingRequired) return "RITIRO IN SEDE 🏬";
 
       return [address, city].filter(s => s).join(", ");
     },
@@ -238,16 +244,43 @@ export default {
       const { delivery_date, delivery_date_end, pickup_time } = this.order;
 
       if (pickup_time) {
+        // Pickup for couriers
         return pickup_time;
       }
 
       const hour = this.$options.filters.hour;
+
+      if (this.pickUp) {
+        // Pickup for store managers
+        return hour(delivery_date);
+      }
+
       return `${hour(delivery_date)}–${hour(delivery_date_end)}`;
     },
     googleDirectionsUrl() {
-      if (this.pickUp) return null;
-      const addressComponent = encodeURIComponent(this.address);
-      return `https://www.google.com/maps/dir/?api=1&destination=${addressComponent}`;
+      if (!this.shippingRequired) return null;
+      if (this.pickUp) {
+        // Pickup
+        const coordsTable = {
+          // FIXME: fugly
+          tre_ponti: "43.50971319041170,10.31844418510778",
+          sale: "43.49784799869550,10.320622829287228",
+          pendola: "43.49392999869542,10.323425829287217",
+          scogli_piatti: "43.47451374300249,10.33110510074852",
+          vaschette: "43.46951927067554,10.33648914482174",
+          sassoscritto: "43.46598799869552,10.340911829287174",
+          calignaia: "43.46504799869549,10.346875829287194"
+        };
+
+        const coords = coordsTable[this.order.pickup_location];
+
+        if (!coords) return null;
+        return `https://www.google.com/maps/place/${coords}`;
+      } else {
+        // Home delivery
+        const addressComponent = encodeURIComponent(this.address);
+        return `https://www.google.com/maps/dir/?api=1&destination=${addressComponent}`;
+      }
     }
   },
   methods: {

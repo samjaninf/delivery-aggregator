@@ -269,6 +269,7 @@ const pullToConfig = {
   pointer-events: none;
   position: fixed;
   height: 100%;
+  width: 100%;
 }
 
 .day-header {

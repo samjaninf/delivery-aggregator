@@ -4,6 +4,11 @@
     fluid
   >
     <h3>Registro Consegne</h3>
+
+    <div class="d-flex justify-content-end flex-wrap mt-4 ">
+      <generate-courier-report />
+    </div>
+
     <h5 class="mt-4">Negozio</h5>
     <b-form-select
       v-model="selectedStore"
@@ -195,6 +200,10 @@ export default {
     filter: _.debounce(function(filter, oldFilter) {
       if (filter !== oldFilter) this.loadPage();
     }, 500)
+  },
+  components: {
+    GenerateCourierReport: require("./StatusLog/GenerateCourierReport.vue")
+      .default
   }
 };
 </script>
