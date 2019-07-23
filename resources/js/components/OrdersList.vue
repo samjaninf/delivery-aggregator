@@ -69,6 +69,17 @@
           <div class="loading-bar infinite-loading-bar">
             <h6 v-if="noMoreOrders">Non sono presenti altri ordini</h6>
             <div
+              class="text-center mb-4"
+              v-else-if="!loadingNextPage"
+            >
+              <b-button
+                variant="outline-primary"
+                @click="loadNextPage"
+              >
+                Carica prossima pagina
+              </b-button>
+            </div>
+            <div
               class="lds-ring"
               v-else
             >
@@ -100,7 +111,8 @@ export default {
       storeCancel: CancelToken.source(),
       selectedOrder: null,
       intervalHandle: null,
-      noMoreOrders: false
+      noMoreOrders: false,
+      loadingNextPage: false
     };
   },
   props: ["storeCode", "stores"],
@@ -160,10 +172,12 @@ export default {
     loadNextPage() {
       if (this.noMoreOrders) return;
 
+      this.loadingNextPage = true;
       const page = this.page;
 
       this.loadPage(page).then(success => {
         if (success) this.page = page + 1;
+        this.loadingNextPage = false;
       });
     },
     reset() {
