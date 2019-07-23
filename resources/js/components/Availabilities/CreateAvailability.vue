@@ -21,7 +21,7 @@
             :min-date="minDate"
             :max-date="maxDate"
             :input-props="{
-              class: 'form-control',
+              class: 'form-control v-calendar-input',
               style: 'background: white !important;',
               placeholder: `Seleziona ${range ? 'il periodo' : 'la data'}`,
               readonly: true,
@@ -74,7 +74,9 @@ export default {
   },
   computed: {
     minDate() {
-      return new Date();
+      return moment()
+        .add(3, "days")
+        .toDate();
     },
     maxDate() {
       return moment()
@@ -86,13 +88,13 @@ export default {
       const formatHHMM = x =>
         `${padTime(Math.floor(x / 100))}:${padTime(x % 100)}`;
 
-      return Array.from({ length: 25 }, (x, i) => i * 100).map(x => ({
+      return Array.from({ length: 24 }, (x, i) => i * 100).map(x => ({
         text: formatHHMM(x),
         value: x
       }));
     },
     startOptions() {
-      return this.timeOptions.slice(0, -1);
+      return this.timeOptions;
     },
     endOptions() {
       return this.timeOptions.filter(({ value }) => value > this.start);
@@ -153,13 +155,8 @@ export default {
 };
 </script>
 
-
 <style>
-.btn-group-toggle.btn-group {
-  width: 100%;
-}
-.btn-group-toggle.btn-group > .btn {
-  flex-grow: 1;
-  flex-basis: 0;
+.v-calendar-input {
+  border: 1px solid #ced4da;
 }
 </style>
