@@ -77,12 +77,12 @@ class AvailabilityController extends Controller
         $endH = intdiv($params['endTime'], 100);
         $endM = $params['endTime'] % 100;
 
-        if (Bouncer::cannot('manage others availabilities') && $date->copy()->subHours(48)->isPast()) {
-            return abort(422, "Can only create availabilities until 48 hours before their start");
-        }
-
         if ($startH >= 24 || $endH >= 24 || $startM >= 60 || $endM >= 60) {
             abort(422, "Invalid start/end time. Please provice an HHMM number");
+        }
+
+        if ($date->copy()->setTime($startH, $startM)->isPast()) {
+            return abort(422, "Can only create availabilities in the future");
         }
 
         $user = auth()->user();

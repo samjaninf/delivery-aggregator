@@ -35,6 +35,7 @@
               <b-form-select
                 v-model="start"
                 :options="startOptions"
+                :disabled="date === null"
               ></b-form-select>
             </b-form-group>
           </b-col>
@@ -43,7 +44,7 @@
               <b-form-select
                 v-model="end"
                 :options="endOptions"
-                :disabled="!start"
+                :disabled="start === null"
               ></b-form-select>
             </b-form-group>
           </b-col>
@@ -52,7 +53,7 @@
           <b-button
             type="submit"
             variant="success"
-            :disabled="!date || !start || !end"
+            :disabled="date === null || start === null || end === null"
           >
             Salva disponibilità
           </b-button>
@@ -74,9 +75,7 @@ export default {
   },
   computed: {
     minDate() {
-      return moment()
-        .add(3, "days")
-        .toDate();
+      return moment().toDate();
     },
     maxDate() {
       return moment()
@@ -84,14 +83,28 @@ export default {
         .toDate();
     },
     timeOptions() {
+      // Used to check valid time options
+      const dateStart = moment(this.range ? this.date.start : this.date);
+      const now = moment();
+
+      // Helper functions to format the time options properly
       const padTime = s => s.toString().padStart(2, "0");
       const formatHHMM = x =>
         `${padTime(Math.floor(x / 100))}:${padTime(x % 100)}`;
 
-      return Array.from({ length: 24 }, (x, i) => i * 100).map(x => ({
-        text: formatHHMM(x),
-        value: x
-      }));
+      return Array.from({ length: 24 }, (x, i) => i * 100)
+        .filter(
+          // Hide starting times in the past
+          x =>
+            dateStart
+              .hours(x / 100)
+              .minutes(x % 100)
+              .diff(now) > 0
+        )
+        .map(x => ({
+          text: formatHHMM(x),
+          value: x
+        }));
     },
     startOptions() {
       return this.timeOptions;
