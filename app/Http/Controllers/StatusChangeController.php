@@ -63,6 +63,10 @@ class StatusChangeController extends Controller
         $response = $q
             ->groupBy('order')
             ->orderByRaw('MAX(created_at) desc')
+            ->where(function ($q) {
+                $q->where('status', '=', 'out-for-delivery')
+                    ->orWhere('status', '=', 'completed');
+            })
             ->selectRaw('`order`,
                          GROUP_CONCAT(created_at) as created_ats,
                          GROUP_CONCAT(user_id) as user_ids,

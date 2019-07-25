@@ -87,6 +87,9 @@ Route::group([
     // Set order state as "Completed"
     Route::post('/stores/{store}/orders/{order}/completed', 'WooController@orderCompleted');
 
+    // Set order state as "Late"
+    Route::post('/stores/{store}/orders/{order}/late', 'WooController@orderLate');
+
     // Update product availability
     Route::put('/stores/{store}/products/{product}', 'WooController@updateProduct');
 

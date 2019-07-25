@@ -64,7 +64,7 @@ class WooService
                 return $order->status != 'pending';
             })
             ->values()
-            ->map(function ($order) use ($fromSuperstore) {
+            ->map(function ($order) use ($fromSuperstore, $store) {
                 // Map each order to the format that the frontend expects
 
                 // Order items list
@@ -90,6 +90,12 @@ class WooService
                 $seen = $meta->firstWhere('key', 'seen');
                 $pickupLocation = $meta->firstWhere('key', '_billing_place');
                 $pickupTime = $fromSuperstore ? null : $meta->firstWhere('key', 'da_time');
+
+                // Get late field from our StatusChanges
+                $late = $store->statusChanges()
+                    ->where('order', $order->number)
+                    ->where('status', 'late')
+                    ->count() > 0;
 
                 return [
                     'number' => $order->number,
@@ -117,6 +123,7 @@ class WooService
                     'from_superstore' => $fromSuperstore,
                     'pickup_location' => $pickupLocation->value ?? null,
                     'pickup_time' => $pickupTime->value ?? null,
+                    'late' => $late,
                 ];
             });
     }

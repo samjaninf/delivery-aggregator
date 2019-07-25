@@ -135,6 +135,25 @@ class WooController extends Controller
     }
 
     /**
+     * Update an order to log it being late
+     */
+    public function orderLate(Request $request, $store, $order)
+    {
+        $s = Store::findByCode($store);
+        if (!isset($s) || Bouncer::cannot('set out for delivery', $s)) {
+            abort(401);
+        }
+
+        // Log order status change
+        $status = new StatusChange;
+        $status->order = $order;
+        $status->status = 'late';
+        $status->user()->associate(auth()->user());
+        $status->store()->associate($s);
+        $status->save();
+    }
+
+    /**
      * Return a list of all products from a store
      */
     public function products(Request $request, $store)

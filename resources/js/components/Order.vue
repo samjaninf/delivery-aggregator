@@ -93,42 +93,15 @@
         </div>
 
         <div class="text-center mt-2">
-          <template v-if="order.status === 'processing' && $auth.check(['set prepared', 'set out for delivery', 'admin'])">
-            <b-button
-              variant="primary"
-              @click="setPrepared"
-              v-if="!order.prepared && $auth.check(['set prepared', 'admin'])"
-            >
-              <i class="fas fa-check"></i> Preparato
-            </b-button>
-            <b-button
-              variant="primary"
-              @click="setOutForDelivery"
-              v-if="$auth.check(['set out for delivery', 'admin']) && shippingRequired"
-            >
-              <i class="fas fa-motorcycle"></i> In consegna
-            </b-button>
-          </template>
-
-          <template v-if="order.status === 'out-for-delivery' && $auth.check(['set completed', 'admin']) && shippingRequired">
-            <b-button
-              variant="success"
-              @click="setCompleted"
-            >
-              <i class="fas fa-box"></i> Consegnato
-            </b-button>
-          </template>
-
-          <b-button
-            variant="secondary"
-            @click="$emit('print')"
-            v-if="$auth.check(['print receipts', 'admin'])"
-          >
-            <i
-              class="fas fa-print"
-              style="margin-right: 0"
-            ></i>
-          </b-button>
+          <order-actions
+            :order="order"
+            :shippingRequired="shippingRequired"
+            @prepared="setPrepared"
+            @outForDelivery="setOutForDelivery"
+            @completed="setCompleted"
+            @late="setLate"
+            @print="$emit('print')"
+          />
         </div>
 
         <hr />
@@ -286,7 +259,7 @@ export default {
   methods: {
     setOutForDelivery: updateState("out-for-delivery", "outfordelivery"),
     setCompleted: updateState("completed", "completed"),
-    setPrepared: function() {
+    setPrepared() {
       this.$http
         .post(`stores/${this.storeCode}/orders/${this.order.number}/prepared`)
         .then(() => {
@@ -296,6 +269,19 @@ export default {
           this.$notify({
             type: "error",
             text: "Errore durante il cambio di stato"
+          });
+        });
+    },
+    setLate() {
+      this.$http
+        .post(`stores/${this.storeCode}/orders/${this.order.number}/late`)
+        .then(() => {
+          this.order.late = true;
+        })
+        .catch(() => {
+          this.$notify({
+            type: "error",
+            text: "Errore durante l'operazione"
           });
         });
     },
@@ -310,6 +296,9 @@ export default {
         .map(w => w[0].toUpperCase() + w.slice(1))
         .join(" ");
     }
+  },
+  components: {
+    OrderActions: require("./Order/OrderActions.vue").default
   }
 };
 </script>
