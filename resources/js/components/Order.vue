@@ -78,6 +78,20 @@
         <i class="fab fa-fw fa-paypal"></i>
         <span>{{ order.total | money }} (Paypal)</span>
       </p>
+      <p v-if="order.vendors && order.vendors.length > 0">
+        <i class="fas fa-fw fa-store"></i>
+        <span>
+          <b-badge
+            variant="primary"
+            v-for="vendor in order.vendors"
+            :key="vendor"
+            style="margin-right: 0.5em; text-transform: capitalize"
+            pill
+          >
+            {{ vendor.toLowerCase() }}
+          </b-badge>
+        </span>
+      </p>
       <template v-if="detailed">
         <div
           v-for="coupon in order.coupons"

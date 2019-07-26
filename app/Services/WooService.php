@@ -90,6 +90,10 @@ class WooService
                 $seen = $meta->firstWhere('key', 'seen');
                 $pickupLocation = $meta->firstWhere('key', '_billing_place');
                 $pickupTime = $fromSuperstore ? null : $meta->firstWhere('key', 'da_time');
+                $vendors = isset($order->vendors)
+                ? collect($order->vendors)->map(function ($vendor) {
+                    return Store::findByCode($vendor)->name ?? $vendor;
+                }) : null;
 
                 // Get late field from our StatusChanges
                 $late = $store->statusChanges()
@@ -124,6 +128,7 @@ class WooService
                     'pickup_location' => $pickupLocation->value ?? null,
                     'pickup_time' => $pickupTime->value ?? null,
                     'late' => $late,
+                    'vendors' => $vendors,
                 ];
             });
     }
