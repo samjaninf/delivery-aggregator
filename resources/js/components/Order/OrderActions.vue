@@ -40,7 +40,7 @@
     <b-button
       variant="danger"
       @click="lateButtonClick"
-      v-if="$auth.check(['set out for delivery', 'admin']) && shippingRequired && !order.late"
+      v-if="$auth.check(['set out for delivery', 'admin']) && shippingRequired && !order.late && order.status === 'processing'"
     >
       <span v-if="confirmLate">Vuoi segnalare ritardo ristorante?</span>
       <i
