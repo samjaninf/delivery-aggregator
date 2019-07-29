@@ -42,7 +42,7 @@ class WooService
     {
         $wc = $this->createClient($store);
         $args = [
-            'per_page' => 20,
+            'per_page' => 30,
             'page' => $page,
         ];
         if ($vendor) {

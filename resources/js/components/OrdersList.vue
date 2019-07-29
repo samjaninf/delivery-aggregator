@@ -98,7 +98,7 @@
 <script>
 const CancelToken = axios.CancelToken;
 const UPDATE_INTERVAL = 30 * 1000;
-const ORDERS_PER_PAGE = 20;
+const ORDERS_PER_PAGE = 30;
 
 const makeReceipt = require("../util/makeReceipt.js");
 const { formatDate } = require("../util/formatTime");
