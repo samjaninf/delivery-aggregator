@@ -13,7 +13,7 @@ use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithStrictNullComparison;
 use Maatwebsite\Excel\Events\AfterSheet;
 
-class CourierReportExport implements FromCollection, ShouldAutoSize, WithStrictNullComparison, WithEvents
+class CouriersReportExport implements FromCollection, ShouldAutoSize, WithStrictNullComparison, WithEvents
 {
     use Exportable, RegistersEventListeners;
 

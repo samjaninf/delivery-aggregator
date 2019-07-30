@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\CourierReportExport;
+use App\Exports\CouriersReportExport;
+use App\Exports\StoresReportExport;
 use App\Services\WooService;
 use App\Store;
 use App\User;
@@ -111,16 +112,30 @@ class StatusChangeController extends Controller
         return $response;
     }
 
-    public function report(Request $request, $year, $month)
+    public function couriersReport(Request $request, $year, $month)
     {
         if (Bouncer::cannot('view statuslog')) {
             abort(401);
         }
 
         $monthPad = str_pad($month, 2, '0', STR_PAD_LEFT);
-        $fileName = "report-$year-$monthPad.xlsx";
+        $fileName = "couriers-report-$year-$monthPad.xlsx";
 
-        return (new CourierReportExport($this->woo))
+        return (new CouriersReportExport($this->woo))
+            ->forMonth($year, $month)
+            ->download($fileName);
+    }
+
+    public function storesReport(Request $request, $year, $month)
+    {
+        if (Bouncer::cannot('view statuslog')) {
+            abort(401);
+        }
+
+        $monthPad = str_pad($month, 2, '0', STR_PAD_LEFT);
+        $fileName = "stores-report-$year-$monthPad.xlsx";
+
+        return (new StoresReportExport($this->woo))
             ->forMonth($year, $month)
             ->download($fileName);
     }

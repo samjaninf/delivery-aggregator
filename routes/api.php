@@ -49,7 +49,8 @@ Route::group([
     Route::delete('/availabilities/{availability}', 'AvailabilityController@destroy');
 
     // === Reports ===
-    Route::get('/reports/{year}/{month}', 'StatusChangeController@report');
+    Route::get('/reports/stores/{year}/{month}', 'StatusChangeController@storesReport');
+    Route::get('/reports/couriers/{year}/{month}', 'StatusChangeController@couriersReport');
 
     // === Woocommerce-related routes ===
     // All of the following routes are store-specific

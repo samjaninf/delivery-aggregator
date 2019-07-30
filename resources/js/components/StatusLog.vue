@@ -6,7 +6,14 @@
     <h3>Registro Consegne</h3>
 
     <div class="d-flex justify-content-end flex-wrap mt-4 ">
-      <generate-courier-report />
+      <generate-report
+        label="Genera report fattorini"
+        type="couriers"
+      />
+      <generate-report
+        label="Genera report negozi"
+        type="stores"
+      />
     </div>
 
     <h5 class="mt-4">Negozio</h5>
@@ -202,8 +209,7 @@ export default {
     }, 500)
   },
   components: {
-    GenerateCourierReport: require("./StatusLog/GenerateCourierReport.vue")
-      .default
+    GenerateReport: require("./StatusLog/GenerateReport.vue").default
   }
 };
 </script>
