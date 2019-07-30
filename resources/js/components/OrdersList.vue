@@ -14,84 +14,60 @@
         @print="printReceipt(selectedOrder)"
       ></order>
     </div>
-    <pull-to
-      :top-load-method="refresh"
-      :top-config="pullToConfig"
-      :is-bottom-bounce="false"
-      :is-throttle-bottom-pull="false"
-      @infinite-scroll="loadNextPage"
+    <template
+      slot="top-block"
+      slot-scope="props"
     >
-      <template
-        slot="top-block"
-        slot-scope="props"
-      >
-        <div class="loading-bar">
-          <span v-html="props.stateText"></span>
-        </div>
-      </template>
-      <main
-        role="main"
-        class="container mt-4"
-        v-if="activeStore"
-      >
-        <h1 class="text-center mt-4 mb-4">Ordini —
-          <span style="white-space: pre;">{{ activeStore.name }}</span>
-        </h1>
-        <div>
-          <div
-            v-for="{dayOrders, day} in ordersByDate"
-            class="mb-3"
-            :key="day"
-          >
-            <div class="day-header">
-              <h3 class="text-primary">{{ day }}</h3>
-              <h3
-                class="text-primary"
-                v-if="$auth.check(['view totals', 'admin'])"
-              >
-                {{ dayOrders.reduce((acc, o) => acc + Number(o.total), 0) | money }}
-              </h3>
-            </div>
-            <hr />
-            <div class="orders row">
-              <div
-                class="col-lg-4 col-md-6"
-                v-for="order in dayOrders"
-                :key="order.number"
-              >
-                <order
-                  :order="order"
-                  @click="selectOrder(order)"
-                ></order>
-              </div>
-            </div>
+      <div class="loading-bar">
+        <span v-html="props.stateText"></span>
+      </div>
+    </template>
+    <main
+      role="main"
+      class="container mt-4"
+      v-if="activeStore"
+    >
+      <h1 class="text-center mt-4 mb-4">Ordini —
+        <span style="white-space: pre;">{{ activeStore.name }}</span>
+      </h1>
+      <div class="scroll-container">
+        <div
+          v-for="{dayOrders, day} in ordersByDate"
+          class="mb-3"
+          :key="day"
+        >
+          <div class="day-header">
+            <h3 class="text-primary">{{ day }}</h3>
+            <h3
+              class="text-primary"
+              v-if="$auth.check(['view totals', 'admin'])"
+            >
+              {{ dayOrders.reduce((acc, o) => acc + Number(o.total), 0) | money }}
+            </h3>
           </div>
-          <div class="loading-bar infinite-loading-bar">
-            <h6 v-if="noMoreOrders">Non sono presenti altri ordini</h6>
+          <hr />
+          <div class="orders row">
             <div
-              class="text-center mb-4"
-              v-else-if="!loadingNextPage"
+              class="col-lg-4 col-md-6"
+              v-for="order in dayOrders"
+              :key="order.number"
             >
-              <b-button
-                variant="outline-primary"
-                @click="loadNextPage"
-              >
-                Carica prossima pagina
-              </b-button>
-            </div>
-            <div
-              class="lds-ring"
-              v-else
-            >
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
+              <order
+                :order="order"
+                @click="selectOrder(order)"
+              ></order>
             </div>
           </div>
         </div>
-      </main>
-    </pull-to>
+        <h6 v-if="noMoreOrders">Non sono presenti altri ordini</h6>
+        <infinite-loading
+          v-else-if="activeStore"
+          @infinite="loadNextPage"
+          :identifier="activeStore.code"
+          spinner="circles"
+        ></infinite-loading>
+      </div>
+    </main>
   </div>
 </template>
 
@@ -169,7 +145,7 @@ export default {
           return false; // loading failed
         });
     },
-    loadNextPage() {
+    loadNextPage($state = null) {
       if (this.noMoreOrders) return;
 
       this.loadingNextPage = true;
@@ -178,6 +154,11 @@ export default {
       this.loadPage(page).then(success => {
         if (success) this.page = page + 1;
         this.loadingNextPage = false;
+
+        if ($state) {
+          if (this.noMoreOrders) $state.completed();
+          else $state.loaded();
+        }
       });
     },
     reset() {
@@ -188,8 +169,6 @@ export default {
       this.selectedOrder = null;
       this.storeCancel = CancelToken.source();
       this.noMoreOrders = false;
-
-      if (this.activeStore) this.loadNextPage();
     },
     refresh(loaded) {
       this.loadPage(0).then(success => {
@@ -232,7 +211,7 @@ export default {
   },
   components: {
     Order: require("./Order.vue").default,
-    PullTo: require("vue-pull-to").default
+    InfiniteLoading: require("vue-infinite-loading").default
   }
 };
 
@@ -282,8 +261,7 @@ const pullToConfig = {
   overflow: hidden !important;
   pointer-events: none;
   position: fixed;
-  height: 100%;
-  width: 100%;
+  max-width: 1110px;
 }
 
 .day-header {
