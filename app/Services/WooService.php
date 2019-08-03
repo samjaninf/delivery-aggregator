@@ -101,6 +101,13 @@ class WooService
                     ->where('status', 'late')
                     ->count() > 0;
 
+                // Include fees in shipping total
+                $fees = collect($order->fee_lines)
+                    ->reduce(function ($acc, $fee) {
+                        return $acc + $fee->total;
+                    }, 0);
+                $shipping = $order->shipping_total + $fees;
+
                 return [
                     'number' => $order->number,
                     'status' => $order->status,
@@ -115,7 +122,7 @@ class WooService
                     'delivery_date_end' => $slot_to ?? '',
                     'items' => $items ?? [],
                     'notes' => $order->customer_note,
-                    'shipping' => $order->shipping_total,
+                    'shipping' => $shipping,
                     'coupons' => collect($order->coupon_lines)->map(function ($c) {
                         return [
                             'code' => $c->code,
@@ -152,13 +159,20 @@ class WooService
         )->map(function ($order) {
             list($slot_from, $slot_to) = $this->getTimeslots($order);
 
+            // Include fees in shipping total
+            $fees = collect($order->fee_lines)
+                ->reduce(function ($acc, $fee) {
+                    return $acc + $fee->total;
+                }, 0);
+            $shipping = $order->shipping_total + $fees;
+
             return [
                 'number' => $order->number,
                 'first_name' => $order->shipping->first_name,
                 'last_name' => $order->shipping->last_name,
                 'delivery_date' => $slot_from ?? '',
                 'delivery_date_end' => $slot_to ?? '',
-                'shipping' => $order->shipping_total,
+                'shipping' => $shipping,
             ];
         });
     }
