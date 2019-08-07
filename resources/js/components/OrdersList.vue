@@ -156,7 +156,7 @@ export default {
         this.loadingNextPage = false;
 
         if ($state) {
-          if (this.noMoreOrders) $state.completed();
+          if (this.noMoreOrders) $state.complete();
           else $state.loaded();
         }
       });
