@@ -37,6 +37,14 @@ class WooController extends Controller
                 $orders = $orders->merge($ssOrders);
             }
 
+            $isCourier = auth()->user()->isA("courier");
+            if ($isCourier) {
+                $orders = $orders->filter(function ($order) {
+                    // Couriers only have access to today's orders
+                    return \Carbon\Carbon::createFromTimestamp($order['delivery_date'])->isToday();
+                });
+            }
+
             return $orders;
 
         } catch (\Automattic\WooCommerce\HttpClient\HttpClientException $e) {
