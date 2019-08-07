@@ -1,5 +1,13 @@
 <template>
   <div>
+    <b-button
+      variant="success"
+      @click="$emit('assigned')"
+      v-if="$auth.check(['set out for delivery']) && shippingRequired && !order.assigned && order.status === 'processing'"
+    >
+      <i class="fas fa-check"></i> Assegnalo a me!
+    </b-button>
+
     <template v-if="order.status === 'processing' && $auth.check(['set prepared', 'set out for delivery', 'admin'])">
       <b-button
         variant="primary"
@@ -11,13 +19,13 @@
       <b-button
         variant="primary"
         @click="$emit('outForDelivery')"
-        v-if="$auth.check(['set out for delivery', 'admin']) && shippingRequired"
+        v-if="$auth.check(['set out for delivery', 'admin']) && shippingRequired && order.assigned"
       >
         <i class="fas fa-motorcycle"></i> In consegna
       </b-button>
     </template>
 
-    <template v-if="order.status === 'out-for-delivery' && $auth.check(['set completed', 'admin']) && shippingRequired">
+    <template v-if="order.status === 'out-for-delivery' && $auth.check(['set completed', 'admin']) && shippingRequired && order.assigned">
       <b-button
         variant="success"
         @click="$emit('completed')"

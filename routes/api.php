@@ -76,6 +76,9 @@ Route::group([
     // Get status log for store
     Route::get('/stores/{store}/statuslog', 'StatusChangeController@index');
 
+    // Set order state as "Assigned"
+    Route::post('/stores/{store}/orders/{order}/assigned', 'WooController@orderAssigned');
+
     // Set order state as "Prepared"
     Route::post('/stores/{store}/orders/{order}/prepared', 'WooController@orderPrepared');
 

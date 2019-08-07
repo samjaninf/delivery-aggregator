@@ -110,6 +110,7 @@
           <order-actions
             :order="order"
             :shippingRequired="shippingRequired"
+            @assigned="setAssigned"
             @prepared="setPrepared"
             @outForDelivery="setOutForDelivery"
             @completed="setCompleted"
@@ -273,6 +274,19 @@ export default {
   methods: {
     setOutForDelivery: updateState("out-for-delivery", "outfordelivery"),
     setCompleted: updateState("completed", "completed"),
+    setAssigned() {
+      this.$http
+        .post(`stores/${this.storeCode}/orders/${this.order.number}/assigned`)
+        .then(() => {
+          this.order.assigned = this.$auth.user().id;
+        })
+        .catch(() => {
+          this.$notify({
+            type: "error",
+            text: "Errore durante il cambio di stato"
+          });
+        });
+    },
     setPrepared() {
       this.$http
         .post(`stores/${this.storeCode}/orders/${this.order.number}/prepared`)

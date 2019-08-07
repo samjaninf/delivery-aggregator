@@ -90,6 +90,7 @@ class WooService
                 $seen = $meta->firstWhere('key', 'seen');
                 $pickupLocation = $meta->firstWhere('key', '_billing_place');
                 $pickupTime = $fromSuperstore ? null : $meta->firstWhere('key', 'da_time');
+                $assigned = $meta->firstWhere('key', 'assigned');
                 $vendors = isset($order->vendors)
                 ? collect($order->vendors)->map(function ($vendor) {
                     return Store::findByCode($vendor)->name ?? $vendor;
@@ -136,6 +137,7 @@ class WooService
                     'pickup_time' => $pickupTime->value ?? null,
                     'late' => $late,
                     'vendors' => $vendors,
+                    'assigned' => isset($assigned->value) ? +$assigned->value : false,
                 ];
             });
     }
@@ -242,6 +244,27 @@ class WooService
                 [
                     'key' => 'seen',
                     'value' => true,
+                ],
+            ],
+        ]);
+    }
+
+    /**
+     * Update order meta "Assigned" value to the courier user id
+     *
+     * @param string $store  The desidered store
+     * @param string $order  The ID of the order we want to update
+     * @param string $userId The ID of the courier we want to assign it to
+     */
+    public function setAssigned($store, $order, $userId)
+    {
+        $wc = $this->createClient($store);
+
+        return $wc->put("orders/$order", [
+            'meta_data' => [
+                [
+                    'key' => 'assigned',
+                    'value' => $userId,
                 ],
             ],
         ]);

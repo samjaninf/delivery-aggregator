@@ -37,11 +37,18 @@ class WooController extends Controller
                 $orders = $orders->merge($ssOrders);
             }
 
+            // Couriers orders are filtered
             $isCourier = auth()->user()->isA("courier");
             if ($isCourier) {
                 $orders = $orders->filter(function ($order) {
+
                     // Couriers only have access to today's orders
-                    return \Carbon\Carbon::createFromTimestamp($order['delivery_date'])->isToday();
+                    $isToday = \Carbon\Carbon::createFromTimestamp($order['delivery_date'])->isToday();
+
+                    // And can't see orders assigned to someone else
+                    $assignedToOther = $order['assigned'] && $order['assigned'] != auth()->user()->id;
+
+                    return $isToday && !$assignedToOther;
                 });
             }
 
@@ -159,6 +166,35 @@ class WooController extends Controller
         $status->user()->associate(auth()->user());
         $status->store()->associate($s);
         $status->save();
+    }
+
+    /**
+     * Update an order to assign it to a courier
+     */
+    public function orderAssigned(Request $request, $store, $order)
+    {
+        $s = Store::findByCode($store);
+        if (!isset($s) || Bouncer::cannot('set out for delivery', $s)) {
+            abort(401);
+        }
+
+        $userId = auth()->user()->id;
+
+        try {
+            $this->woo->setAssigned($s, $order, $userId);
+
+            // Log order status change
+            $status = new StatusChange;
+            $status->order = $order;
+            $status->status = 'assigned';
+            $status->user()->associate(auth()->user());
+            $status->store()->associate($s);
+            $status->save();
+
+        } catch (\Automattic\WooCommerce\HttpClient\HttpClientException $e) {
+            // Return error message
+            return abort(422, $e->getMessage());
+        }
     }
 
     /**
