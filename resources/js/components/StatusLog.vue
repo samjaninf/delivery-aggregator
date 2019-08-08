@@ -112,7 +112,7 @@ const fields = [
     formatter: date
   },
   {
-    key: "completed.user",
+    key: "out-for-delivery.user",
     label: "Corriere",
     formatter: s => s || "—"
   },
