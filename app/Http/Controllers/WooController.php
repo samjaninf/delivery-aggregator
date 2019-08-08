@@ -49,7 +49,7 @@ class WooController extends Controller
                     $assignedToOther = $order['assigned'] && $order['assigned'] != auth()->user()->id;
 
                     return $isToday && !$assignedToOther;
-                });
+                })->values();
             }
 
             // Admins can see the assignee name
@@ -58,10 +58,8 @@ class WooController extends Controller
                 $orders->transform(function ($order) {
                     if ($order['assigned']) {
                         $assignee = User::find($order['assigned']);
-                        if ($assignee) {
-                            $order['assignee_name'] = $assignee->name;
+                        $order['assignee_name'] = $assignee->name ?? "Courier #{$order['assigned']}";
                         }
-                    }
 
                     return $order;
                 });
