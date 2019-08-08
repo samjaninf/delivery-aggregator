@@ -5,7 +5,7 @@
       @click="$emit('assigned')"
       v-if="$auth.check(['set out for delivery']) && shippingRequired && !order.assigned && order.status === 'processing'"
     >
-      <i class="fas fa-check"></i> Assegnalo a me!
+      <i class="fas fa-check"></i> Accetto l'ordine
     </b-button>
 
     <template v-if="order.status === 'processing' && $auth.check(['set prepared', 'set out for delivery', 'admin'])">

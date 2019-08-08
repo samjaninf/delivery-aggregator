@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\WooService;
 use App\StatusChange;
 use App\Store;
+use App\User;
 use Bouncer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,9 +38,8 @@ class WooController extends Controller
                 $orders = $orders->merge($ssOrders);
             }
 
-            // Couriers orders are filtered
-            $isCourier = auth()->user()->isA("courier");
-            if ($isCourier) {
+            // Orders are filtered for couriers
+            if (auth()->user()->isA("courier")) {
                 $orders = $orders->filter(function ($order) {
 
                     // Couriers only have access to today's orders
@@ -50,6 +50,22 @@ class WooController extends Controller
 
                     return $isToday && !$assignedToOther;
                 });
+            }
+
+            // Admins can see the assignee name
+            if (auth()->user()->can("see the names of assignees")) {
+
+                $orders->transform(function ($order) {
+                    if ($order['assigned']) {
+                        $assignee = User::find($order['assigned']);
+                        if ($assignee) {
+                            $order['assignee_name'] = $assignee->name;
+                        }
+                    }
+
+                    return $order;
+                });
+
             }
 
             return $orders;

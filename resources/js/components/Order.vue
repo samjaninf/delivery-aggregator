@@ -92,6 +92,10 @@
           </b-badge>
         </span>
       </p>
+      <p v-if="order.assignee_name">
+        <i class="fas fa-fw fa-motorcycle"></i>
+        <span>Assegnato a: <strong>{{ order.assignee_name }}</strong></span>
+      </p>
       <template v-if="detailed">
         <div
           v-for="coupon in order.coupons"
