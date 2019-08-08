@@ -79,6 +79,9 @@ Route::group([
     // Set order state as "Assigned"
     Route::post('/stores/{store}/orders/{order}/assigned', 'WooController@orderAssigned');
 
+    // Set order state as "Unassigned"
+    Route::post('/stores/{store}/orders/{order}/unassigned', 'WooController@orderUnassigned');
+
     // Set order state as "Prepared"
     Route::post('/stores/{store}/orders/{order}/prepared', 'WooController@orderPrepared');
 

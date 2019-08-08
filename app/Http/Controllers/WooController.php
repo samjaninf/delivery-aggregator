@@ -59,7 +59,7 @@ class WooController extends Controller
                     if ($order['assigned']) {
                         $assignee = User::find($order['assigned']);
                         $order['assignee_name'] = $assignee->name ?? "Courier #{$order['assigned']}";
-                        }
+                    }
 
                     return $order;
                 });
@@ -204,6 +204,25 @@ class WooController extends Controller
             $status->user()->associate(auth()->user());
             $status->store()->associate($s);
             $status->save();
+
+        } catch (\Automattic\WooCommerce\HttpClient\HttpClientException $e) {
+            // Return error message
+            return abort(422, $e->getMessage());
+        }
+    }
+
+    /**
+     * Update an order to unassign it from everyone
+     */
+    public function orderUnassigned(Request $request, $store, $order)
+    {
+        $s = Store::findByCode($store);
+        if (!isset($s) || Bouncer::cannot('unassign orders', $s)) {
+            abort(401);
+        }
+
+        try {
+            $this->woo->setUnassigned($s, $order);
 
         } catch (\Automattic\WooCommerce\HttpClient\HttpClientException $e) {
             // Return error message

@@ -271,6 +271,26 @@ class WooService
     }
 
     /**
+     * Update order and delete meta "Assigned"
+     *
+     * @param string $store  The desidered store
+     * @param string $order  The ID of the order we want to update
+     */
+    public function setUnassigned($store, $order)
+    {
+        $wc = $this->createClient($store);
+
+        return $wc->put("orders/$order", [
+            'meta_data' => [
+                [
+                    'key' => 'assigned',
+                    'value' => null,
+                ],
+            ],
+        ]);
+    }
+
+    /**
      * Parse timeslot data from an order meta
      * Supports both YITH and Iconic timeslot plugins
      *

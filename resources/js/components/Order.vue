@@ -2,7 +2,7 @@
   <b-card
     class="order"
     @click="!detailed && $emit('click')"
-    :class="{ cancelled: order.status === 'cancelled', detailed: detailed, 'mb-4': !detailed, 'pickup': order.from_superstore }"
+    :class="{ cancelled: order.status === 'cancelled', detailed: detailed, 'mb-4': !detailed, 'pickup': order.from_superstore, 'assigned' : order.assigned }"
   >
     <span
       v-if="!detailed && !order.seen"
@@ -115,6 +115,7 @@
             :order="order"
             :shippingRequired="shippingRequired"
             @assigned="setAssigned"
+            @unassigned="setUnassigned"
             @prepared="setPrepared"
             @outForDelivery="setOutForDelivery"
             @completed="setCompleted"
@@ -291,6 +292,20 @@ export default {
           });
         });
     },
+    setUnassigned() {
+      this.$http
+        .post(`stores/${this.storeCode}/orders/${this.order.number}/unassigned`)
+        .then(() => {
+          this.order.assigned = false;
+          this.order.assignee_name = undefined;
+        })
+        .catch(() => {
+          this.$notify({
+            type: "error",
+            text: "Errore durante il cambio di stato"
+          });
+        });
+    },
     setPrepared() {
       this.$http
         .post(`stores/${this.storeCode}/orders/${this.order.number}/prepared`)
@@ -358,6 +373,10 @@ export default {
 .card.cancelled {
   color: var(--danger);
   border-color: var(--danger);
+}
+
+.order.assigned {
+  border-color: var(--primary);
 }
 
 .order.card p {

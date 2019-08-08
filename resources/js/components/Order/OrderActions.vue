@@ -12,7 +12,7 @@
       <b-button
         variant="primary"
         @click="$emit('prepared')"
-        v-if="!order.prepared && $auth.check(['set prepared', 'admin'])"
+        v-if="!order.prepared && $auth.check(['set prepared'])"
       >
         <i class="fas fa-check"></i> Preparato
       </b-button>
@@ -48,13 +48,21 @@
     <b-button
       variant="danger"
       @click="lateButtonClick"
-      v-if="$auth.check(['set out for delivery', 'admin']) && shippingRequired && !order.late && order.status === 'processing'"
+      v-if="$auth.check(['set out for delivery']) && shippingRequired && !order.late && order.status === 'processing'"
     >
       <span v-if="confirmLate">Vuoi segnalare ritardo ristorante?</span>
       <i
         v-else
         class="fas fa-stopwatch"
       ></i>
+    </b-button>
+
+    <b-button
+      variant="secondary"
+      @click="$emit('unassigned')"
+      v-if="$auth.check(['set unassigned', 'admin']) && shippingRequired && order.assigned && order.status !== 'completed'"
+    >
+      <i class="fas fa-times"></i> Riassegna
     </b-button>
   </div>
 </template>
