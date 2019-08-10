@@ -52,6 +52,17 @@ class WooController extends Controller
                 })->values();
             }
 
+            // Orders are filtered for managers
+            if (auth()->user()->isA("manager")) {
+                $orders->transform(function ($order) {
+
+                    // Managers aren't supposed to see info about assignees
+                    unset($order['assigned']);
+
+                    return $order;
+                });
+            }
+
             // Admins can see the assignee name
             if (auth()->user()->can("see the names of assignees")) {
 
